@@ -1,0 +1,13 @@
+title: Sample Soft
+version: 1
+category: utility
+interface: console
+img_desc: 
+os_support: Linux
+order: 3
+date_added: 01/01/1993
+# Lines beginning '#' are skipped
+# The rest of the file is the description in HTML
+Sample soft offers no convenience to the user. It only exists to provide a sample for RSRU.
+This is a new line.
+This is <b>bold</b> to test HTML.
