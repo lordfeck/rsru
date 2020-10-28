@@ -1,0 +1,92 @@
+
+    /*layout */
+    body {
+        background-color: #EFE4B0;
+        margin: 0;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    }
+    div#topBar {
+        background-color: #3F48CC;
+        width: 100%;
+        height: 70px;
+        padding-top: 5px;
+        padding-left: 5px;
+        border-bottom: 1px solid black;
+    }
+    div#bodyContainer {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+div#catBar {
+    margin-top: 0px;
+    margin-bottom: 5px;
+    padding-top: 2px;
+    height: 26px;
+    background-color: #c0b687;  
+    text-align: center;
+    border-bottom: 1px solid black;
+    bottom: 0;
+    position: relative;
+}
+
+div.catName {
+    display: inline-block;
+    font-size: 1.2em;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    height: 25px;
+    padding: 0px 8px 0px 8px;
+    background-color: #c7be92;
+
+}
+div.active {
+    background-color: #EFE4B0;
+    font-weight: bold;
+    border-bottom: 0;
+    padding-bottom: 1px;
+}
+
+div#rsruCanvas {
+    padding-top: 10px;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+@media only screen and (max-width: 600px) {
+    div#rsruCanvas {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+    /* text style */
+    h1#top{
+        color: #D8D9F1;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow: 1px 1px black;
+        font-size: 1.4em;
+        margin-bottom: 0px;
+    }
+    p#subt{
+        font-size: 0.9em;
+        margin-top: 0px;
+        font-style: italic;
+    }
+    p#footerText{
+        font-size: 0.7em;
+        text-align: center;
+    }
+    /* rsru table */
+    table.rsru {
+        border: 1px solid black;
+        width: 100%;
+        margin-bottom: 15px;
+        background-color: #dbd1a1;
+    }
+    .rsru td {
+        border: 1px solid black;
+    }
+    .rsru .desc {
+        height: 50px;
+    }

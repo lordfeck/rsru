@@ -20,8 +20,8 @@ my $tplinc = "./html";      # Where shall I find my easel?
 my $entrydir = "./entries"; # Where shall I find my work?
 my $out = "./rsru";         # Where shall I place my finished work?
 my $tpl = "$tplinc/rsru_template.html"; # What is my easel named?
-my $debug = 0;
-my $verbose = 1;
+my $debug = 1;
+my $verbose = 0;
 
 # Default cats are always generated, even if empty.
 # hitherto unknown cats will be appended to this list if found.
