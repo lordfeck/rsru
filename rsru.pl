@@ -1,17 +1,21 @@
 #!/usr/bin/env perl
 
+#===============================================================================
 # Thransoft RSRU
 # Collation and generation of software listings for a static website.
 # Licence: GPLv3. See "licence.txt" for full details.
 # Author: Thran. Authored: 09/09/2020
 
 # With Thanks: https://stackoverflow.com/questions/63835994/
+#===============================================================================
 
 use strict;
 use warnings;
 use v5.10;
 
+#===============================================================================
 # Begin user-configurable
+#===============================================================================
 my $tplinc = "./html";      # Where shall I find my easel?
 my $entrydir = "./entries"; # Where shall I find my work?
 my $out = "./rsru";         # Where shall I place my finished work?
@@ -23,9 +27,13 @@ my $verbose = 1;
 # hitherto unknown cats will be appended to this list if found.
 my @cats = ("utility", "media", "sysadmin", "gfx", "dev");
 
+#===============================================================================
 # End usr config, begin function and global vars.
+#===============================================================================
 my %entryKvs;
 my $entryId;
+my $tplTop;
+my $tplBottom;
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date_added desc);
@@ -43,8 +51,34 @@ sub dump_kvs {
     }
 }
 
+# Read in the template, look for the RSRU markers, split it.
+sub read_partition_template {
+    open(TPL, "$tpl");
+    
+    while (<TPL>) {
+        last if /\s*(<!--BEGIN RSRU-->)/;
+        $tplTop .= $_;
+    }
+
+    say "TPLTOP: $tplTop" if ($debug);
+
+    while (<TPL>) {
+        next if /\s*(<!--END RSRU-->)/;
+        $tplBottom .= $_;
+    }
+
+    say "TPLBOTTOM: $tplBottom" if ($debug);
+    close TPL;
+}
+
+# Takes a key and prints the HTML for its contents
+# ARGUMENTS: "key" name for an entry
+sub entry_kvs_to_html {
+
+}
+
 # Print gathered entries into our template files. Incomplete. TODO: complete.
-sub print_templates {
+sub paint_template {
 
     while (my ($entryId, $hashRef) = each (%entryKvs)) {
         say "EID: $entryId";
@@ -53,10 +87,11 @@ sub print_templates {
         }
     }
 
-    open(TPL, "$tpl");
-    say <TPL>;
 }
 
+# Read the contents of an individual entry file. Entryfiles are plain text and in
+# a simple format. See 'samplesoft1.txt' for an example.
+# Returns a reference to a key-value store of all obtained key-values from the entryfile.
 sub read_entry {
     ($entryId) = $_[0];
     open (ENTRY, '<', "$entrydir/$entryId") or die "Couldn't open $entrydir/$entryId";
@@ -84,7 +119,9 @@ sub read_entry {
     return \%entryData;
 }
 
+#===============================================================================
 # End Fndefs, begin exec.
+#===============================================================================
 say "RSRU starting. Master template: $tpl";
 
 # Check we have what's needed.
@@ -108,9 +145,10 @@ say "<== Read Finished <==";
 dump_kvs if ($verbose);
 
 say "<== Begin template interpolation... ==>";
+read_partition_template;
+
 say "Forthcoming, soon to be at the ready. But that day is not today. Apologies, The Management.";
 #print_templates;
 say "<== Template interpolation finished ==>";
 
-say "RSRU finishing. Closing filehandles.";
-close TPL;
+say "RSRU complete.";
