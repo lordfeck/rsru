@@ -39,8 +39,8 @@ div.catName {
     height: 25px;
     padding: 0px 8px 0px 8px;
     background-color: #c7be92;
-
 }
+
 div.active {
     background-color: #EFE4B0;
     font-weight: bold;
@@ -53,10 +53,30 @@ div#rsruCanvas {
     margin-left: 20%;
     margin-right: 20%;
 }
+/* make sure it's presentable on the small screen */
 @media only screen and (max-width: 600px) {
     div#rsruCanvas {
         margin-left: 0;
         margin-right: 0;
+    }
+    
+    div.catName {
+        display: inline-block;
+        font-size: 0.9em;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        height: 25px;
+        padding: 0px 2px 0px 2px;
+        background-color: #c7be92;
+    }
+    
+    div.active {
+        background-color: #EFE4B0;
+        font-weight: bold;
+        border-bottom: 0;
+        padding-bottom: 1px;
     }
 }
     /* text style */
