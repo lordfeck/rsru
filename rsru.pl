@@ -17,9 +17,10 @@ use v5.10;
 # Begin user-configurable
 #===============================================================================
 my $tplinc = "./html";      # Where shall I find my easel?
-my $entrydir = "./entries"; # Where shall I find my work?
+my $entrydir = "./entries"; # Where shall I find my inspiration?
 my $out = "./rsru";         # Where shall I place my finished work?
 my $tpl = "$tplinc/rsru_template.html"; # What is my easel named?
+my $blankentry = "$tplinc/rsru_entry.html";
 my $debug = 1;
 my $verbose = 0;
 
@@ -28,12 +29,13 @@ my $verbose = 0;
 my @cats = ("utility", "media", "sysadmin", "gfx", "dev");
 
 #===============================================================================
-# End usr config, begin function and global vars.
+# End usr config, begin function defs and global vars.
 #===============================================================================
 my %entryKvs;
 my $entryId;
 my $tplTop;
 my $tplBottom;
+my $tplEntry;
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date_added desc);
@@ -53,7 +55,7 @@ sub dump_kvs {
 
 # Read in the template, look for the RSRU markers, split it.
 sub read_partition_template {
-    open(TPL, "$tpl");
+    open(TPL, "$tpl") or die ("Fatal: Couldn't open template $tpl!");
     
     while (<TPL>) {
         last if /\s*(<!--BEGIN RSRU-->)/;
@@ -62,29 +64,46 @@ sub read_partition_template {
 
     say "TPLTOP: $tplTop" if ($debug);
 
-    while (<TPL>) {
-        next if /\s*(<!--END RSRU-->)/;
-        $tplBottom .= $_;
-    }
+    # Skip everything that isn't for the "easel" area
+    while (<TPL>) {last if /\s*(<!--END RSRU-->)/; }
+
+    while (<TPL>) {$tplBottom .= $_; }
 
     say "TPLBOTTOM: $tplBottom" if ($debug);
     close TPL;
 }
 
-# Takes a key and prints the HTML for its contents
-# ARGUMENTS: "key" name for an entry
-sub entry_kvs_to_html {
-
+# Now load in our entry template file. This should be a HTML table
+# with the appropriate areas for our data marked out
+sub read_entrytpl {
+    open(my $fh, "$blankentry") or die ("Fatal: couldn't open entry template $blankentry!");
+    while (<$fh>) { $tplEntry .= $_ ;}
+    say "Entry Template:\n$tplEntry" if ($debug);
+    close TPL;
 }
 
-# Print gathered entries into our template files. Incomplete. TODO: complete.
+# Takes a key and prints the HTML for its contents
+# ARGUMENTS: Entry ID
+# RETURNS: Scalar reference to woven template
+sub entrykvs_to_html {
+    my $entryId = $_[0];
+    my $filledEntry = $tplEntry;
+    
+    # Find and replace, boys. Find and replace.
+    foreach my $key (@knownKeys) {
+        $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/;
+    }
+    
+    say "Filled $entryId:\n$filledEntry" if ($debug);
+    return \$filledEntry;
+}
+
+# Print gathered entries into our template files. Do one for each cat.
+# Incomplete. TODO: complete.
 sub paint_template {
 
     while (my ($entryId, $hashRef) = each (%entryKvs)) {
         say "EID: $entryId";
-        foreach (@knownKeys) {
-            say "KEY: $_. VAL: $entryKvs{$entryId}{$_}";
-        }
     }
 
 }
@@ -146,7 +165,8 @@ dump_kvs if ($verbose);
 
 say "<== Begin template interpolation... ==>";
 read_partition_template;
-
+read_entrytpl;
+entrykvs_to_html "vim";
 say "Forthcoming, soon to be at the ready. But that day is not today. Apologies, The Management.";
 #print_templates;
 say "<== Template interpolation finished ==>";
