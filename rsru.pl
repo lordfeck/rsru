@@ -21,6 +21,8 @@ my $entrydir = "./entries"; # Where shall I find my inspiration?
 my $out = "./rsru";         # Where shall I place my finished work?
 my $tpl = "$tplinc/rsru_template.html"; # What is my easel named?
 my $blankentry = "$tplinc/rsru_entry.html";
+my $fnPre = "rsru";
+my $siteName = "RSRU";
 my $debug = 1;
 my $verbose = 0;
 
@@ -31,11 +33,12 @@ my @cats = ("utility", "media", "sysadmin", "gfx", "dev");
 #===============================================================================
 # End usr config, begin function defs and global vars.
 #===============================================================================
-my %entryKvs;
-my $entryId;
-my $tplTop;
-my $tplBottom;
-my $tplEntry;
+my %entryKvs;       # Master key-value store, holds all read-in entries
+my $entryId;        # Entry-id variable of current working entry, used for reads
+my $tplTop;         # The 'top' half of the per-category template
+my $tplBottom;      # The 'bottom' half of the same. Entries will go between
+my $tplEntry;       # The blank HTML for each entry
+my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date_added desc);
@@ -98,14 +101,29 @@ sub entrykvs_to_html {
     return \$filledEntry;
 }
 
+# Copy any resources to outdir.
+sub copy_res {
+# TODO: CSS
+}
+
 # Print gathered entries into our template files. Do one for each cat.
-# Incomplete. TODO: complete.
+# Incomplete. TODO: complete, need to do for each cat...
+# ARGUMENTS: Cat name
 sub paint_template {
+    my $catName = $_[0];
+    my $outFn = "$out/". $fnPre . $catName . ".html";
+    my $currentEntry;
+
+    open (my $fh, '>', $outFn);
+    print $fh $tplTop;
 
     while (my ($entryId, $hashRef) = each (%entryKvs)) {
-        say "EID: $entryId";
+        $currentEntry = entrykvs_to_html $entryId;
+        print $fh $$currentEntry;
     }
 
+    print $fh $tplBottom; 
+    close $fh;
 }
 
 # Read the contents of an individual entry file. Entryfiles are plain text and in
@@ -155,20 +173,18 @@ say "Entrydir listing: @entries" if ($debug);
 
 say "==> Begin read of $entrydir contents ==>";
 $entryKvs{$entryId} = read_entry $_ for @entries;
-
 print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($debug);
 print (values %entryKvs, " values in entrykvs.\n") if ($debug);
-
+dump_kvs if ($verbose);
 say "<== Read Finished <==";
 
-dump_kvs if ($verbose);
-
-say "<== Begin template interpolation... ==>";
+say "==> Begin read of template files ==>";
 read_partition_template;
 read_entrytpl;
-entrykvs_to_html "vim";
-say "Forthcoming, soon to be at the ready. But that day is not today. Apologies, The Management.";
-#print_templates;
+say "<== Read Finished <==";
+
+say "<== Begin template interpolation... ==>";
+paint_template "test";
 say "<== Template interpolation finished ==>";
 
 say "RSRU complete.";
