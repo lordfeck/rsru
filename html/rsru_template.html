@@ -10,15 +10,15 @@
     <meta name="author" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="rsru.css" type="text/css">
-    <title>RSRU_TITLE</title>
+    <title>{% RSRU_TITLE %}</title>
 </head>
 <body>
     <div id="topBar">
-        <h1 id="top">RSRU</h1>
-    <p id="subt">Really Small, Really Useful software listings.</p>
+        <h1 id="top">{% HEAD_TITLE %}</h1>
+    <p id="subt">{% HEAD_DESC %}</p>
     </div>
     <div id="catBar">
-        <div class="catName">Cat1</div> <div class="catName active">Cat2</div> <div class="catName">Cat3</div>
+        {% RSRU_CATS %}
     </div>
     <div id="bodyContainer">
         <div id="rsruCanvas">
