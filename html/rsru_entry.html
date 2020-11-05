@@ -1,16 +1,17 @@
             <table class="rsru">
             <tr>
-                <td class="title">{% title %}</td>
-                <td class="version">Version Reviewed: {% version %}</td>
+                <td class="title" colspan="2">{% title %}</td>
+                <td class="version" title="Version Reviewed"> {% version %}</td>
             <tr>
-                <td class="desc">{% desc %}</td>
+                <td class="desc" colspan="2">{% desc %}</td>
                 <td class="image" rowspan="2">{% img_desc %}</td>
             </tr>
             <tr>
+                <td class="dl_url"><a href="{% dl_url %}"} target="_blank">Download {% title %}</a></td>
                 <td class="iface">Interface: {% interface %}</td>
             </tr>
             <tr>
-                <td class="ossp">Systems supported: {% os_support %}</td>
-                <td class="date">Submission date: {% date_added %}</td>
+                <td class="ossp" colspan="2">Systems supported: {% os_support %}</td>
+                <td class="date" title="Submission date"> {% date_added %}</td>
             </tr>
             </table>

@@ -49,16 +49,13 @@ div.active {
 
 div#rsruCanvas {
     padding-top: 10px;
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.9em;
+    max-width: 85%;
 }
 /* make sure it's presentable on the small screen */
-@media only screen and (max-width: 600px) {
-    div#rsruCanvas {
-        margin-left: 0;
-        margin-right: 0;
-    }
-    
+@media only screen and (max-width: 650px) {
     div.catName {
         font-size: 0.9em;
         padding: 0px 2px 0px 2px;
@@ -69,6 +66,10 @@ div#rsruCanvas {
         font-weight: bold;
         border-bottom: 0;
         padding-bottom: 1px;
+    }
+    
+    div#rsruCanvas {
+        max-width: 100%;
     }
 }
 /* text style */
@@ -101,4 +102,16 @@ table.rsru {
 }
 .rsru .desc {
     height: 50px;
+}
+
+.rsru .title {
+    min-width: 80%;
+}
+
+.rsru .dl_url {
+    width: 40%;
+}
+
+.rsru .iface {
+    width: 40%;
 }

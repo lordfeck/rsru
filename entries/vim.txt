@@ -6,6 +6,7 @@ img_desc: res/vim.jpg
 os_support: Linux, Windows, Mac
 order: 3
 date_added: 01/01/1997
+dl_url: https://www.vim.org/download.php
 # The rest of the file is the description in HTML
-VIM, the ubiquitious text editor. The evolution of Vi. For vim, the ratio of learning difficulty to lifetime usefulness is <integer overflow>. It's a solid friend who will accompany you everywhere you go.
+VIM, the ubiquitious text editor. The evolution of Vi. For vim, the ratio of learning difficulty to lifetime usefulness is INTEGER_OVERFLOW. It's a solid friend who will accompany you everywhere you go.
 

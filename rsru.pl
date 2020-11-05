@@ -49,7 +49,7 @@ my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 
 # List of known keys for each entry
-my @knownKeys = qw(title version category interface img_desc os_support order date_added desc);
+my @knownKeys = qw(title version category interface img_desc os_support order date_added desc dl_url);
 
 # Dump everything we've gathered into our KVS to stdout, format nicely. Intended for verbose mode.
 sub dump_kvs {
@@ -111,7 +111,7 @@ sub entrykvs_to_html {
     
     # Find and replace, boys. Find and replace.
     foreach my $key (@knownKeys) {
-        $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/;
+        $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
     }
     
     say "Filled $entryId:\n$filledEntry" if ($debug);
@@ -209,9 +209,10 @@ sub read_entry {
         # Lines with a colon have a key, lines without are descriptions
         if (/:/) {
             chomp;
-            my ($key, $val) = split /:\s*/; 
+            # Watch for URLs! spilt will split at each colon it finds, unless restrained
+            my ($key, $val) = split /:\s+/; 
             $entryData{$key} = $val;
-            print "KEY: $key VALUE: $val\n" if ($debug);
+            print "KEY: $key VALUE: $val\n";# if ($debug);
         } else {
             # $_ means current line... '_' looks like a line
             $entryData{desc} .= $_;
