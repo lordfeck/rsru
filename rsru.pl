@@ -12,6 +12,7 @@
 use strict;
 use warnings;
 use v5.10;
+use File::Copy;
 
 #===============================================================================
 # Begin user-configurable
@@ -20,14 +21,15 @@ my $tplinc = "./html";
 my $entrydir = "./entries";
 my $out = "./rsru";
 my $tpl = "$tplinc/rsru_template.html";
-my $blankentry = "$tplinc/rsru_entry.html";
-my $blankCatBar = "$tplinc/rsru_cat.html";
+my $blankEntry = "$tplinc/rsru_entry.html";
+my $blankCatEntry = "$tplinc/rsru_cat.html";
 my $fnPre = "rsru";
 my $siteName = "RSRU";
 my $siteHeaderDesc = "Really Small, Really Useful software listings.";
 my $siteHomepageDesc = "Lightweight software catalogue.";
-my $debug = 1;
+my $debug = 0;
 my $verbose = 0;
+my $clearDest = 1;
 
 # Default cats are always generated, even if empty.
 # hitherto unknown cats will be appended to this list if found.
@@ -41,7 +43,8 @@ my $entryId;        # Entry-id variable of current working entry, used for reads
 my $tplTop;         # The 'top' half of the per-category template
 my $tplBottom;      # The 'bottom' half of the same. Entries will go between
 my $tplEntry;       # The blank HTML for each entry
-my $tplCatBar;
+my $tplCatBar;      # Blank HTML for each category
+my $cwTplTop;       # Current working template top (global scope)
 my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 
@@ -73,8 +76,9 @@ sub read_partition_template {
     say "TPLTOP: $tplTop" if ($debug);
 
     # Skip everything that isn't for the "easel" area
-    while (<TPL>) {last if /\s*(<!--END RSRU-->)/; }
+    while (<TPL>) { last if /\s*(<!--END RSRU-->)/; }
 
+    # Then read the rest
     while (<TPL>) { $tplBottom .= $_; }
 
     say "TPLBOTTOM: $tplBottom" if ($debug);
@@ -84,12 +88,15 @@ sub read_partition_template {
 # Now load in our entry template file. This should be a HTML table
 # with the appropriate areas for our data marked out
 sub read_entrytpl {
-    open(my $fh, "$blankentry") or die ("Fatal: couldn't open entry template $blankentry!");
+    open(my $fh, "$blankEntry") or die ("Fatal: couldn't open entry template $blankEntry!");
     while (<$fh>) { $tplEntry .= $_; }
     say "Entry Template:\n$tplEntry" if ($debug);
     close $fh;
+}
 
-    open($fh, "$blankCatBar") or die("Fatal: couldn't open catbar template $blankCatBar!");
+# Load in the HTML for each category in the catbar
+sub read_cat_entrytpl {
+    open(my $fh, "$blankCatEntry") or die("Fatal: couldn't open catbar template $blankCatEntry!");
     while(<$fh>) { $tplCatBar .= $_; }
     say "Catbar Template: $tplCatBar" if ($debug);
     close $fh;
@@ -111,37 +118,56 @@ sub entrykvs_to_html {
     return \$filledEntry;
 }
 
-# Copy any resources to outdir.
-sub copy_res {
-# TODO: CSS
+# Clear destination before write (configurable)
+# Currently, will not clear any subdirs in $out
+sub clear_dest {
+    for my $unwanted (glob "$out/*.*") {
+        next if -d $unwanted;
+        say "clear_dest: Removing $unwanted..." if ($debug);
+        unlink $unwanted or warn("Problem deleting $unwanted\n");
+    }
 }
 
-# Insert the cat links and title/desc
-sub prep_tpltop {
-    my $filledCats;
-    my $tempCat;
-    my $catFn;
+# Copy any resources to outdir. For now, this is only CSS.
+sub copy_res {
+    for my $cssFile (glob "$tplinc/*.css") {
+        copy($cssFile,"$out/") or die ("Problem copying $cssFile to $out.");
+    }
+}
 
+# Insert title and description to master template top
+sub paint_desc {
     $tplTop =~ s/{% HEAD_TITLE %}/$siteName/;
     $tplTop =~ s/{% HEAD_DESC %}/$siteHeaderDesc/;
+}
+
+# Insert the cat links. called by paint_template when it is used to process
+# each category page.
+# ARGUMENTS: active cat
+sub prep_tpltop {
+    my $activeCat = $_[0];
+    my $filledCats; # Catbar
+    my $cwCat;  # Current Working Category
+    my $catFn; # Cat Filename (used for hyperlinks)
 
     foreach my $cat (@cats) {
         $catFn = $fnPre."_".$cat.".html";
-        $tempCat = $tplCatBar;
-        $tempCat =~ s/{% CAT_NAME %}/$cat/;
-        $tempCat =~ s/{% CAT_URL %}/$catFn/;
-        # How we make sure only the active cat page is seen as the current tab.
-        # Delete this for every cat except active, sub for "active" on cat
-        # Do in paint_template? 
-        $tempCat =~ s/IS_ACTIVE/IS_ACTIVE $cat/;
-        $filledCats .= $tempCat;
+        $cwCat = $tplCatBar;
+        $cwCat =~ s/{% CAT_NAME %}/$cat/;
+        $cwCat =~ s/{% CAT_URL %}/$catFn/;
+        # Set only the active cat to have the HTML class "active"
+        if ($cat eq $activeCat) {
+            $cwCat =~ s/{% IS_ACTIVE %}/active/;
+        }  else {
+            $cwCat =~ s/{% IS_ACTIVE %}//;
+        }
+        $filledCats .= $cwCat;
     }
 
-    $tplTop =~  s/{% RSRU_CATS %}/$filledCats/;
+    $cwTplTop =~  s/{% RSRU_CATS %}/$filledCats/;
 }
 
 # Print gathered entries into our template files. Do one for each cat.
-# Incomplete. TODO: complete, need to do for each cat...
 # ARGUMENTS: Cat name
 sub paint_template {
     my $catName = $_[0];
@@ -151,10 +177,14 @@ sub paint_template {
 
     open (my $fh, '>', $outFn);
     
-    $tplTop =~ s/{% RSRU_TITLE %}/$siteName :: $catName (Page $pageNo)/;
-    print $fh $tplTop;
+    $cwTplTop = $tplTop;
+    $cwTplTop =~ s/{% RSRU_TITLE %}/$siteName :: $catName (Page $pageNo)/;
+    prep_tpltop $catName; 
+
+    print $fh $cwTplTop;
     
-    while (my ($entryId, $hashRef) = each (%entryKvs)) {
+    for my $entryId (keys %entryKvs) {
+        next unless ($entryKvs{$entryId}{"category"} eq $catName);
         $currentEntry = entrykvs_to_html $entryId;
         print $fh $$currentEntry;
     }
@@ -168,9 +198,8 @@ sub paint_template {
 # a simple format. See 'samplesoft1.txt' for an example.
 # Returns a reference to a key-value store of all obtained key-values from the entryfile.
 sub read_entry {
-    ($entryId) = $_[0];
+    $entryId = $_[0];
     open (ENTRY, '<', "$entrydir/$entryId") or die "Couldn't open $entrydir/$entryId";
-    #FIXME: This should be a new variable for clarity's sake
     $entryId =~ s/\.txt//;
 
     my %entryData;
@@ -184,7 +213,7 @@ sub read_entry {
             $entryData{$key} = $val;
             print "KEY: $key VALUE: $val\n" if ($debug);
         } else {
-            # $_ means current line... '_' LOOKS LIKE A LINE... BRILLIANT!
+            # $_ means current line... '_' looks like a line
             $entryData{desc} .= $_;
         }
     }
@@ -192,6 +221,23 @@ sub read_entry {
     close ENTRY;
 
     return \%entryData;
+}
+
+# Read in the contents of the entrydir. Calls read_entry
+# on each text file therein. We will use this to fill our
+# entryKvs.
+sub read_entrydir {
+    opendir(ENTRIES, "$entrydir") or die "Directory of entries not found."; 
+    # Read in entries, exclude dotfiles
+    my @entries = grep !/^\./, readdir ENTRIES;
+    closedir ENTRIES;
+    say "Entrydir listing: @entries" if ($debug);
+
+    # $entryID is assigned inside read_entry
+    $entryKvs{$entryId} = read_entry $_ for @entries;
+    print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($debug);
+    print (values %entryKvs, " values in entrykvs.\n") if ($debug);
+    dump_kvs if ($verbose);
 }
 
 #===============================================================================
@@ -203,27 +249,21 @@ say "RSRU starting. Master template: $tpl";
 die "Template file $tpl not found, cannot continue." unless -f $tpl;
 mkdir $out unless -d $out;
 
-opendir(ENTRIES, "$entrydir") or die "Directory of entries not found."; 
-# Read in entries, exclude dotfiles
-my @entries = grep !/^\./, readdir ENTRIES;
-closedir ENTRIES;
-say "Entrydir listing: @entries" if ($debug);
-
 say "==> Begin read of $entrydir contents ==>";
-$entryKvs{$entryId} = read_entry $_ for @entries;
-print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($debug);
-print (values %entryKvs, " values in entrykvs.\n") if ($debug);
-dump_kvs if ($verbose);
+read_entrydir;
 say "<== Read Finished <==";
 
 say "==> Begin read of template files ==>";
 read_partition_template;
 read_entrytpl;
+read_cat_entrytpl;
 say "<== Read Finished <==";
 
 say "<== Begin template interpolation... ==>";
-prep_tpltop;
-paint_template "test";
+clear_dest if ($clearDest);
+copy_res;
+paint_desc;
+foreach my $cat (@cats) { paint_template $cat; }
 say "<== Template interpolation finished. Wrote $writtenOut files. ==>";
 
 say "RSRU complete.";
