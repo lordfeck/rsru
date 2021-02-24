@@ -2,10 +2,10 @@
 
 #===============================================================================
 # Thransoft RSRU
-# Collation and generation of software listings for a static website.
+# Collation and generation of software listings for a static software catalogue.
 # Licence: GPLv3. See "licence.txt" for full details.
 # Author: Thran. Authored: 09/09/2020
-
+#
 # With Thanks: https://stackoverflow.com/questions/63835994/
 #===============================================================================
 
@@ -13,6 +13,7 @@ use strict;
 use warnings;
 use v5.10;
 use File::Copy;
+use Time::Piece;
 
 #===============================================================================
 # Begin user-configurable
@@ -50,6 +51,8 @@ my $writtenOut = 0; # A count of written out files.
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date_added desc dl_url);
+
+sub sort_cat;
 
 # Dump everything we've gathered into our KVS to stdout, format nicely. Intended for verbose mode.
 sub dump_kvs {
@@ -183,6 +186,7 @@ sub paint_template {
 
     print $fh $cwTplTop;
     
+    sort_cat $catName;
     for my $entryId (keys %entryKvs) {
         next unless ($entryKvs{$entryId}{"category"} eq $catName);
         $currentEntry = entrykvs_to_html $entryId;
@@ -194,8 +198,26 @@ sub paint_template {
     close $fh;
 }
 
+# Sort the given cat's entries. Sort order: DATE > RANK > ENTRY_NAME
+# Argument: Cat name
+# Returns: A list that consists of ordered entry IDs for each cat
+sub sort_cat {
+    my $cwCat = $_[0];
+    my @sortedCat;
+
+    for my $entryId (keys %entryKvs) {
+        if ($entryKvs{$entryId}{"category"} eq $cwCat) {
+           push @sortedCat, $entryId;
+        }
+    }
+
+    say "SORTED SOFAR: @sortedCat, Length: ". length @sortedCat . " ";
+    
+}
+
 # Read the contents of an individual entry file. Entryfiles are plain text and in
 # a simple format. See 'samplesoft1.txt' for an example.
+# Argument: Entry ID (equivalent to the name of its text file)
 # Returns a reference to a key-value store of all obtained key-values from the entryfile.
 sub read_entry {
     $entryId = $_[0];
@@ -209,10 +231,10 @@ sub read_entry {
         # Lines with a colon have a key, lines without are descriptions
         if (/:/) {
             chomp;
-            # Watch for URLs! spilt will split at each colon it finds, unless restrained
+            # Watch for URLs! spilt will split at each colon it finds, unless restrained as such:
             my ($key, $val) = split /:\s+/; 
             $entryData{$key} = $val;
-            print "KEY: $key VALUE: $val\n";# if ($debug);
+            print "KEY: $key VALUE: $val\n" if ($debug);
         } else {
             # $_ means current line... '_' looks like a line
             $entryData{desc} .= $_;

@@ -5,7 +5,7 @@ interface: console
 img_desc: 
 os_support: Linux
 order: 3
-date_added: 01/01/1993
+date_added: 2020-01-01
 dl_url: http://www.themostamazingwebsiteontheinternet.com/
 # Lines beginning '#' are skipped
 # The rest of the file is the description in HTML
