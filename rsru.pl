@@ -29,7 +29,7 @@ my $siteName = "RSRU";
 my $siteHeaderDesc = "Really Small, Really Useful software listings.";
 my $siteHomepageDesc = "Lightweight software catalogue.";
 my $debug = 0;
-my $verbose = 0;
+my $verbose = 1;
 my $clearDest = 1;
 
 # Default cats are always generated, even if empty.
@@ -49,8 +49,11 @@ my $cwTplTop;       # Current working template top (global scope)
 my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 
+# Consts
+my $DATE_FORMAT = "%Y-%m-%d";
+
 # List of known keys for each entry
-my @knownKeys = qw(title version category interface img_desc os_support order date_added desc dl_url);
+my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url);
 
 sub sort_cat;
 
@@ -114,7 +117,12 @@ sub entrykvs_to_html {
     
     # Find and replace, boys. Find and replace.
     foreach my $key (@knownKeys) {
-        $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
+        if ($key eq "date") {
+            my $date = $entryKvs{$entryId}{'date'}->strftime('%m/%d/%Y');
+            $filledEntry =~ s/{% $key %}/$date/g;
+        } else {
+            $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
+        }
     }
     
     say "Filled $entryId:\n$filledEntry" if ($debug);
@@ -186,8 +194,7 @@ sub paint_template {
 
     print $fh $cwTplTop;
     
-    sort_cat $catName;
-    for my $entryId (keys %entryKvs) {
+    for my $entryId (sort_cat $catName) {
         next unless ($entryKvs{$entryId}{"category"} eq $catName);
         $currentEntry = entrykvs_to_html $entryId;
         print $fh $$currentEntry;
@@ -198,21 +205,24 @@ sub paint_template {
     close $fh;
 }
 
-# Sort the given cat's entries. Sort order: DATE > RANK > ENTRY_NAME
+# Sort the given cat's entries. TODO sort order: DATE > RANK > ENTRY_NAME, currently only DATE.
 # Argument: Cat name
 # Returns: A list that consists of ordered entry IDs for each cat
 sub sort_cat {
     my $cwCat = $_[0];
-    my @sortedCat;
+    my %entryDate;
 
     for my $entryId (keys %entryKvs) {
         if ($entryKvs{$entryId}{"category"} eq $cwCat) {
-           push @sortedCat, $entryId;
+           $entryDate{$entryId} = $entryKvs{$entryId}{"date"};
         }
     }
 
-    say "SORTED SOFAR: @sortedCat, Length: ". length @sortedCat . " ";
-    
+    # I have no idea how this works, but it does.
+    my @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } keys %entryDate;
+
+    say "SORTED SOFAR: @sorted, Length: ". length @sorted . " " if $debug;
+    return @sorted;
 }
 
 # Read the contents of an individual entry file. Entryfiles are plain text and in
@@ -233,7 +243,11 @@ sub read_entry {
             chomp;
             # Watch for URLs! spilt will split at each colon it finds, unless restrained as such:
             my ($key, $val) = split /:\s+/; 
-            $entryData{$key} = $val;
+            if ($key eq "date"){
+                $entryData{"date"} = Time::Piece->strptime($val, $DATE_FORMAT); 
+            } else {
+                $entryData{$key} = $val;
+            }
             print "KEY: $key VALUE: $val\n" if ($debug);
         } else {
             # $_ means current line... '_' looks like a line

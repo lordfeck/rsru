@@ -1,14 +1,15 @@
-title: Sample Soft
-version: 1
+title: Sample Soft 2
+version: 4
 category: utility
 interface: console
 img_desc: 
 os_support: Linux
 order: 3
-date: 2020-01-01
+date: 2021-01-01
 dl_url: http://www.themostamazingwebsiteontheinternet.com/
 # Lines beginning '#' are skipped
 # The rest of the file is the description in HTML
 Sample soft offers no convenience to the user. It only exists to provide a sample for RSRU.
 This is a new line.
 This is <b>bold</b> to test HTML.
+This is more useless text. Hello!
