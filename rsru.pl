@@ -21,7 +21,7 @@ use List::Util qw(first);
 #===============================================================================
 my $tplinc = "./html";
 my $entrydir = "./entries";
-my $out = "./rsru";
+my $out = "./output";
 my $tpl = "$tplinc/rsru_template.html";
 my $blankEntry = "$tplinc/rsru_entry.html";
 my $blankCatEntry = "$tplinc/rsru_cat.html";
