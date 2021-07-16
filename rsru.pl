@@ -14,6 +14,7 @@ use warnings;
 use v5.10;
 use File::Copy;
 use Time::Piece;
+use List::Util qw(first);
 
 #===============================================================================
 # Begin user-configurable
@@ -28,7 +29,7 @@ my $fnPre = "rsru";
 my $siteName = "RSRU";
 my $siteHeaderDesc = "Really Small, Really Useful software listings.";
 my $siteHomepageDesc = "Lightweight software catalogue.";
-my $debug = 0;
+my $debug = 1;
 my $verbose = 1;
 my $clearDest = 1;
 
@@ -53,7 +54,7 @@ my $writtenOut = 0; # A count of written out files.
 my $DATE_FORMAT = "%Y-%m-%d";
 
 # List of known keys for each entry
-my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url);
+my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url is_highlight);
 
 sub sort_cat;
 
@@ -218,10 +219,9 @@ sub sort_cat {
         }
     }
 
-    # I have no idea how this works, but it does.
     my @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } keys %entryDate;
 
-    say "SORTED SOFAR: @sorted, Length: ". length @sorted . " " if $debug;
+    say "SORTED: @sorted, Length: ". length @sorted . " " if $debug;
     return @sorted;
 }
 
@@ -245,9 +245,15 @@ sub read_entry {
             my ($key, $val) = split /:\s+/; 
             if ($key eq "date"){
                 $entryData{"date"} = Time::Piece->strptime($val, $DATE_FORMAT); 
-            } else {
-                $entryData{$key} = $val;
+                next;
+            } elsif ($key eq "category"){
+                say 'CATEGORY FOUND';
+                unless ( first { /$val/ } @cats ){
+                    say "New category found: $val." if $verbose;
+                    push (@cats, $val);
+                }
             }
+            $entryData{$key} = $val;
             print "KEY: $key VALUE: $val\n" if ($debug);
         } else {
             # $_ means current line... '_' looks like a line
@@ -288,6 +294,7 @@ mkdir $out unless -d $out;
 
 say "==> Begin read of $entrydir contents ==>";
 read_entrydir;
+say "CATS: @cats" if ($debug);
 say "<== Read Finished <==";
 
 say "==> Begin read of template files ==>";
