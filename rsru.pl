@@ -59,13 +59,17 @@ my $DATE_FORMAT = "%Y-%m-%d";
 my $MAX_CATS = 8;
 my $MIN_ENTRIES = 5;
 my $MAX_ENTRIES = 5;
+my $YES = 'yes';
+my $NO_SUMMARY = 'No summary necessary.';
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url is_highlight);
+my @necessaryKeys = qw(title version category order date desc);
 
 # Declare Functions (but don't define yet)
 sub sort_entries;
 sub sort_all_entries;
+sub get_highlighted_entries;
 
 # Useful Helper Function.
 # ARGUMENTS: Filename to be read in. RETURNS: Contents of file as string.
@@ -124,6 +128,8 @@ sub entrykvs_to_html {
             $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
         }
     }
+    # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
+    $filledEntry =~ s/{% KEY %}/$entryId/g;
     
     say "Filled $entryId:\n$filledEntry" if ($debug);
     return \$filledEntry;
@@ -232,10 +238,15 @@ sub generate_entries_hp {
        $cwHpEntry = $tplHpEntry;
         
        $cwHpEntry =~ s/{% ENTRY_NAME %}/$entryKvs{$entry}{"title"}/;
-       $cwHpEntry =~ s/{% ENTRY_DESC %}/$entryKvs{$entry}{"title"}/;
+       if ($entryKvs{$entry}{'summary'}) {
+           $cwHpEntry =~ s/{% ENTRY_DESC %}/$entryKvs{$entry}{'summary'}/;
+       } else {
+            say "No summary found for $entry; its summary will be omitted on homepage." if $verbose;
+            $cwHpEntry =~ s/{% ENTRY_DESC %}/$NO_SUMMARY/;
+       }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
-       $catFn = $fnPre."_".$cat.".html";
+       $catFn = $fnPre."_".$cat.".html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
     }
@@ -247,7 +258,7 @@ sub paint_homepage {
     my $outFn = "$out/index.html";
     
     my $cwTplTop = prep_tpltop('index'); 
-    my @entries;
+    my (@latest, @highlights);
 
     open (my $fh, '>', $outFn) or die ("Fatal: Couldn't open $outFn for writing!");
     print $fh $cwTplTop;
@@ -257,13 +268,18 @@ sub paint_homepage {
 
     print $fh $tplHp;
 
-    if (scalar (@entries) < $MIN_ENTRIES){
-        @entries = sort_all_entries($MAX_ENTRIES); 
-        print $fh generate_entries_hp(@entries);
+    if (scalar (@latest) < $MIN_ENTRIES){
+        @latest = sort_all_entries($MAX_ENTRIES); 
+        print $fh generate_entries_hp(@latest);
     } else {
         say "Total entries are below $MIN_ENTRIES. Skipping latest on homepage.";
     }
-
+    
+    @highlights = get_highlighted_entries; 
+    if (@highlights) {
+        print $fh '<h2>Highlights</h2>';
+        print $fh generate_entries_hp(@highlights);
+    }
     print $fh $tplBottom; 
     $writtenOut++;
     close $fh;
@@ -307,6 +323,15 @@ sub sort_all_entries {
     return @sorted;
 }
 
+sub get_highlighted_entries {
+    my @highlights;
+    foreach (keys %entryKvs) {
+        next unless ($entryKvs{$_}{is_highlight});
+        push (@highlights, $_) if ($entryKvs{$_}{is_highlight} eq $YES);
+    }
+    return @highlights;
+}
+
 # Read the contents of an individual entry file. Entryfiles are plain text and in
 # a simple format. See 'samplesoft1.txt' for an example.
 # Argument: Entry ID (equivalent to the name of its text file)
@@ -341,7 +366,7 @@ sub read_entry {
             $entryData{desc} .= $_;
         }
     }
-    say "DESC: $entryData{desc}" if ($debug);
+    say "$entryId DESC: $entryData{desc}" if ($debug);
     close ENTRY;
 
     return \%entryData;

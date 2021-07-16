@@ -1,13 +1,14 @@
+            
             <table class="rsru">
             <tr>
-                <td class="title" colspan="2">{% title %}</td>
+                <td class="title" colspan="2"><a id="{% KEY %}">{% title %}</a></td>
                 <td class="version" title="Version Reviewed"> {% version %}</td>
             <tr>
                 <td class="desc" colspan="2">{% desc %}</td>
                 <td class="image" rowspan="2">{% img_desc %}</td>
             </tr>
             <tr>
-                <td class="dl_url"><a href="{% dl_url %}"} target="_blank">Download {% title %}</a></td>
+                <td class="dl_url"><a href="{% dl_url %}" target="_blank">Download {% title %}</a></td>
                 <td class="iface">Interface: {% interface %}</td>
             </tr>
             <tr>
