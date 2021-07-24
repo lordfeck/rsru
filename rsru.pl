@@ -50,7 +50,7 @@ my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url is_highlight);
-my @necessaryKeys = qw(title version category order date desc);
+my @necessaryKeys = qw(title version category date desc);
 
 # Declare Functions (but don't define yet)
 sub sort_entries;
@@ -60,7 +60,7 @@ sub get_highlighted_entries;
 # Useful Helper Function.
 # ARGUMENTS: Filename to be read in. RETURNS: Contents of file as string.
 sub read_whole_file {
-    my $fileName = $_[0];
+    my $fileName = shift;
     my $fileContent;
     open(my $fh, "$fileName") or die ("Fatal: couldn't open $fileName!");
     $fileContent .= $_ while <$fh>;
@@ -98,13 +98,25 @@ sub read_partition_template {
     close TPL;
 }
 
+# Iterate through an entry and ensure all the specified necessary (necified?)
+# keys are present. Failure stops everything!
+# ARGS: Entry ID
+sub verify_necessary_keys {
+    my $entryId = shift;
+    foreach my $key (@necessaryKeys){
+        die "Key $key missing from $entryId.txt; please add $key: <value> to the entry file!" unless (first { /$key/ } keys %{$entryKvs{$entryId}});
+    }
+}
+
 # Takes a key and prints the HTML for its contents
 # ARGUMENTS: Entry ID
 # RETURNS: Scalar reference to woven template
 sub entrykvs_to_html {
-    my $entryId = $_[0];
+    my $entryId = shift;
     my $filledEntry = $tplEntry;
     
+    verify_necessary_keys ($entryId);
+
     # Find and replace, boys. Find and replace.
     foreach my $key (@knownKeys) {
         if ($key eq "date") {
@@ -145,7 +157,7 @@ sub paint_desc {
 }
 
 sub generate_cat_tabs {
-    my $activeCat = $_[0];
+    my $activeCat = shift;
     my $catFn; # Cat Filename (used for hyperlinks)
     my $cwCat;  # Current Working Category
     my $filledCats; # Tabs of categories, eventually filled
@@ -194,7 +206,7 @@ sub prep_tpltop {
 # Print gathered entries into our template files. Do one for each cat.
 # ARGUMENTS: Cat name
 sub paint_template {
-    my $catName = $_[0];
+    my $catName = shift;
     my $outFn = "$uc{out}/". $uc{fnPre} . "_" . $catName . ".html";
     my $currentEntry;
     my $pageNo = 1;
@@ -280,7 +292,7 @@ sub paint_homepage {
 # Argument: Cat name. [If not supplied, sort ALL entries by date]
 # Returns: A list that consists of ordered entry IDs for each cat
 sub sort_entries {
-    my $cwCat = $_[0];
+    my $cwCat = shift;
     my %entryDate;
 
     for my $entryId (keys %entryKvs) {
@@ -299,7 +311,7 @@ sub sort_entries {
 # of all entries sorted by date.
 # ARGUMENTS: max index
 sub sort_all_entries {
-    my $max = $_[0];
+    my $max = shift;
     my $itr = 0;
     my %entryDate;
     for my $entry (keys %entryKvs) {
@@ -327,7 +339,7 @@ sub get_highlighted_entries {
 # Argument: Entry ID (equivalent to the name of its text file)
 # Returns a reference to a key-value store of all obtained key-values from the entryfile.
 sub read_entry {
-    $entryId = $_[0];
+    $entryId = shift;
     open (ENTRY, '<', "$uc{entrydir}/$entryId") or die "Couldn't open $uc{entrydir}/$entryId";
     $entryId =~ s/\.txt//;
 
