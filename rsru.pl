@@ -61,6 +61,7 @@ my $MIN_ENTRIES = 5;
 my $MAX_ENTRIES = 5;
 my $YES = 'yes';
 my $NO_SUMMARY = 'No summary necessary.';
+my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
 
 # List of known keys for each entry
 my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url is_highlight);
@@ -213,6 +214,7 @@ sub paint_template {
     my $currentEntry;
     my $pageNo = 1;
     my $cwTplTop = prep_tpltop($catName, $pageNo); 
+    my $catIsEmpty = 1;
 
     open (my $fh, '>', $outFn);
     print $fh $cwTplTop;
@@ -220,8 +222,11 @@ sub paint_template {
     for my $entryId (sort_entries $catName) {
         next unless ($entryKvs{$entryId}{"category"} eq $catName);
         $currentEntry = entrykvs_to_html $entryId;
+        $catIsEmpty = 0;
         print $fh $$currentEntry;
     }
+    
+    print $fh $TPL_EMPTY_CAT if $catIsEmpty;
 
     print $fh $tplBottom; 
     $writtenOut++;
