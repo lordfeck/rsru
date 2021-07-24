@@ -1,11 +1,12 @@
 #!/usr/bin/env perl
 
 #===============================================================================
-# Thransoft RSRU
+# Thransoft RSRU v0.9
 # Collation and generation of software listings for a static software catalogue.
 # Licence: GPLv3. See "licence.txt" for full details.
 # Author: Thran. Authored: 09/09/2020
-#
+# WWW: http://soft.thran.uk
+# 
 # With Thanks: https://stackoverflow.com/questions/63835994/
 #===============================================================================
 
@@ -15,30 +16,14 @@ use v5.10;
 use File::Copy;
 use Time::Piece;
 use List::Util qw(first);
+use Cwd qw(getcwd);
 
 #===============================================================================
-# Begin user-configurable
+# Read in user-configurable values
 #===============================================================================
-my $tplinc = "./html";
-my $entrydir = "./entries";
-my $out = "./output";
-my $tpl = "$tplinc/rsru_template.html";
-my $blankEntry = "$tplinc/rsru_entry.html";
-my $blankCatEntry = "$tplinc/rsru_cat.html";
-my $blankTplHp = "$tplinc/index.html";      # Blank HTML for the homepage
-my $blankTplHpEntry = "$tplinc/rsru_hp_entry.html";
-my $fnPre = "rsru";
-my $siteName = "RSRU";
-my $siteHeaderDesc = "Really Small, Really Useful software listings.";
-my $siteHomepageHeader = 'Welcome to RSRU!';
-my $siteHomepageDesc = "How do you do? Please enjoy your time browsing our lightweight software catalogue.";
-my $debug = 0;
-my $verbose = 0;
-my $clearDest = 1;
-
-# Default cats are always generated, even if empty.
-# hitherto unknown cats will be appended to this list if found.
-my @cats = ("utility", "media", "sysadmin", "gfx", "dev");
+my %uc = do getcwd . "/conf.pl";
+# Copy cats list from the user conf and make it a mutable array.
+my @cats = @{$uc{cats}};
 
 #===============================================================================
 # End usr config, begin function defs and global vars.
@@ -89,7 +74,7 @@ sub dump_kvs {
     print (keys %entryKvs, "\n");
 
     while (my ($entryId, $hashRef) = each (%entryKvs)) {
-        say "EID: $entryId" if $debug;
+        say "EID: $entryId" if $uc{debug};
         while (my ($key, $val) = each (%$hashRef)) {
             say "KEY: $key. VAL: $val";
         }
@@ -98,7 +83,7 @@ sub dump_kvs {
 
 # Read in the template, look for the RSRU markers, split it.
 sub read_partition_template {
-    open(TPL, "$tpl") or die ("Fatal: Couldn't open template $tpl!");
+    open(TPL, $uc{tpl}) or die ("Fatal: Couldn't open template $uc{tpl}!");
     
     while (<TPL>) {
         last if /\s*(<!--BEGIN RSRU-->)/;
@@ -132,31 +117,31 @@ sub entrykvs_to_html {
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
     
-    say "Filled $entryId:\n$filledEntry" if ($debug);
+    say "Filled $entryId:\n$filledEntry" if ($uc{debug});
     return \$filledEntry;
 }
 
 # Clear destination before write (configurable)
-# Currently, will not clear any subdirs in $out
+# Currently, will not clear any subdirs in $uc{out}
 sub clear_dest {
-    for my $unwanted (glob "$out/*.*") {
+    for my $unwanted (glob "$uc{out}/*.*") {
         next if -d $unwanted;
-        say "clear_dest: Removing $unwanted..." if ($debug);
+        say "clear_dest: Removing $unwanted..." if ($uc{debug});
         unlink $unwanted or warn("Problem deleting $unwanted\n");
     }
 }
 
 # Copy any resources to outdir. For now, this is only CSS.
 sub copy_res {
-    for my $cssFile (glob "$tplinc/*.css") {
-        copy($cssFile,"$out/") or die ("Problem copying $cssFile to $out.");
+    for my $cssFile (glob "$uc{tplinc}/*.css") {
+        copy($cssFile,"$uc{out}/") or die ("Problem copying $cssFile to $uc{out}.");
     }
 }
 
 # Insert title and description to master template top
 sub paint_desc {
-    $tplTop =~ s/{% HEAD_TITLE %}/$siteName/;
-    $tplTop =~ s/{% HEAD_DESC %}/$siteHeaderDesc/;
+    $tplTop =~ s/{% HEAD_TITLE %}/$uc{siteName}/;
+    $tplTop =~ s/{% HEAD_DESC %}/$uc{siteHeaderDesc}/;
 }
 
 sub generate_cat_tabs {
@@ -168,7 +153,7 @@ sub generate_cat_tabs {
     # handle special case of index.html
     $catFn = 'index.html';
     $cwCat = $tplCatTab;
-    $cwCat =~ s/{% CAT_NAME %}/'home'/;
+    $cwCat =~ s/{% CAT_NAME %}/home/;
     $cwCat =~ s/{% CAT_URL %}/$catFn/;
     if ($activeCat eq 'index'){
         $cwCat =~ s/{% IS_ACTIVE %}/active/;
@@ -177,7 +162,7 @@ sub generate_cat_tabs {
 
     # Now fill in the category tabs
     foreach my $cat (@cats) {
-        $catFn = $fnPre."_".$cat.".html";
+        $catFn = $uc{fnPre}."_".$cat.".html";
         $cwCat = $tplCatTab;
         $cwCat =~ s/{% CAT_NAME %}/$cat/;
         $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -201,7 +186,7 @@ sub prep_tpltop {
     $pageTxt = "(Page $pageNo)" if $pageNo;
     my $catTabs = generate_cat_tabs($activeCat);
     my $cwTplTop = $tplTop;
-    $cwTplTop =~ s/{% RSRU_TITLE %}/$siteName :: $activeCat $pageTxt/;
+    $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
     return $cwTplTop;
 }
@@ -210,7 +195,7 @@ sub prep_tpltop {
 # ARGUMENTS: Cat name
 sub paint_template {
     my $catName = $_[0];
-    my $outFn = "$out/". $fnPre . "_" . $catName . ".html";
+    my $outFn = "$uc{out}/". $uc{fnPre} . "_" . $catName . ".html";
     my $currentEntry;
     my $pageNo = 1;
     my $cwTplTop = prep_tpltop($catName, $pageNo); 
@@ -246,12 +231,12 @@ sub generate_entries_hp {
        if ($entryKvs{$entry}{'summary'}) {
            $cwHpEntry =~ s/{% ENTRY_DESC %}/$entryKvs{$entry}{'summary'}/;
        } else {
-            say "No summary found for $entry; its summary will be omitted on homepage." if $verbose;
+            say "No summary found for $entry; its summary will be omitted on homepage." if $uc{verbose};
             $cwHpEntry =~ s/{% ENTRY_DESC %}/$NO_SUMMARY/;
        }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
-       $catFn = $fnPre."_".$cat.".html#$entry";
+       $catFn = $uc{fnPre}."_".$cat.".html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
     }
@@ -260,16 +245,16 @@ sub generate_entries_hp {
 
 # Print the homepage. ARGS: None.
 sub paint_homepage {
-    my $outFn = "$out/index.html";
+    my $outFn = "$uc{out}/index.html";
     
     my $cwTplTop = prep_tpltop('index'); 
     my (@latest, @highlights);
 
-    open (my $fh, '>', $outFn) or die ("Fatal: Couldn't open $outFn for writing!");
+    open (my $fh, '>', $outFn) or die ("Fatal: Couldn't open $uc{out}Fn for writing!");
     print $fh $cwTplTop;
         
-    $tplHp =~ s/{% RSRU_HPHD %}/$siteHomepageHeader/;
-    $tplHp =~ s/{% RSRU_HPDESC %}/$siteHomepageDesc/;
+    $tplHp =~ s/{% RSRU_HPHD %}/$uc{siteHomepageHeader}/;
+    $tplHp =~ s/{% RSRU_HPDESC %}/$uc{siteHomepageDesc}/;
 
     print $fh $tplHp;
 
@@ -306,7 +291,7 @@ sub sort_entries {
 
     my @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } keys %entryDate;
 
-    say "SORTED: @sorted, Length: ". scalar @sorted . " " if $debug;
+    say "SORTED: @sorted, Length: ". scalar @sorted . " " if $uc{debug};
     return @sorted;
 }
 
@@ -319,12 +304,12 @@ sub sort_all_entries {
     my %entryDate;
     for my $entry (keys %entryKvs) {
         break if ($itr == $max);
-        say "entry $entry and $entryKvs{$entry}{'date'}" if $debug;
+        say "entry $entry and $entryKvs{$entry}{'date'}" if $uc{debug};
         $entryDate{$entry} = $entryKvs{$entry}{"date"};
         $itr++;
     }
     my @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } keys %entryDate;
-    say "Sorted are @sorted." if $debug;
+    say "Sorted are @sorted." if $uc{debug};
     return @sorted;
 }
 
@@ -343,7 +328,7 @@ sub get_highlighted_entries {
 # Returns a reference to a key-value store of all obtained key-values from the entryfile.
 sub read_entry {
     $entryId = $_[0];
-    open (ENTRY, '<', "$entrydir/$entryId") or die "Couldn't open $entrydir/$entryId";
+    open (ENTRY, '<', "$uc{entrydir}/$entryId") or die "Couldn't open $uc{entrydir}/$entryId";
     $entryId =~ s/\.txt//;
 
     my %entryData;
@@ -360,18 +345,18 @@ sub read_entry {
                 next;
             } elsif ($key eq "category"){
                 unless ( first { /$val/ } @cats ){
-                    say "New category found: $val." if $verbose;
+                    say "New category found: $val." if $uc{verbose};
                     push (@cats, $val);
                 }
             }
             $entryData{$key} = $val;
-            print "KEY: $key VALUE: $val\n" if ($debug);
+            print "KEY: $key VALUE: $val\n" if ($uc{debug});
         } else {
             # $_ means current line... '_' looks like a line
             $entryData{desc} .= $_;
         }
     }
-    say "$entryId DESC: $entryData{desc}" if ($debug);
+    say "$entryId DESC: $entryData{desc}" if ($uc{debug});
     close ENTRY;
 
     return \%entryData;
@@ -381,50 +366,50 @@ sub read_entry {
 # on each text file therein. We will use this to fill our
 # entryKvs.
 sub read_entrydir {
-    opendir(ENTRIES, "$entrydir") or die "Directory of entries not found."; 
+    opendir(ENTRIES, "$uc{entrydir}") or die "Directory of entries not found."; 
     # Read in entries, exclude dotfiles
     my @entries = grep !/^\./, readdir ENTRIES;
     closedir ENTRIES;
-    say "Entrydir listing: @entries" if ($debug);
+    say "Entrydir listing: @entries" if ($uc{debug});
 
     # $entryID is assigned inside read_entry
     $entryKvs{$entryId} = read_entry $_ for @entries;
-    print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($debug);
-    print (values %entryKvs, " values in entrykvs.\n") if ($debug);
-    dump_kvs if ($verbose);
+    print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($uc{debug});
+    print (values %entryKvs, " values in entrykvs.\n") if ($uc{debug});
+    dump_kvs if ($uc{verbose});
 }
 
 #===============================================================================
 # End Fndefs, begin exec.
 #===============================================================================
-say "RSRU starting. Master template: $tpl";
+say "RSRU starting. Master template: $uc{tpl}";
 
 # Check we have what's needed.
-die "Template file $tpl not found, cannot continue." unless -f $tpl;
-mkdir $out unless -d $out;
+die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
+mkdir $uc{out} unless -d $uc{out};
 
-say "==> Begin read of $entrydir contents ==>";
+say "==> Begin read of $uc{entrydir} contents ==>";
 read_entrydir;
-say "CATS: @cats" if ($debug);
-say "Warning: More than $MAX_CATS exist in file. Template may be malformed." if (scalar (@cats) > $MAX_CATS);
+say "CATS: @cats" if ($uc{debug});
+warn "Warning: More than $MAX_CATS exist in file. Template may be malformed.\n" if (scalar (@cats) > $MAX_CATS);
 say "<== Read Finished <==";
 
 say "==> Begin read of template files ==>";
 read_partition_template;
 
 # Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
-$tplEntry = read_whole_file($blankEntry);
+$tplEntry = read_whole_file($uc{blankEntry});
 
 # Load in blank HTML for homepage items. Fills the global vars tplHp and tplHpEntry.
-$tplHp = read_whole_file($blankTplHp);
-$tplHpEntry = read_whole_file($blankTplHpEntry);
+$tplHp = read_whole_file($uc{blankTplHp});
+$tplHpEntry = read_whole_file($uc{blankTplHpEntry});
 
 # Load in the HTML for each category in the catbar
-$tplCatTab = read_whole_file($blankCatEntry);
+$tplCatTab = read_whole_file($uc{blankCatEntry});
 say "<== Read Finished <==";
 
 say "<== Begin template interpolation... ==>";
-clear_dest if ($clearDest);
+clear_dest if ($uc{clearDest});
 copy_res;
 paint_desc;
 foreach my $cat (@cats) { paint_template $cat; }
