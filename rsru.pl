@@ -44,6 +44,7 @@ my $DATE_FORMAT = "%Y-%m-%d";
 my $MAX_CATS = 8;
 my $MIN_ENTRIES = 5;
 my $MAX_ENTRIES = 5;
+my $MAX_ENTRIES_PER_PAGE = 10;
 my $YES = 'yes';
 my $NO_SUMMARY = 'No summary necessary.';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
@@ -231,7 +232,7 @@ sub paint_template {
 }
 
 # Use the $tplHpEntry template to generate a list of entries for the homepage.
-# ARGUMENTS: An array of entry key names.
+# ARGUMENTS: An array of entry key names
 sub generate_entries_hp {
     my $hpEntries = "";
     my ($cwHpEntry, $catFn, $cat);
@@ -288,7 +289,7 @@ sub paint_homepage {
 }
 
 
-# Sort the given cat's entries. TODO sort order: DATE > RANK > ENTRY_NAME, currently only DATE.
+# Sort the given cat's entries. TODO sort order: DATE > RANK > ENTRY_NAME, currently only DATE, ENTRY NAME.
 # Argument: Cat name. [If not supplied, sort ALL entries by date]
 # Returns: A list that consists of ordered entry IDs for each cat
 sub sort_entries {
@@ -301,7 +302,9 @@ sub sort_entries {
         } 
     }
 
-    my @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } keys %entryDate;
+    # First sort alphabetically, then by date
+    my @sorted = sort keys %entryDate;
+    @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
 
     say "SORTED: @sorted, Length: ". scalar @sorted . " " if $uc{debug};
     return @sorted;
@@ -315,12 +318,14 @@ sub sort_all_entries {
     my $itr = 0;
     my %entryDate;
     for my $entry (keys %entryKvs) {
-        break if ($itr == $max);
+        last if ($itr == $max);
         say "entry $entry and $entryKvs{$entry}{'date'}" if $uc{debug};
         $entryDate{$entry} = $entryKvs{$entry}{"date"};
         $itr++;
     }
-    my @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } keys %entryDate;
+    # First sort alphabetically, then by date
+    my @sorted = sort keys %entryDate;
+    @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
     say "Sorted are @sorted." if $uc{debug};
     return @sorted;
 }
