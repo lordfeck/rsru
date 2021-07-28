@@ -54,6 +54,12 @@ div#rsruCanvas {
     font-size: 0.9em;
     max-width: 85%;
 }
+
+span.anchor {
+    float: right;
+    padding-right: 3px;
+}
+
 /* make sure it's presentable on the small screen */
 @media only screen and (max-width: 650px) {
     div.catName {
