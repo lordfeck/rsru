@@ -28,6 +28,22 @@ div#catBar {
     position: relative;
 }
 
+div#nav {
+    text-align: center;
+    font-size: 0.8em;
+    padding-bottom: 2px;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    height: 1.2em;
+}
+
+div#navCount {
+    float: left;
+}
+div#navSkip {
+    float: right; 
+}
+
 div.catName {
     display: inline-block;
     font-size: 1.2em;

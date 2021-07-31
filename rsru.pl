@@ -36,6 +36,7 @@ my $tplEntry;       # The blank HTML for each entry
 my $tplCatTab;      # Blank HTML for each category
 my $tplHp;          # Blank HTML for homepage
 my $tplHpEntry;     # Blank HTML for entries on the homepage
+my $tplNav;         # Blank HTML for nav section
 my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 
@@ -175,7 +176,7 @@ sub generate_cat_tabs {
 
     # Now fill in the category tabs
     foreach my $cat (@cats) {
-        $catFn = $uc{fnPre}."_".$cat.".html";
+        $catFn = $uc{fnPre}."_".$cat."_0.html";
         $cwCat = $tplCatTab;
         $cwCat =~ s/{% CAT_NAME %}/$cat/;
         $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -190,13 +191,61 @@ sub generate_cat_tabs {
     return $filledCats;
 }
 
+# Calculate the max page index for a category
+# Note: This will be easier once entryKvs is restructured
+# ARGS: Cat name
+# RETURNS: Max page index
+sub calculate_max_page {
+    my $catName = shift;
+    my $catSize = 0;
+    foreach (keys %entryKvs){
+        $catSize++ if ($entryKvs{$_}{category} eq $catName);
+    }
+    use integer;
+    return $catSize / $uc{maxPerPage}; 
+}
+
+
+# Prepare the navbar.
+# Arguments: Cat Name, Current Index, isLast
+# Returns: prepared navbar HTML
+sub prep_navbar {
+    my ($catName, $pgIdx, $isLast) = @_;
+    my $cwNavbar = $tplNav;
+    my %url;
+    my ($prev, $next, $max);
+
+    $max = calculate_max_page($catName);
+    $url{max} = "$uc{fnPre}_${catName}_$max.html";
+
+    if ($pgIdx == 0) {
+        $url{prev} = "#"     
+    } else {
+        $prev = $pgIdx - 1;
+        $url{prev} = "$uc{fnPre}_${catName}_$prev.html";
+    }
+    if ($isLast eq 'no'){
+        $next = $pgIdx + 1;
+        $url{next} = "$uc{fnPre}_${catName}_$next.html";
+    } else {
+        $url{next} = "#";
+    }
+
+    $cwNavbar =~ s/{% IDX_PREV %}/$url{prev}/;
+    $cwNavbar =~ s/{% IDX_NEXT %}/$url{next}/;
+    $cwNavbar =~ s/{% IDX %}/$pgIdx/;
+    $cwNavbar =~ s/{% MAX %}/$max/;
+    $cwNavbar =~ s/{% MAX_URL %}/$url{max}/;
+    return $cwNavbar;
+}
+
 # Insert the cat links. called by paint_template when it is used to process
 # each category page.
 # ARGUMENTS: active cat, page number
 sub prep_tpltop {
-    my ($activeCat, $pageNo) = @_; # FIXME pageNo isn't set for some reason
+    my ($activeCat, $pgIdx) = @_; 
     my $pageTxt = "";
-    $pageTxt = "(Page $pageNo)" if $pageNo;
+    $pageTxt = "(Page $pgIdx)" if $pgIdx;
     my $catTabs = generate_cat_tabs($activeCat);
     my $cwTplTop = $tplTop;
     $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
@@ -208,25 +257,46 @@ sub prep_tpltop {
 # ARGUMENTS: Cat name
 sub paint_template {
     my $catName = shift;
-    my $outFn = "$uc{out}/". $uc{fnPre} . "_" . $catName . ".html";
     my $currentEntry;
-    my $pageNo = 1;
-    my $cwTplTop = prep_tpltop($catName, $pageNo); 
+    my $pgIdx = 0;
+    my $cwTplTop = prep_tpltop($catName, $pgIdx); 
     my $catIsEmpty = 1;
+
+    my $entryIdx = 0;
+    my $outFn = "$uc{out}/$uc{fnPre}_${catName}_${pgIdx}.html";
+    my $navBar;
 
     open (my $fh, '>', $outFn);
     print $fh $cwTplTop;
     
     for my $entryId (sort_entries $catName) {
+        say "$entryIdx is entry index. for $entryId" if $uc{debug};
+        # Handle pagination
+        if ($entryIdx > $uc{maxPerPage}) {
+            print $fh prep_navbar($catName, $pgIdx, 'no');
+            print $fh $tplBottom; 
+            $pgIdx++;
+            close $fh;
+            $outFn = "$uc{out}/$uc{fnPre}_${catName}_${pgIdx}.html";
+            open ($fh, '>', $outFn);
+            print $fh prep_tpltop($catName, $pgIdx); 
+            say "NEW PAGE!! $pgIdx" if $uc{debug};
+            $writtenOut++;
+        }
         next unless ($entryKvs{$entryId}{"category"} eq $catName);
+        $entryKvs{$entryId}{pgIdx} = $pgIdx;
         $currentEntry = entrykvs_to_html $entryId;
         $catIsEmpty = 0;
         print $fh $$currentEntry;
+        $entryIdx++;
     }
     
     print $fh $TPL_EMPTY_CAT if $catIsEmpty;
 
+    
+    print $fh prep_navbar($catName, $pgIdx, 'yes');
     print $fh $tplBottom; 
+    # Increment grand total for reporting files written after process completes
     $writtenOut++;
     close $fh;
 }
@@ -249,7 +319,7 @@ sub generate_entries_hp {
        }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
-       $catFn = $uc{fnPre}."_".$cat.".html#$entry";
+       $catFn = $uc{fnPre}."_".$cat."_$entryKvs{$entry}{pgIdx}.html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
     }
@@ -268,6 +338,7 @@ sub paint_homepage {
         
     $tplHp =~ s/{% RSRU_HPHD %}/$uc{siteHomepageHeader}/;
     $tplHp =~ s/{% RSRU_HPDESC %}/$uc{siteHomepageDesc}/;
+    $tplHp .= "<p>Current total entries: " . scalar %entryKvs . "</p>";
 
     print $fh $tplHp;
 
@@ -420,7 +491,7 @@ $tplEntry = read_whole_file($uc{blankEntry});
 # Load in blank HTML for homepage items. Fills the global vars tplHp and tplHpEntry.
 $tplHp = read_whole_file($uc{blankTplHp});
 $tplHpEntry = read_whole_file($uc{blankTplHpEntry});
-
+$tplNav = read_whole_file($uc{blankTplNav});
 # Load in the HTML for each category in the catbar
 $tplCatTab = read_whole_file($uc{blankCatEntry});
 say "<== Read Finished <==";

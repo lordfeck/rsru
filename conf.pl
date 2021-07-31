@@ -1,12 +1,16 @@
 #===============================================================================
 # RSRU user-configurable constants
-# Don't be daft: This is not executable alone. Do not ammend the key names.
+# Don't be daft: This is not executable alone. Do not amend the key names.
 #===============================================================================
 
 # Path setup, template include dir
 my $tplinc = "./html";
 
 (
+    # Specify mode for RSRU. Software catalogue, link catalogue, quote database
+
+    mode => "softcat", # quotedb, linkcat, softcat
+
     # Path Configuration
 
     tplinc => "$tplinc",
@@ -20,6 +24,7 @@ my $tplinc = "./html";
     blankCatEntry => "$tplinc/rsru_cat.html",
     blankTplHp => "$tplinc/index.html",
     blankTplHpEntry => "$tplinc/rsru_hp_entry.html",
+    blankTplNav => "$tplinc/pagination_nav.html",
 
     # Presentation Config
 
@@ -29,9 +34,10 @@ my $tplinc = "./html";
     siteHeaderDesc => "Really Small, Really Useful software listings.",
     siteHomepageHeader => 'Welcome to RSRU!',
     siteHomepageDesc => "How do you do? Please enjoy your time browsing our lightweight software catalogue.",
+    maxPerPage => 10,
     
     # Logging levels
-    debug => 0,
+    debug => 1,
     verbose => 0,
     
     # Wipe destination directory when writing
