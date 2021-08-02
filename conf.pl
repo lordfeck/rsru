@@ -4,12 +4,15 @@
 #===============================================================================
 
 # Path setup, template include dir
+
 my $tplinc = "./html";
 
 (
-    # Specify mode for RSRU. Software catalogue, link catalogue, quote database
+    # Target: dev or production. Dev uses relative URLs, production uses live URL
+    target => "dev",
 
-    mode => "softcat", # quotedb, linkcat, softcat
+    # Production URL, excluding forward stroke 
+    liveURL => "http://www.example.com",
 
     # Path Configuration
 
@@ -37,7 +40,7 @@ my $tplinc = "./html";
     maxPerPage => 10,
     
     # Logging levels
-    debug => 1,
+    debug => 0,
     verbose => 0,
     
     # Wipe destination directory when writing

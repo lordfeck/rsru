@@ -22,6 +22,7 @@ use Cwd qw(getcwd);
 # Read in user-configurable values
 #===============================================================================
 my %uc = do getcwd . "/conf.pl";
+die 'Problem reading config' if $!;
 # Copy cats list from the user conf and make it a mutable array.
 my @cats = @{$uc{cats}};
 
@@ -39,6 +40,7 @@ my $tplHpEntry;     # Blank HTML for entries on the homepage
 my $tplNav;         # Blank HTML for nav section
 my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
+my $baseURL = '.';  # Relative is default
 
 # Consts
 my $DATE_FORMAT = "%Y-%m-%d";
@@ -165,7 +167,7 @@ sub generate_cat_tabs {
     my $filledCats; # Tabs of categories, eventually filled
 
     # handle special case of index.html
-    $catFn = 'index.html';
+    $catFn = "$baseURL/index.html";
     $cwCat = $tplCatTab;
     $cwCat =~ s/{% CAT_NAME %}/home/;
     $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -176,10 +178,12 @@ sub generate_cat_tabs {
 
     # Now fill in the category tabs
     foreach my $cat (@cats) {
-        $catFn = $uc{fnPre}."_".$cat."_0.html";
+        $catFn = "${baseURL}/$uc{fnPre}_${cat}_0.html";
         $cwCat = $tplCatTab;
         $cwCat =~ s/{% CAT_NAME %}/$cat/;
         $cwCat =~ s/{% CAT_URL %}/$catFn/;
+        # Remove IS_ACTIVE from home tab
+        $filledCats =~ s/{% IS_ACTIVE %}//;
         # Set only the active cat to have the HTML class "active"
         if ($cat eq $activeCat) {
             $cwCat =~ s/{% IS_ACTIVE %}/active/;
@@ -216,17 +220,17 @@ sub prep_navbar {
     my ($prev, $next, $max);
 
     $max = calculate_max_page($catName);
-    $url{max} = "$uc{fnPre}_${catName}_$max.html";
+    $url{max} = "$baseURL/$uc{fnPre}_${catName}_$max.html";
 
     if ($pgIdx == 0) {
         $url{prev} = "#"     
     } else {
         $prev = $pgIdx - 1;
-        $url{prev} = "$uc{fnPre}_${catName}_$prev.html";
+        $url{prev} = "$baseURL/$uc{fnPre}_${catName}_$prev.html";
     }
     if ($isLast eq 'no'){
         $next = $pgIdx + 1;
-        $url{next} = "$uc{fnPre}_${catName}_$next.html";
+        $url{next} = "$baseURL/$uc{fnPre}_${catName}_$next.html";
     } else {
         $url{next} = "#";
     }
@@ -319,7 +323,7 @@ sub generate_entries_hp {
        }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
-       $catFn = $uc{fnPre}."_".$cat."_$entryKvs{$entry}{pgIdx}.html#$entry";
+       $catFn = "$baseURL/$uc{fnPre}_${cat}_$entryKvs{$entry}{pgIdx}.html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
     }
@@ -471,6 +475,11 @@ sub read_entrydir {
 # End Fndefs, begin exec.
 #===============================================================================
 say "RSRU starting. Master template: $uc{tpl}";
+
+if (scalar @ARGV and ($ARGV[0] eq '-p') or $uc{target} eq 'production') {
+    $baseURL = $uc{liveURL};
+    say "Production mode configured, base URL: $baseURL";
+}
 
 # Check we have what's needed.
 die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
