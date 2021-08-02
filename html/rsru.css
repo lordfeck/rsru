@@ -103,6 +103,13 @@ h1#top{
     font-size: 1.4em;
     margin-bottom: 0px;
 }
+
+h3.entryName , p.entryDesc {
+    padding-top: 0px;
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+
 p#subt{
     font-size: 0.9em;
     margin-top: 0px;
@@ -112,6 +119,24 @@ p#footerText{
     font-size: 0.7em;
     text-align: center;
 }
+
+span#entryTitle {
+    font-weight: bold;
+    font-style: italic; 
+}
+
+
+/* Link style */
+a:hover {
+    text-decoration-line: underline;
+    color: #1b1d91;
+}
+
+a, a:visited {
+    text-decoration-line: none;
+    color: #1b1d91;
+}
+
 /* rsru table */
 table.rsru {
     border: 1px solid black;
@@ -130,10 +155,7 @@ table.rsru {
     min-width: 80%;
 }
 
-.rsru .dl_url {
+.rsru .dl_url, .rsru .iface {
     width: 40%;
 }
 
-.rsru .iface {
-    width: 40%;
-}

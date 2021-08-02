@@ -20,15 +20,6 @@ my $tplinc = "./html";
     entrydir => "./entries",
     out => "./output",
 
-    # Master template and any other blank HTML templates
-
-    tpl => "$tplinc/rsru_template.html",
-    blankEntry => "$tplinc/rsru_entry.html",
-    blankCatEntry => "$tplinc/rsru_cat.html",
-    blankTplHp => "$tplinc/index.html",
-    blankTplHpEntry => "$tplinc/rsru_hp_entry.html",
-    blankTplNav => "$tplinc/pagination_nav.html",
-
     # Presentation Config
 
     # Filename Prefix, prepended to all output HTML
@@ -39,15 +30,25 @@ my $tplinc = "./html";
     siteHomepageDesc => "How do you do? Please enjoy your time browsing our lightweight software catalogue.",
     maxPerPage => 10,
     
+    # These default cats are always generated, even if empty.
+    # Hitherto unknown cats will be appended to a derived array if found.
+    cats => ["utility", "media", "sysadmin", "gfx", "dev"],
+
+    # Master template and any other blank HTML templates
+    # Typically, these should not be altered.
+    tpl => "$tplinc/rsru_template.html",
+    blankEntry => "$tplinc/rsru_entry.html",
+    blankCatEntry => "$tplinc/rsru_cat.html",
+    blankTplHp => "$tplinc/index.html",
+    blankTplHpEntry => "$tplinc/rsru_hp_entry.html",
+    blankTplNav => "$tplinc/pagination_nav.html",
+
     # Logging levels
     debug => 0,
     verbose => 0,
     
-    # Wipe destination directory when writing
+    # Wipe destination directory before writing output files
     clearDest => 1,
 
-    # These default cats are always generated, even if empty.
-    # Hitherto unknown cats will be appended to a derived array if found.
-    cats => ["utility", "media", "sysadmin", "gfx", "dev"],
 )
 

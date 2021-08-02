@@ -3,7 +3,7 @@
 ## What is RSRU?
 Simple static HTML page generator written in Perl. Intended for the sole task of generating my RSRU section, but may have broader usage potential. GPLv3 licence.
 
-RSRU works only in HTML and CSS. There are fewer than 150 lines of CSS. That's all it needs (_and arguably all that most sites need_).
+RSRU works only in HTML and CSS. There are fewer than 150 lines of CSS. That's living the simple life.
 
 ## What does RSRU mean?
 *R*eally *S*mall, *R*eally *U*seful. It's the name of a section on my website which lists software matching the criteria of being really small and really useful.
@@ -14,7 +14,11 @@ RSRU will read each text file in the `entries/` directory. It will determine the
 Each entry will belong to a category. Each category will appear as tab-style HTML pages.
 
 ## Configure RSRU
-FUTURE: Edit the fields in the config file. These will be described.
+Before the script may be used, it is first necessary to tailor `conf.pl` to your liking.
+
+### Command Line Flags
+
+* `-p` Call `./rsru.pl -p` to use production mode. The configured live URL will be used as the base URL for all internal links.
 
 ## Add an entry to RSRU
 Add a new file under `./entries/`. It should have the extension `.txt`.

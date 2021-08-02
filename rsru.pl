@@ -178,7 +178,7 @@ sub generate_cat_tabs {
 
     # Now fill in the category tabs
     foreach my $cat (@cats) {
-        $catFn = "${baseURL}/$uc{fnPre}_${cat}_0.html";
+        $catFn = "${baseURL}/$uc{fnPre}_${cat}_1.html";
         $cwCat = $tplCatTab;
         $cwCat =~ s/{% CAT_NAME %}/$cat/;
         $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -206,7 +206,7 @@ sub calculate_max_page {
         $catSize++ if ($entryKvs{$_}{category} eq $catName);
     }
     use integer;
-    return $catSize / $uc{maxPerPage}; 
+    return ($catSize / $uc{maxPerPage}) + 1; 
 }
 
 
@@ -222,7 +222,7 @@ sub prep_navbar {
     $max = calculate_max_page($catName);
     $url{max} = "$baseURL/$uc{fnPre}_${catName}_$max.html";
 
-    if ($pgIdx == 0) {
+    if ($pgIdx == 1) {
         $url{prev} = "#"     
     } else {
         $prev = $pgIdx - 1;
@@ -262,7 +262,7 @@ sub prep_tpltop {
 sub paint_template {
     my $catName = shift;
     my $currentEntry;
-    my $pgIdx = 0;
+    my $pgIdx = 1;
     my $cwTplTop = prep_tpltop($catName, $pgIdx); 
     my $catIsEmpty = 1;
 
@@ -348,6 +348,7 @@ sub paint_homepage {
 
     if (scalar (@latest) < $MIN_ENTRIES){
         @latest = sort_all_entries($MAX_ENTRIES); 
+        print $fh '<h2>Latest Entries</h2>';
         print $fh generate_entries_hp(@latest);
     } else {
         say "Total entries are below $MIN_ENTRIES. Skipping latest on homepage.";
@@ -390,19 +391,16 @@ sub sort_entries {
 # ARGUMENTS: max index
 sub sort_all_entries {
     my $max = shift;
-    my $itr = 0;
     my %entryDate;
     for my $entry (keys %entryKvs) {
-        last if ($itr == $max);
         say "entry $entry and $entryKvs{$entry}{'date'}" if $uc{debug};
         $entryDate{$entry} = $entryKvs{$entry}{"date"};
-        $itr++;
     }
     # First sort alphabetically, then by date
     my @sorted = sort keys %entryDate;
     @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
     say "Sorted are @sorted." if $uc{debug};
-    return @sorted;
+    return @sorted[0..$max];
 }
 
 sub get_highlighted_entries {
