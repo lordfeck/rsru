@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 #===============================================================================
-# Thransoft RSRU v0.9
+# Thransoft RSRU v1.0
 # Collation and generation of software listings for a static software catalogue.
 # Licence: GPLv3. See "licence.txt" for full details.
 # Author: Thran. Authored: 09/09/2020
