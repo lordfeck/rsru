@@ -47,14 +47,13 @@ my $DATE_FORMAT = "%Y-%m-%d";
 my $MAX_CATS = 8;
 my $MIN_ENTRIES = 5;
 my $MAX_ENTRIES = 5;
-my $MAX_ENTRIES_PER_PAGE = 10;
 my $YES = 'yes';
 my $NO_SUMMARY = 'No summary necessary.';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
 
 # List of known keys for each entry
-my @knownKeys = qw(title version category interface img_desc os_support order date desc dl_url is_highlight);
-my @necessaryKeys = qw(title version category date desc);
+my @knownKeys = @{$uc{knownKeys}};
+my @necessaryKeys = @{$uc{necessaryKeys}};
 
 # Declare Functions (but don't define yet)
 sub sort_entries;
@@ -276,7 +275,7 @@ sub paint_template {
     for my $entryId (sort_entries $catName) {
         say "$entryIdx is entry index. for $entryId" if $uc{debug};
         # Handle pagination
-        if ($entryIdx > $uc{maxPerPage}) {
+        if ($entryIdx >= $uc{maxPerPage}) {
             print $fh prep_navbar($catName, $pgIdx, 'no');
             print $fh $tplBottom; 
             $pgIdx++;

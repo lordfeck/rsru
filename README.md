@@ -11,14 +11,7 @@ RSRU works only in HTML and CSS. There are fewer than 150 lines of CSS. That's l
 ## What does RSRU do?
 RSRU will read each text file in the `entries/` directory. It will determine the title, description, category and other fields for each entry. These will be made into rows which are appended to web pages. It also generates a nice homepage for your website.
 
-Each entry will belong to a category. Each category will appear as tab-style HTML pages.
-
-## Configure RSRU
-Before the script may be used, it is first necessary to tailor `conf.pl` to your liking.
-
-### Command Line Flags
-
-* `-p` Call `./rsru.pl -p` to use production mode. The configured live URL will be used as the base URL for all internal links.
+Each entry will belong to a category. Each category will appear as tab-style HTML pages. So for each, you get a category page with all the entries listed below.
 
 ## Add an entry to RSRU
 Add a new file under `./entries/`. It should have the extension `.txt`.
@@ -48,7 +41,32 @@ This is a new line.
 This is <b>bold</b> to test HTML.
 ```
 
-**NOTE:** The minimum required fields are: _title, version, category, order, date, desc_. These are coded as `@necessaryKeys` in `rsru.pl`.
+**NOTE:** The minimum required fields are: _title, version, category, date, desc_. These are coded as `necessaryKeys` in `conf.pl`. It is possible to change this list, should you see fit.
+
+## Configure RSRU
+Before the script may be used, it is first necessary to tailor `conf.pl` to your liking. There are adequate comments explaning the options, but further explanation follows:
+
+`my $tplinc` should point to the source directory containing the template files. It defaults to `./tpl/softcat`. Change this to change the style of site generated.
+
+`liveURL` specifies the base URL for production mode.
+
+`entrydir` where to read the entry files from. Default: `entries/`.
+
+### Presentation config
+`fnPre` a value prepnded to all HTML files. Default is `rsru`, change to something that fits your site. Eg, for category 'utility' rsru.pl will render `rsru_utility_1.html`.
+
+`siteName`, `siteHeaderDesc`. Site Name is used in the page title and the masthead of each page. HeaderDesc is a brief description printed beneath.
+
+`siteHomepageHeader`, `siteHomepageDesc` are used to fill in the homepage.
+
+`maxPerPage` the mavimum number of entries that will be printed before a new page is made. Used for each category.
+
+`cats` a Perl list of the default categories. The categories in your entries should match one of these, but this isn't necessary. Unknown categories will have pages generated regardless.
+
+## Command Line Flags
+
+`-p` for *P*roduction mode. Call `./rsru.pl -p`. The configured live URL will be used as the base URL for all internal links.Without this flag, relative links are instead used.
+
 
 ### Running RSRU
 
@@ -59,9 +77,9 @@ Once you have added all your entries, run `./rsru.pl` and it will get busy weavi
 Any entries with the value 'yes' for `is_highlight:` will be added to the 'Highlights' section on the homepage.
 
 ## Templating
-The template files are read by default from `./html/`. Each HTML file under here is essential and used to weave the output.
+The template files are read by default from `./tpl/softcat`. Each HTML file under here is essential and used to weave the output.
 
-FUTURE: see TEMPLATES.md, which will describe each file and how to customise it.
+See [TPL_README](TPL_README.md), which will describe each file and how to customise it.
 
 ## Publishing
 RSRU has no self-publishing features. While such is possible with the right CPAN modules, such is beyond the scope of this project. 

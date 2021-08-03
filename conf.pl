@@ -4,9 +4,9 @@
 #===============================================================================
 
 # Path setup, template include dir
-
-my $tplinc = "./html";
-
+#======================================================================
+my $tplinc = "./tpl/softcat";
+#======================================================================
 (
     # Target: dev or production. Dev uses relative URLs, production uses live URL
     target => "dev",
@@ -16,7 +16,7 @@ my $tplinc = "./html";
 
     # Path Configuration
 
-    tplinc => "$tplinc",
+    tplinc => "$tplinc", # DO NOT CHANGE THIS, SET IT ABOVE!
     entrydir => "./entries",
     out => "./output",
 
@@ -30,9 +30,17 @@ my $tplinc = "./html";
     siteHomepageDesc => "How do you do? Please enjoy your time browsing our lightweight software catalogue.",
     maxPerPage => 10,
     
+    #======================================================================
+    # Edit these to switch from 'software catalogue' configuration
+    #======================================================================
     # These default cats are always generated, even if empty.
     # Hitherto unknown cats will be appended to a derived array if found.
     cats => ["utility", "media", "sysadmin", "gfx", "dev"],
+    # List of known keys for each entry
+    knownKeys => [qw(title version category interface img_desc os_support order date desc dl_url is_highlight)],
+    # Necessary keys. RSRU will fail if these are not present in any entry.
+    necessaryKeys => [qw(title version category date desc)],
+    #======================================================================
 
     # Master template and any other blank HTML templates
     # Typically, these should not be altered.
