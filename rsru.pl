@@ -345,7 +345,7 @@ sub paint_homepage {
 
     print $fh $tplHp;
 
-    if (scalar (@latest) > $MIN_ENTRIES){
+    if (scalar (%entryKvs) >= $MIN_ENTRIES){
         @latest = sort_all_entries($MAX_ENTRIES); 
         print $fh '<h2>Latest Entries</h2>';
         print $fh generate_entries_hp(@latest);
@@ -399,7 +399,7 @@ sub sort_all_entries {
     my @sorted = sort keys %entryDate;
     @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
     say "Sorted are @sorted." if $uc{debug};
-    return @sorted[0..$max];
+    return @sorted[0..$max-1];
 }
 
 sub get_highlighted_entries {
