@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- RSRU by Thransoft. -->
+<!--   (C) 2020 Thran   -->
+<!-- Licenced under the terms of the GPL. See licence.txt. -->
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="rsru.css" type="text/css">
+    <title>{% RSRU_TITLE %}</title>
+</head>
+<body>
+    <div id="topBar">
+        <h1 id="top">{% HEAD_TITLE %}</h1>
+    <p id="subt">{% HEAD_DESC %}</p>
+    </div>
+    <div id="catBar">
+        {% RSRU_CATS %}
+    </div>
+    <div id="bodyContainer">
+        <div id="rsruCanvas">
+            <!--BEGIN RSRU-->
+            <h2>Note: This is a sample section which will be overwritten!</h2>
+            <table class="rsru">
+            <tr>
+                <td class="title" colspan="2">{% title %}</td>
+                <td class="version" title="Version Reviewed"> {% version %}</td>
+            <tr>
+                <td class="desc" colspan="2">{% desc %}</td>
+                <td class="image" rowspan="2">{% img_desc %}</td>
+            </tr>
+            <tr>
+                <td class="dl_url"><a href="{% dl_url %}"} target="_blank">Download {% title %}</a></td>
+                <td class="iface">Interface: {% interface %}</td>
+            </tr>
+            <tr>
+                <td class="ossp" colspan="2">Systems supported: {% os_support %}</td>
+                <td class="date" title="Submission date"> {% date_added %}</td>
+            </tr>
+            </table>
+            <!--END RSRU-->
+        </div>
+        <p id="footerText">Powered by <a href="https://github.com/lordfeck/rsru" target="_blank">RSRU</a>, &copy; 2020 <a href="http://soft.thran.uk" target="_blank">Thransoft</a>. Source code is licenced under the GPLv3.</p>
+    </div>
+</body>
+</html>

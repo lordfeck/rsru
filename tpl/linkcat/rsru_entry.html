@@ -1,0 +1,18 @@
+            
+            <table class="rsru">
+            <tr>
+                <td class="title" colspan="2"><span id="entryTitle">{% title %}</span> <span class="anchor">[<a href="#{% KEY %}" id="{% KEY %}">jump here</a>]</span></td>
+                <td class="version" title="Eccentricity"> {% ecc %}</td>
+            <tr>
+                <td class="desc" colspan="2">{% desc %}</td>
+                <td class="image" rowspan="2">{% img_desc %}</td>
+            </tr>
+            <tr>
+                <td class="dl_url"><a href="{% url %}" target="_blank">Visit {% title %}</a></td>
+                <td class="iface">Heaviness: {% heaviness %}</td>
+            </tr>
+            <tr>
+                <td class="ossp" colspan="2"></td>
+                <td class="date" title="Submission date"> {% date %}</td>
+            </tr>
+            </table>
