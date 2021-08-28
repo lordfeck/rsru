@@ -345,7 +345,7 @@ sub paint_homepage {
 
     print $fh $tplHp;
 
-    if (scalar (@latest) < $MIN_ENTRIES){
+    if (scalar (@latest) > $MIN_ENTRIES){
         @latest = sort_all_entries($MAX_ENTRIES); 
         print $fh '<h2>Latest Entries</h2>';
         print $fh generate_entries_hp(@latest);
