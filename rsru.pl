@@ -49,7 +49,7 @@ my $MAX_CATS = 8;
 my $MIN_ENTRIES = 5;
 my $MAX_ENTRIES = 5;
 my $YES = 'yes';
-my $NO_SUMMARY = 'No summary necessary.';
+my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
 
 # List of known keys for each entry
@@ -310,7 +310,7 @@ sub paint_template {
 # ARGUMENTS: An array of entry key names
 sub generate_entries_hp {
     my $hpEntries = "";
-    my ($cwHpEntry, $catFn, $cat);
+    my ($cwHpEntry, $catFn, $cat, $date);
 
     for my $entry (@_) {
        $cwHpEntry = $tplHpEntry;
@@ -324,6 +324,8 @@ sub generate_entries_hp {
        }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
+       $date = $entryKvs{$entryId}{'date'}->strftime('%d/%m/%Y');
+       $cwHpEntry =~ s/{% ENTRY_DATE %}/$date/;
        $catFn = "$baseURL/$uc{fnPre}_${cat}_$entryKvs{$entry}{pgIdx}.html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
