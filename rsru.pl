@@ -324,7 +324,7 @@ sub generate_entries_hp {
        }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
-       $date = $entryKvs{$entryId}{'date'}->strftime('%d/%m/%Y');
+       $date = $entryKvs{$entry}{'date'}->strftime('%d/%m/%Y');
        $cwHpEntry =~ s/{% ENTRY_DATE %}/$date/;
        $catFn = "$baseURL/$uc{fnPre}_${cat}_$entryKvs{$entry}{pgIdx}.html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
