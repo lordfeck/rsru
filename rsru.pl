@@ -123,7 +123,7 @@ sub entrykvs_to_html {
     # Find and replace, boys. Find and replace.
     foreach my $key (@knownKeys) {
         if ($key eq "date") {
-            my $date = $entryKvs{$entryId}{'date'}->strftime('%m/%d/%Y');
+            my $date = $entryKvs{$entryId}{'date'}->strftime('%d/%m/%Y');
             $filledEntry =~ s/{% $key %}/$date/g;
         } else {
             $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
