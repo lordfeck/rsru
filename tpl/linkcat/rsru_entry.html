@@ -3,12 +3,12 @@
             <tr>
                 <td class="title" colspan="3"><span id="entryTitle">{% title %}</span> <span class="anchor">[<a href="#{% KEY %}" id="{% KEY %}">jump here</a>]</span></td>
             <tr>
-                <td class="desc" colspan="2" rowspan="1">{% desc %}</td>
-                <td class="image" rowspan="2">{% img_desc %}</td>
+                <td class="desc" colspan="3" rowspan="1">{% desc %}</td>
+<!--                <td class="image" rowspan="2">{% img_desc %}</td>-->
             </tr>
             <tr>
                 <td class="iface"><b>Heaviness:</b> {% heaviness %}</td>
-                <td class="version" title="Eccentricity"><b>Eccentricity:</b> {% ecc %}/10</td>
+                <td class="version" title="Eccentricity" colspan="2"><b>Eccentricity:</b> {% ecc %}/10</td>
             </tr>
             <tr>
                 <td class="dl_url" colspan="2"><a href="{% url %}" target="_blank">Visit {% title %}</a></td>
