@@ -40,6 +40,7 @@ my $tplHpEntry;     # Blank HTML for entries on the homepage
 my $tplNav;         # Blank HTML for nav section
 my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
+my $writtenEntries = 0;     # total count of written entries in all files
 my $baseURL = '.';  # Relative is default
 
 # Consts
@@ -133,6 +134,7 @@ sub entrykvs_to_html {
     $filledEntry =~ s/{% KEY %}/$entryId/g;
     
     say "Filled $entryId:\n$filledEntry" if ($uc{debug});
+    $writtenEntries++;
     return \$filledEntry;
 }
 
@@ -508,6 +510,6 @@ copy_res;
 paint_desc;
 foreach my $cat (@cats) { paint_template $cat; }
 paint_homepage;
-say "<== Template interpolation finished. Wrote $writtenOut files. ==>";
+say "<== Template interpolation finished. ==>";
 
-say "RSRU complete.";
+say "RSRU complete. Wrote $writtenEntries total entries into $writtenOut files.";
