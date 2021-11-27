@@ -20,6 +20,16 @@ use List::Util qw(first);
 use Cwd qw(getcwd);
 
 #===============================================================================
+# Load RSS module if available
+#===============================================================================
+my $has_rss = eval
+{
+    require XML::RSS;
+    XML::RSS->import();
+    1;
+};
+
+#===============================================================================
 # Read in user-configurable values
 #===============================================================================
 
@@ -476,6 +486,51 @@ sub read_entrydir {
     dump_kvs if ($uc{verbose});
 }
 
+# Write the latest amount of entries, as configured, to a RSS 2.0 file
+# Requires all pages to be written first, so that pgIdx is correctly set for each entry
+sub write_rss {
+    unless ($has_rss) {
+        warn "RSS configured but XML::RSS is not installed.\nPlease run 'cpan install XML::RSS' to enable RSS output!";
+        return;
+    };
+    my $t = Time::Piece->new;
+    my $build_date = $t->strftime();
+    my $entry_count;
+
+    if ($uc{rss_entry_count} gt (scalar %entryKvs)) {
+        $entry_count = $uc{rss_entry_count};
+    } else {
+        $entry_count = scalar %entryKvs;
+    }
+
+    my @sortedEntryKeys = sort_all_entries($entry_count);
+    my $rss = XML::RSS->new (version => '2.0');
+
+    $rss->channel(
+        title          => $uc{siteName},
+        link           => $uc{liveUrl},
+        language       => $uc{rss_lang},
+        description    => $uc{siteHomepageDesc},
+        copyright      => $uc{rss_copyright},
+        pubDate        => $entryKvs{$sortedEntryKeys[0]}{date}->strftime(),
+        lastBuildDate  => $build_date,
+    );
+
+    foreach my $entry (@sortedEntryKeys) {
+        # it isn't a permalink
+        my $flimsyLink = "$baseURL/$uc{fnPre}_$entryKvs{$entry}{category}_$entryKvs{$entry}{pgIdx}.html#$entry";
+        say $flimsyLink;
+        $rss->add_item(
+            title => $entryKvs{$entry}{title},
+            permaLink  => $flimsyLink,
+            description => $entryKvs{$entry}{desc},
+            categories => [$entryKvs{$entry}{category}],
+        );
+    }
+
+    $rss->save("$uc{out}/$uc{rss_filepath}");
+}
+
 #===============================================================================
 # End Fndefs, begin exec.
 #===============================================================================
@@ -517,5 +572,9 @@ paint_desc;
 foreach my $cat (@cats) { paint_template $cat; }
 paint_homepage;
 say "<== Template interpolation finished. ==>";
-
+if ($uc{rss_enabled}){
+    say "==> Writing RSS 2.0 feed to $uc{rss_filepath}. ==>";
+    write_rss;
+    say "<== RSS composition complete. ==>";
+}
 say "RSRU complete. Wrote $writtenEntries total entries into $writtenOut files.";

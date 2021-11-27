@@ -115,7 +115,7 @@ p#subt{
     margin-top: 0px;
     font-style: italic;
 }
-p#footerText{
+p.footerText{
     font-size: 0.7em;
     text-align: center;
 }

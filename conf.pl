@@ -29,6 +29,13 @@ my $tplinc = "./tpl/softcat";
     siteHomepageHeader => 'Welcome to RSRU!',
     siteHomepageDesc => "How do you do? Please enjoy your time browsing our lightweight software catalogue.",
     maxPerPage => 10,
+
+    # RSS Configuration (requires XML::RSS)
+    rss_enabled => 1,
+    rss_filepath => "rss.xml",
+    rss_entry_count => 10,
+    rss_lang => "en",
+    rss_copyright => "No Copyright",
     
     #======================================================================
     # Edit these to switch from 'software catalogue' configuration
