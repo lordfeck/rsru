@@ -432,8 +432,8 @@ sub read_entry {
     while (<ENTRY>) {
         # Skip comments (hash-commenced lines)
         next if /^#/;
-        # Lines with a colon have a key, lines without are descriptions
-        if (/:/) {
+        # Lines commencing with single words, colon-terminated are a key, lines without are descriptions
+        if (/^\S+:/) {
             chomp;
             # Watch for URLs! spilt will split at each colon it finds, unless restrained as such:
             my ($key, $val) = split /:\s+/; 

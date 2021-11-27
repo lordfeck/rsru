@@ -13,3 +13,4 @@ Sample soft offers no convenience to the user. It only exists to provide a sampl
 This is a new line.
 This is <b>bold</b> to test HTML.
 This is more useless text. Hello!
+Test of COLON: HAHAH <a href="https://www.example.com">A LINK</a>
