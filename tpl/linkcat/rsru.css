@@ -1,4 +1,4 @@
-/*layout */
+/*layout - linkcat */
 body {
     background-color: #1f1f1f;
     margin: 0;
@@ -115,7 +115,8 @@ p#subt{
     margin-top: 0px;
     font-style: italic;
 }
-p#footerText{
+
+p.footerText{
     font-size: 0.7em;
     text-align: center;
 }
@@ -125,6 +126,10 @@ span#entryTitle {
     font-style: italic; 
 }
 
+p#catDesc {
+    font-style: italic;
+    letter-spacing: 1.1px;
+}
 
 /* Link style */
 a:hover {

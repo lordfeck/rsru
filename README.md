@@ -103,8 +103,13 @@ RSRU's core functionality operates using only standard library modules. The proj
 ## Future hackery for RSRU
 * I've plans to hack it into a "microblogger" system. Think of a way to share clips of sites, quotes, images, whatever else.
 * Run as CGI. This may be possible if we write to stdout instead of files. (_I've no interest in writing this, but the door is always open to friendly PRs..._)
+* Support multiple config files
+* Support image resizing and thumbnailing
+* Improve the layouts to have more variety
 
 ## Sample Screenshot
 
 ![RSRU Screenshot](misc/rsru1.png)
 
+## Release history
+[Devlog](./DEVLOG.md)
