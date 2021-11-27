@@ -181,3 +181,6 @@ table.rsru .date {
     width: 40%;
 }
 
+table.rsru .ecc {
+    text-align: right;
+}

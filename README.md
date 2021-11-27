@@ -106,6 +106,7 @@ RSRU's core functionality operates using only standard library modules. The proj
 * Support multiple config files
 * Support image resizing and thumbnailing
 * Improve the layouts to have more variety
+* Performance optimisations, deduplicate where necessary (many places look similar)
 
 ## Sample Screenshot
 
