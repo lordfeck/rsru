@@ -43,6 +43,7 @@ my @cats = @{$uc{cats}};
 #===============================================================================
 my %entryKvs;       # Master key-value store, holds all read-in entries
 my $entryId;        # Entry-id variable of current working entry, used for reads
+
 my $tplTop;         # The 'top' half of the per-category template
 my $tplBottom;      # The 'bottom' half of the same. Entries will go between
 my $tplEntry;       # The blank HTML for each entry
@@ -50,6 +51,9 @@ my $tplCatTab;      # Blank HTML for each category
 my $tplHp;          # Blank HTML for homepage
 my $tplHpEntry;     # Blank HTML for entries on the homepage
 my $tplNav;         # Blank HTML for nav section
+my $tplRssBlockTop; # Blank HTML for RSS block - top
+my $tplRssBlockBottom;      # Blank HTML for RSS block - bottom
+
 my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 my $writtenEntries = 0;     # total count of written entries in all files
@@ -267,7 +271,29 @@ sub prep_tpltop {
     my $cwTplTop = $tplTop;
     $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
+
+    # Handle RSS feeds
+    if ($uc{rss_enabled}) {
+        $cwTplTop =~ s/{% FEEDBLOCK_TOP %}/$tplRssBlockTop/;
+        $cwTplTop =~ s/{% RSRU_FEED %}/$baseURL\/$uc{rss_filepath}/;
+        $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName}/;
+    } else {
+        $cwTplTop =~ s/{% FEEDBLOCK_TOP %}//;
+    }
     return $cwTplTop;
+}
+
+# Works on global tplBottom (it doesn't vary for category or page)
+# Appends RSS link, if configured
+sub prep_tplbottom {
+    # Handle RSS feeds
+    my $rss_path = "${baseURL}/$uc{rss_filepath}";
+    if ($uc{rss_enabled}) {
+        $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}/$tplRssBlockBottom/;
+        $tplBottom =~ s/{% RSRU_FEED %}/$rss_path/;
+    } else {
+        $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}//;
+    }
 }
 
 # Print gathered entries into our template files. Do one for each cat.
@@ -311,10 +337,9 @@ sub paint_template {
     }
     
     print $fh $TPL_EMPTY_CAT if $catIsEmpty;
-
     
     print $fh prep_navbar($catName, $pgIdx, 'yes');
-    print $fh $tplBottom; 
+    print $fh $tplBottom;
     # Increment grand total for reporting files written after process completes
     $writtenOut++;
     close $fh;
@@ -489,10 +514,7 @@ sub read_entrydir {
 # Write the latest amount of entries, as configured, to a RSS 2.0 file
 # Requires all pages to be written first, so that pgIdx is correctly set for each entry
 sub write_rss {
-    unless ($has_rss) {
-        warn "RSS configured but XML::RSS is not installed.\nPlease run 'cpan install XML::RSS' to enable RSS output!";
-        return;
-    };
+    return unless $has_rss;
     my $t = Time::Piece->new;
     my $build_date = $t->strftime();
     my $entry_count;
@@ -512,19 +534,18 @@ sub write_rss {
         language       => $uc{rss_lang},
         description    => $uc{siteHomepageDesc},
         copyright      => $uc{rss_copyright},
-        pubDate        => $entryKvs{$sortedEntryKeys[0]}{date}->strftime(),
         lastBuildDate  => $build_date,
     );
 
     foreach my $entry (@sortedEntryKeys) {
         # it isn't a permalink
         my $flimsyLink = "$baseURL/$uc{fnPre}_$entryKvs{$entry}{category}_$entryKvs{$entry}{pgIdx}.html#$entry";
-        say $flimsyLink;
         $rss->add_item(
             title => $entryKvs{$entry}{title},
             permaLink  => $flimsyLink,
             description => $entryKvs{$entry}{desc},
             categories => [$entryKvs{$entry}{category}],
+            pubDate => $entryKvs{$entry}{date}->strftime(),
         );
     }
 
@@ -563,15 +584,22 @@ $tplHpEntry = read_whole_file($uc{blankTplHpEntry});
 $tplNav = read_whole_file($uc{blankTplNav});
 # Load in the HTML for each category in the catbar
 $tplCatTab = read_whole_file($uc{blankCatEntry});
+$tplRssBlockTop = read_whole_file($uc{rssBlockTop});
+$tplRssBlockBottom = read_whole_file($uc{rssBlockBottom});
 say "<== Read Finished <==";
 
 say "<== Begin template interpolation... ==>";
 clear_dest if ($uc{clearDest});
 copy_res;
+prep_tplbottom;
 paint_desc;
 foreach my $cat (@cats) { paint_template $cat; }
 paint_homepage;
 say "<== Template interpolation finished. ==>";
+if ($uc{rss_enabled} && !$has_rss) {
+    warn "!! RSS configured but XML::RSS is not installed.\nPlease run 'cpan install XML::RSS' to enable RSS output !!";
+    $uc{rss_enabled} = 0;
+}
 if ($uc{rss_enabled}){
     say "==> Writing RSS 2.0 feed to $uc{rss_filepath}. ==>";
     write_rss;

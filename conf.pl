@@ -65,6 +65,8 @@ my $tplinc = "./tpl/softcat";
     blankTplHp => "$tplinc/index.html",
     blankTplHpEntry => "$tplinc/rsru_hp_entry.html",
     blankTplNav => "$tplinc/pagination_nav.html",
+    rssBlockTop => "$tplinc/rsru_rss_top.html",
+    rssBlockBottom => "$tplinc/rsru_rss_bottom.html",
 
     # Logging levels
     debug => 0,
