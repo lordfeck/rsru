@@ -125,6 +125,11 @@ span#entryTitle {
     font-style: italic; 
 }
 
+p#catDesc {
+    font-style: italic;
+    letter-spacing: 1.1px;
+}
+
 
 /* Link style */
 a:hover {

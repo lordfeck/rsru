@@ -40,6 +40,14 @@ my $tplinc = "./tpl/softcat";
     knownKeys => [qw(title version category interface img_desc os_support order date desc dl_url is_highlight)],
     # Necessary keys. RSRU will fail if these are not present in any entry.
     necessaryKeys => [qw(title version category date desc)],
+    # Description for each category, will appear on the first page of each
+    catDesc => {
+        utility => "Small programs for accomplishing a specific task",
+        media => "Sound & Video",
+        sysadmin => "Controlling & profiling your system",
+        gfx => "Computer graphics creation",
+        dev => "Developemnt tools and aids, compilers, languages",
+    },
     #======================================================================
 
     # Master template and any other blank HTML templates

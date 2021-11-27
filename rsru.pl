@@ -13,6 +13,7 @@
 use strict;
 use warnings;
 use v5.10;
+
 use File::Copy;
 use Time::Piece;
 use List::Util qw(first);
@@ -21,6 +22,7 @@ use Cwd qw(getcwd);
 #===============================================================================
 # Read in user-configurable values
 #===============================================================================
+
 my %uc = do getcwd . "/conf.pl";
 die 'Problem reading config' if $!;
 # Copy cats list from the user conf and make it a mutable array.
@@ -273,7 +275,9 @@ sub paint_template {
 
     open (my $fh, '>', $outFn);
     print $fh $cwTplTop;
-    
+
+    print $fh "<p id=\"catDesc\">$uc{catDesc}{$catName}</p>" if ($uc{catDesc}{$catName} && $pgIdx == 1);
+
     for my $entryId (sort_entries $catName) {
         say "$entryIdx is entry index. for $entryId" if $uc{debug};
         # Handle pagination
