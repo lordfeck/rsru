@@ -54,7 +54,7 @@ Before the script may be used, it is first necessary to tailor `conf.pl` to your
 
 `entrydir` where to read the entry files from. Default: `entries/`.
 
-RSS options to enable and configure RSS feed generation.
+Various RSS options to enable and configure RSS feed generation.
 
 ### Presentation config
 `fnPre` a value prepnded to all HTML files. Default is `rsru`, change to something that fits your site. Eg, for category 'utility' rsru.pl will render `rsru_utility_1.html`.
@@ -98,7 +98,7 @@ The author suggests use of [rsync](http://rsync.samba.org) to drop the files on 
 RSRU's core functionality operates using only standard library modules. The project goals will not require any hard dependencies on any CPAN modules. Future non-essential features (eg, RSS) may depend upon CPAN modules, but RSRU will still perform its core duties without them.
 
 - Time::Piece is mandatory. It is 'core' everywhere except Fedora/Red Hat, for some strange reason.
-- XML::RSS is optional. It is surprisingly for enabling RSS support in RSRU. Unfortunately, it seems to pull in quite a lot of dependencies.
+- XML::RSS is optional. It is surprisingly for enabling RSS support in RSRU.
 
 ## Future hackery for RSRU
 * I've plans to hack it into a "microblogger" system. Think of a way to share clips of sites, quotes, images, whatever else.
