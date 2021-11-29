@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 
 #===============================================================================
-# Thransoft RSRU v1.0
+# Thransoft RSRU Release 3
 # Collation and generation of software listings for a static software catalogue.
 # Licence: GPLv3. See "licence.txt" for full details.
-# Author: Thran. Authored: 09/09/2020
+# Author: Thran. Authored: 09/09/2020 - 27/11/2021
 # WWW: http://soft.thran.uk
 # 
 # With Thanks: https://stackoverflow.com/questions/63835994/
@@ -72,7 +72,7 @@ my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-
 my @knownKeys = @{$uc{knownKeys}};
 my @necessaryKeys = @{$uc{necessaryKeys}};
 
-# Declare Functions (but don't define yet)
+# Declare fn prototypes
 sub sort_entries;
 sub sort_all_entries;
 sub get_highlighted_entries;
