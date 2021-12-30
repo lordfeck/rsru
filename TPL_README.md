@@ -1,4 +1,4 @@
-RSRU Template Guide
+RSRU Template Guide (incomplete)
 ===================
 
 The template format for RSRU is very straightforward, as in keeping with the project ethos.

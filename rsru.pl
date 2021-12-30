@@ -162,9 +162,9 @@ sub clear_dest {
     warn "Problem clearing output dir ($uc{out}): $!" if $!;
 }
 
-# Copy any resources to outdir. For now, this is only CSS.
+# Copy any resources to outdir. 
 sub copy_res {
-    for my $cssFile (glob "$uc{tplinc}/*.css") {
+    for my $cssFile (glob "$uc{tplinc}/static/*") {
         copy($cssFile,"$uc{out}/") or die ("Problem copying $cssFile to $uc{out}.");
     }
 }
@@ -182,6 +182,9 @@ sub generate_cat_tabs {
     my $cwCat;  # Current Working Category
     my $filledCats; # Tabs of categories, eventually filled
 
+    # Handle relative paths (overwrite global var)
+    my $baseURL = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
+
     # handle special case of index.html
     $catFn = "$baseURL/index.html";
     $cwCat = $tplCatTab;
@@ -189,7 +192,7 @@ sub generate_cat_tabs {
     $cwCat =~ s/{% CAT_URL %}/$catFn/;
     if ($activeCat eq 'index'){
         $cwCat =~ s/{% IS_ACTIVE %}/active/;
-    }
+    } 
     $filledCats .= $cwCat;
 
     # Now fill in the category tabs
@@ -233,7 +236,10 @@ sub prep_navbar {
     my ($catName, $pgIdx, $isLast) = @_;
     my $cwNavbar = $tplNav;
     my %url;
-    my ($prev, $next, $max);
+    my ($max, $next);
+
+    my $prev = $pgIdx - 1;
+    my $baseURL = $baseURL eq "." ? ".." : $baseURL;
 
     $max = calculate_max_page($catName);
     if ($max == 1) {
@@ -242,14 +248,14 @@ sub prep_navbar {
         $url{max} = "$baseURL/${catName}/$max.html";
     }
 
-    # this is messy but if page_id=2 then previous is index.html
     if ($pgIdx == 1) {
         $url{prev} = "#"     
-    } elsif (($prev = $pgIdx - 1) == 2){
+    } elsif ($prev  == 2){
         $url{prev} = "$baseURL/${catName}/index.html";
     } else {
         $url{prev} = "$baseURL/${catName}/$prev.html";
     }
+
     if ($isLast eq 'no'){
         $next = $pgIdx + 1;
         $url{next} = "$baseURL/${catName}/$next.html";
@@ -274,13 +280,15 @@ sub prep_tpltop {
     $pageTxt = "(Page $pgIdx)" if $pgIdx;
     my $catTabs = generate_cat_tabs($activeCat);
     my $cwTplTop = $tplTop;
+    my $staticRoot = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
     $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
+    $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/;
 
     # Handle RSS feeds
     if ($uc{rss_enabled}) {
         $cwTplTop =~ s/{% FEEDBLOCK_TOP %}/$tplRssBlockTop/;
-        $cwTplTop =~ s/{% RSRU_FEED %}/$baseURL\/$uc{rss_filepath}/;
+        $cwTplTop =~ s/{% RSRU_FEED %}/$staticRoot\/$uc{rss_filepath}/;
         $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName}/;
     } else {
         $cwTplTop =~ s/{% FEEDBLOCK_TOP %}//;
