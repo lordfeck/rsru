@@ -194,7 +194,7 @@ sub generate_cat_tabs {
 
     # Now fill in the category tabs
     foreach my $cat (@cats) {
-        $catFn = "${baseURL}/$uc{fnPre}_${cat}_1.html";
+        $catFn = "${baseURL}/${cat}/index.html";
         $cwCat = $tplCatTab;
         $cwCat =~ s/{% CAT_NAME %}/$cat/;
         $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -236,17 +236,23 @@ sub prep_navbar {
     my ($prev, $next, $max);
 
     $max = calculate_max_page($catName);
-    $url{max} = "$baseURL/$uc{fnPre}_${catName}_$max.html";
+    if ($max == 1) {
+        $url{max} = "$baseURL/${catName}/index.html";
+    } else {
+        $url{max} = "$baseURL/${catName}/$max.html";
+    }
 
+    # this is messy but if page_id=2 then previous is index.html
     if ($pgIdx == 1) {
         $url{prev} = "#"     
+    } elsif (($prev = $pgIdx - 1) == 2){
+        $url{prev} = "$baseURL/${catName}/index.html";
     } else {
-        $prev = $pgIdx - 1;
-        $url{prev} = "$baseURL/$uc{fnPre}_${catName}_$prev.html";
+        $url{prev} = "$baseURL/${catName}/$prev.html";
     }
     if ($isLast eq 'no'){
         $next = $pgIdx + 1;
-        $url{next} = "$baseURL/$uc{fnPre}_${catName}_$next.html";
+        $url{next} = "$baseURL/${catName}/$next.html";
     } else {
         $url{next} = "#";
     }
@@ -305,7 +311,7 @@ sub paint_template {
     my $catIsEmpty = 1;
 
     my $entryIdx = 0;
-    my $outFn = "$uc{out}/$uc{fnPre}_${catName}_${pgIdx}.html";
+    my $outFn = "$uc{out}/${catName}/index.html";
     my $navBar;
 
     open (my $fh, '>', $outFn);
@@ -320,8 +326,8 @@ sub paint_template {
             print $fh prep_navbar($catName, $pgIdx, 'no');
             print $fh $tplBottom; 
             $pgIdx++;
+            $outFn = "$uc{out}/${catName}/${pgIdx}.html";
             close $fh;
-            $outFn = "$uc{out}/$uc{fnPre}_${catName}_${pgIdx}.html";
             open ($fh, '>', $outFn);
             print $fh prep_tpltop($catName, $pgIdx); 
             say "NEW PAGE!! $pgIdx" if $uc{debug};
@@ -346,7 +352,9 @@ sub paint_template {
 
 # make a category path for each category that exists
 sub make_category_dirs {
-    say "will create dir $uc{out}/$_" for (@cats) if $uc{debug};
+    if ($uc{debug}) {
+        say "will create dir $uc{out}/$_" for (@cats);
+    }
     make_path "$uc{out}/$_" for (@cats);
 }
 
@@ -370,7 +378,7 @@ sub generate_entries_hp {
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
        $date = $entryKvs{$entry}{'date'}->strftime('%d/%m/%Y');
        $cwHpEntry =~ s/{% ENTRY_DATE %}/$date/;
-       $catFn = "$baseURL/$uc{fnPre}_${cat}_$entryKvs{$entry}{pgIdx}.html#$entry";
+       $catFn = "$baseURL/${cat}/$entryKvs{$entry}{pgIdx}.html#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
     }
@@ -544,7 +552,7 @@ sub write_rss {
 
     foreach my $entry (@sortedEntryKeys) {
         # it isn't a permalink
-        my $flimsyLink = "$baseURL/$uc{fnPre}_$entryKvs{$entry}{category}_$entryKvs{$entry}{pgIdx}.html#$entry";
+        my $flimsyLink = "$baseURL/$entryKvs{$entry}{category}/$entryKvs{$entry}{pgIdx}.html#$entry";
         $rss->add_item(
             title => $entryKvs{$entry}{title},
             permaLink  => $flimsyLink,

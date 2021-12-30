@@ -21,9 +21,6 @@ my $tplinc = "./tpl/softcat";
     out => "./output",
 
     # Presentation Config
-
-    # Filename Prefix, prepended to all output HTML
-    fnPre => "rsru",
     siteName => "RSRU",
     siteHeaderDesc => "Really Small, Really Useful software listings.",
     siteHomepageHeader => 'Welcome to RSRU!',
