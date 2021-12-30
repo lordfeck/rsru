@@ -2,7 +2,7 @@
 
 #===============================================================================
 # Thransoft RSRU Release 3
-# Collation and generation of software listings for a static software catalogue.
+# A static catalogue-style website generator, freely given
 # Licence: GPLv3. See "licence.txt" for full details.
 # Author: Thran. Authored: 09/09/2020 - 27/11/2021
 # WWW: http://soft.thran.uk
@@ -15,13 +15,13 @@ use warnings;
 use v5.10;
 
 use File::Copy;
-use File::Path qw(make_path);
+use File::Path qw(make_path remove_tree);
 use Time::Piece;
 use List::Util qw(first);
 use Cwd qw(getcwd);
 
 #===============================================================================
-# Load RSS module if available
+# Load optional modules if available
 #===============================================================================
 my $has_rss = eval
 {
@@ -73,7 +73,7 @@ my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-
 my @knownKeys = @{$uc{knownKeys}};
 my @necessaryKeys = @{$uc{necessaryKeys}};
 
-# Declare fn prototypes
+# Declare some fn prototypes
 sub sort_entries;
 sub sort_all_entries;
 sub get_highlighted_entries;
@@ -156,13 +156,10 @@ sub entrykvs_to_html {
 }
 
 # Clear destination before write (configurable)
-# Currently, will not clear any subdirs in $uc{out}
 sub clear_dest {
-    for my $unwanted (glob "$uc{out}/*.*") {
-        next if -d $unwanted;
-        say "clear_dest: Removing $unwanted..." if ($uc{debug});
-        unlink $unwanted or warn("Problem deleting $unwanted\n");
-    }
+    say "clear_dest: Removing $uc{out}..." if ($uc{debug});
+    remove_tree("$uc{out}");
+    warn "Problem clearing output dir ($uc{out}): $!" if $!;
 }
 
 # Copy any resources to outdir. For now, this is only CSS.
@@ -178,6 +175,7 @@ sub paint_desc {
     $tplTop =~ s/{% HEAD_DESC %}/$uc{siteHeaderDesc}/;
 }
 
+# Make link bar for the top of each page
 sub generate_cat_tabs {
     my $activeCat = shift;
     my $catFn; # Cat Filename (used for hyperlinks)
@@ -346,6 +344,12 @@ sub paint_template {
     close $fh;
 }
 
+# make a category path for each category that exists
+sub make_category_dirs {
+    say "will create dir $uc{out}/$_" for (@cats) if $uc{debug};
+    make_path "$uc{out}/$_" for (@cats);
+}
+
 # Use the $tplHpEntry template to generate a list of entries for the homepage.
 # ARGUMENTS: An array of entry key names
 sub generate_entries_hp {
@@ -499,10 +503,10 @@ sub read_entry {
 # on each text file therein. We will use this to fill our
 # entryKvs.
 sub read_entrydir {
-    opendir(ENTRIES, "$uc{entrydir}") or die "Directory of entries not found."; 
+    opendir(my $ENTRIES, "$uc{entrydir}") or die "Directory of entries not found."; 
     # Read in entries, exclude dotfiles
-    my @entries = grep !/^\./, readdir ENTRIES;
-    closedir ENTRIES;
+    my @entries = grep !/^\./, readdir $ENTRIES;
+    closedir $ENTRIES;
     say "Entrydir listing: @entries" if ($uc{debug});
 
     # $entryID is assigned inside read_entry
@@ -565,7 +569,6 @@ if (scalar @ARGV and ($ARGV[0] eq '-p') or $uc{target} eq 'production') {
 
 # Check we have what's needed.
 die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
-mkdir $uc{out} unless -d $uc{out};
 
 say "==> Begin read of $uc{entrydir} contents ==>";
 read_entrydir;
@@ -591,7 +594,9 @@ say "<== Read Finished <==";
 
 say "<== Begin template interpolation... ==>";
 clear_dest if ($uc{clearDest});
+mkdir $uc{out} unless -d $uc{out};
 copy_res;
+make_category_dirs;
 prep_tplbottom;
 paint_desc;
 foreach my $cat (@cats) { paint_template $cat; }
