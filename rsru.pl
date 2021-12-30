@@ -43,6 +43,7 @@ my @cats = @{$uc{cats}};
 # End usr config, begin function defs and global vars.
 #===============================================================================
 my %entryKvs;       # Master key-value store, holds all read-in entries
+my %catTotal;       # Integer value of total entries in each category
 my $entryId;        # Entry-id variable of current working entry, used for reads
 
 my $tplTop;         # The 'top' half of the per-category template
@@ -220,14 +221,15 @@ sub generate_cat_tabs {
 # RETURNS: Max page index
 sub calculate_max_page {
     my $catName = shift;
-    my $catSize = 0;
-    foreach (keys %entryKvs){
-        $catSize++ if ($entryKvs{$_}{category} eq $catName);
-    }
-    use integer;
-    return ($catSize / $uc{maxPerPage}) + 1; 
-}
+    my $maxPage = 0;
 
+    # For empty cats, return 1
+    return 1 unless $catTotal{$catName};
+    use integer;
+    $maxPage = ($catTotal{$catName} / $uc{maxPerPage}); 
+    # Handle case of odd/even total entries
+    return ($catTotal{$catName} % $uc{maxPerPage}) ? $maxPage + 1 : $maxPage;
+}
 
 # Prepare the navbar.
 # Arguments: Cat Name, Current Index, isLast
@@ -317,36 +319,38 @@ sub paint_template {
     my $pgIdx = 1;
     my $cwTplTop = prep_tpltop($catName, $pgIdx); 
     my $catIsEmpty = 1;
+    my $currentPgIdx = 0;
 
-    my $entryIdx = 0;
-    my $outFn = "$uc{out}/${catName}/index.html";
+    # assume index, make new page if we exceed maxPerPage
+    my $outFn = "${catName}/index.html";
     my $navBar;
 
-    open (my $fh, '>', $outFn);
+    open (my $fh, '>', "$uc{out}/$outFn");
     print $fh $cwTplTop;
 
     print $fh "<p id=\"catDesc\">$uc{catDesc}{$catName}</p>" if ($uc{catDesc}{$catName} && $pgIdx == 1);
 
     for my $entryId (sort_entries $catName) {
-        say "$entryIdx is entry index. for $entryId" if $uc{debug};
         # Handle pagination
-        if ($entryIdx >= $uc{maxPerPage}) {
+        if ($currentPgIdx >= $uc{maxPerPage}) {
             print $fh prep_navbar($catName, $pgIdx, 'no');
             print $fh $tplBottom; 
             $pgIdx++;
-            $outFn = "$uc{out}/${catName}/${pgIdx}.html";
+            $outFn = "${catName}/${pgIdx}.html";
             close $fh;
-            open ($fh, '>', $outFn);
+            open ($fh, '>', "$uc{out}/$outFn");
             print $fh prep_tpltop($catName, $pgIdx); 
             say "NEW PAGE!! $pgIdx" if $uc{debug};
             $writtenOut++;
+            $currentPgIdx = 0;
         }
         next unless ($entryKvs{$entryId}{"category"} eq $catName);
         $entryKvs{$entryId}{pgIdx} = $pgIdx;
+        $entryKvs{$entryId}{path} = $outFn;
         $currentEntry = entrykvs_to_html $entryId;
         $catIsEmpty = 0;
+        $currentPgIdx++;
         print $fh $$currentEntry;
-        $entryIdx++;
     }
     
     print $fh $TPL_EMPTY_CAT if $catIsEmpty;
@@ -384,9 +388,9 @@ sub generate_entries_hp {
        }
        $cat = $entryKvs{$entry}{"category"};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
-       $date = $entryKvs{$entry}{'date'}->strftime('%d/%m/%Y');
+       $date = $entryKvs{$entry}{date}->strftime('%d/%m/%Y');
        $cwHpEntry =~ s/{% ENTRY_DATE %}/$date/;
-       $catFn = "$baseURL/${cat}/$entryKvs{$entry}{pgIdx}.html#$entry";
+       $catFn = "${baseURL}/$entryKvs{$entry}{path}#$entry";
        $cwHpEntry =~ s/{% ENTRY_CAT_URL %}/$catFn/;
        $hpEntries .= $cwHpEntry;
     }
@@ -501,6 +505,8 @@ sub read_entry {
                     say "New category found: $val." if $uc{verbose};
                     push (@cats, $val);
                 }
+                $catTotal{$val}++;
+                say "$catTotal{$val} is current max for $val";
             }
             $entryData{$key} = $val;
             print "KEY: $key VALUE: $val\n" if ($uc{debug});
@@ -560,7 +566,7 @@ sub write_rss {
 
     foreach my $entry (@sortedEntryKeys) {
         # it isn't a permalink
-        my $flimsyLink = "$baseURL/$entryKvs{$entry}{category}/$entryKvs{$entry}{pgIdx}.html#$entry";
+        my $flimsyLink = "$uc{liveURL}/$entryKvs{$entry}{path}#$entry";
         $rss->add_item(
             title => $entryKvs{$entry}{title},
             permaLink  => $flimsyLink,
