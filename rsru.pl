@@ -15,6 +15,7 @@ use warnings;
 use v5.10;
 
 use File::Copy;
+use File::Path qw(make_path);
 use Time::Piece;
 use List::Util qw(first);
 use Cwd qw(getcwd);
@@ -103,19 +104,19 @@ sub dump_kvs {
 
 # Read in the template, look for the RSRU markers, split it.
 sub read_partition_template {
-    open(TPL, $uc{tpl}) or die ("Fatal: Couldn't open template $uc{tpl}!");
+    open(my $TPL, $uc{tpl}) or die ("Fatal: Couldn't open template $uc{tpl}!");
     
-    while (<TPL>) {
+    while (<$TPL>) {
         last if /\s*(<!--BEGIN RSRU-->)/;
         $tplTop .= $_;
     }
 
     # Skip everything that isn't for the "easel" area
-    while (<TPL>) { last if /\s*(<!--END RSRU-->)/; }
+    while (<$TPL>) { last if /\s*(<!--END RSRU-->)/; }
 
     # Then read the rest
-    while (<TPL>) { $tplBottom .= $_; }
-    close TPL;
+    while (<$TPL>) { $tplBottom .= $_; }
+    close $TPL;
 }
 
 # Iterate through an entry and ensure all the specified necessary (necified?)
@@ -460,11 +461,11 @@ sub get_highlighted_entries {
 # Returns a reference to a key-value store of all obtained key-values from the entryfile.
 sub read_entry {
     $entryId = shift;
-    open (ENTRY, '<', "$uc{entrydir}/$entryId") or die "Couldn't open $uc{entrydir}/$entryId";
+    open (my $ENTRY, '<', "$uc{entrydir}/$entryId") or die "Couldn't open $uc{entrydir}/$entryId";
     $entryId =~ s/\.txt//;
 
     my %entryData;
-    while (<ENTRY>) {
+    while (<$ENTRY>) {
         # Skip comments (hash-commenced lines)
         next if /^#/;
         # Lines commencing with single words, colon-terminated are a key, lines without are descriptions
@@ -489,7 +490,7 @@ sub read_entry {
         }
     }
     say "$entryId DESC: $entryData{desc}" if ($uc{debug});
-    close ENTRY;
+    close $ENTRY;
 
     return \%entryData;
 }
