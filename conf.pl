@@ -7,6 +7,8 @@
 #======================================================================
 my $tplinc = "./tpl/softcat";
 #======================================================================
+
+# NOTE: 1 is ENABLED, 0 is DISABLED
 (
     # Target: dev or production. Dev uses relative URLs, production uses live URL
     target => "dev",
@@ -15,10 +17,11 @@ my $tplinc = "./tpl/softcat";
     liveURL => "http://www.example.com",
 
     # Path Configuration
-
     tplinc => "$tplinc", # DO NOT CHANGE THIS, SET IT ABOVE!
     entrydir => "./entries",
     out => "./output",
+    # Wipe destination directory before writing output files
+    clearDest => 1,
 
     # Presentation Config
     siteName => "RSRU",
@@ -33,9 +36,15 @@ my $tplinc = "./tpl/softcat";
     rss_entry_count => 10,
     rss_lang => "en",
     rss_copyright => "No Copyright",
+
+    # Imaging configuration (requires GD)
+    imagesEnabled => 1,
+    thumbnailSize => "",
+    imgSrcDir => "",
+    imgDestDir => "",
     
     #======================================================================
-    # Edit these to switch from 'software catalogue' configuration
+    # Configure category and entry names. These must match the fields in your template files
     #======================================================================
     # These default cats are always generated, even if empty.
     # Hitherto unknown cats will be appended to a derived array if found.
@@ -58,6 +67,7 @@ my $tplinc = "./tpl/softcat";
     # Typically, these should not be altered.
     tpl => "$tplinc/rsru_template.html",
     blankEntry => "$tplinc/rsru_entry.html",
+    blankEntryImg => "$tplinc/rsru_entry_img.html",
     blankCatEntry => "$tplinc/rsru_cat.html",
     blankTplHp => "$tplinc/index.html",
     blankTplHpEntry => "$tplinc/rsru_hp_entry.html",
@@ -69,8 +79,5 @@ my $tplinc = "./tpl/softcat";
     debug => 0,
     verbose => 0,
     
-    # Wipe destination directory before writing output files
-    clearDest => 1,
-
 )
 

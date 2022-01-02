@@ -30,6 +30,13 @@ my $has_rss = eval
     1;
 };
 
+my $has_gd = eval
+{
+    require GD;
+    GD->import();
+    1;
+};
+
 #===============================================================================
 # Read in user-configurable values
 #===============================================================================
@@ -49,6 +56,7 @@ my $entryId;        # Entry-id variable of current working entry, used for reads
 my $tplTop;         # The 'top' half of the per-category template
 my $tplBottom;      # The 'bottom' half of the same. Entries will go between
 my $tplEntry;       # The blank HTML for each entry
+my $tplEntryImg;       # The blank HTML for each entry, with space for thumbnails
 my $tplCatTab;      # Blank HTML for each category
 my $tplHp;          # Blank HTML for homepage
 my $tplHpEntry;     # Blank HTML for entries on the homepage
@@ -118,6 +126,28 @@ sub read_partition_template {
     # Then read the rest
     while (<$TPL>) { $tplBottom .= $_; }
     close $TPL;
+}
+
+# Check whether image support is enabled; if so, load entry tpl with image section
+# otherwise load text-only entry template to global tplEntry.
+sub read_entry_template {
+    if ($uc{imagesEnabled} && !$has_gd) {
+        warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
+        $uc{imagesEnabled} = 0;
+    }
+    $tplEntryImg = read_whole_file($uc{blankEntryImg});
+    $tplEntry = read_whole_file($uc{blankEntry});
+}
+
+# Check, does img_desc exist under image dir? if so, use it. Otherwise look for
+# $entryId.jpg/png and return it instead. If neither exists return blank (evals to false)
+sub get_image_filename {
+...
+}
+
+# Make thumbnail and large image for each filename, use same img filename in dest dir
+sub process_entry_image {
+...
 }
 
 # Iterate through an entry and ensure all the specified necessary (necified?)
@@ -506,7 +536,6 @@ sub read_entry {
                     push (@cats, $val);
                 }
                 $catTotal{$val}++;
-                say "$catTotal{$val} is current max for $val";
             }
             $entryData{$key} = $val;
             print "KEY: $key VALUE: $val\n" if ($uc{debug});
@@ -602,7 +631,7 @@ say "==> Begin read of template files ==>";
 read_partition_template;
 
 # Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
-$tplEntry = read_whole_file($uc{blankEntry});
+read_entry_template;
 
 # Load in blank HTML for homepage items. Fills the global vars tplHp and tplHpEntry.
 $tplHp = read_whole_file($uc{blankTplHp});
@@ -625,7 +654,7 @@ foreach my $cat (@cats) { paint_template $cat; }
 paint_homepage;
 say "<== Template interpolation finished. ==>";
 if ($uc{rss_enabled} && !$has_rss) {
-    warn "!! RSS configured but XML::RSS is not installed.\nPlease run 'cpan install XML::RSS' to enable RSS output !!";
+    warn "!! RSS configured but XML::RSS is not installed !!\n!! Please run 'cpan install XML::RSS' to enable RSS output !!";
     $uc{rss_enabled} = 0;
 }
 if ($uc{rss_enabled}){
