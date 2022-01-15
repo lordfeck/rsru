@@ -20,6 +20,8 @@ my $tplinc = "./tpl/softcat";
     tplinc => "$tplinc", # DO NOT CHANGE THIS, SET IT ABOVE!
     entrydir => "./entries",
     out => "./output",
+    imgDir => "./img",
+    imgOutSubdir => "img", # Appended to 'out'
     # Wipe destination directory before writing output files
     clearDest => 1,
 
@@ -31,11 +33,11 @@ my $tplinc = "./tpl/softcat";
     maxPerPage => 10,
 
     # RSS Configuration (requires XML::RSS)
-    rss_enabled => 1,
-    rss_filepath => "rss.xml",
-    rss_entry_count => 10,
-    rss_lang => "en",
-    rss_copyright => "No Copyright",
+    rssEnabled => 1,
+    rssFilepath => "rss.xml",
+    rssEntryCount => 10,
+    rssLang => "en",
+    rssCopyright => "No Copyright",
 
     # Imaging configuration (requires GD)
     imagesEnabled => 1,
@@ -48,9 +50,9 @@ my $tplinc = "./tpl/softcat";
     #======================================================================
     # These default cats are always generated, even if empty.
     # Hitherto unknown cats will be appended to a derived array if found.
-    cats => ["utility", "media", "sysadmin", "gfx", "dev"],
+    cats => [qw(utility media sysadmin gfx dev)],
     # List of known keys for each entry
-    knownKeys => [qw(title version category interface img_desc os_support order date desc dl_url is_highlight)],
+    knownKeys => [qw(title version category interface img_desc img_src os_support order date desc dl_url is_highlight)],
     # Necessary keys. RSRU will fail if these are not present in any entry.
     necessaryKeys => [qw(title version category date desc)],
     # Description for each category, will appear on the first page of each

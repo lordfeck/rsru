@@ -130,24 +130,39 @@ sub read_partition_template {
 
 # Check whether image support is enabled; if so, load entry tpl with image section
 # otherwise load text-only entry template to global tplEntry.
-sub read_entry_template {
-    if ($uc{imagesEnabled} && !$has_gd) {
-        warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
-        $uc{imagesEnabled} = 0;
-    }
+sub init_entry_template {
     $tplEntryImg = read_whole_file($uc{blankEntryImg});
     $tplEntry = read_whole_file($uc{blankEntry});
 }
 
-# Check, does img_desc exist under image dir? if so, use it. Otherwise look for
+# Check, does img_src exist under image dir? if so, use it. Otherwise look for
 # $entryId.jpg/png and return it instead. If neither exists return blank (evals to false)
+# ARGS: EntryID
 sub get_image_filename {
-...
+    my $entryId = shift;    
+    my $imgSrc = $entryKvs{$entryId}{img_src};
+    if ($imgSrc && -f "$uc{imgDir}/$imgSrc") {
+        return $imgSrc;
+    } elsif (-f "$uc{imgDir}/${entryId}.jpg") {
+        return "${entryId}.jpg";
+    } elsif (-f "$uc{imgDir}/${entryId}.png") {
+        return "${entryId}.png";
+    } else {
+        say "No image filename found for $entryId" if $uc{verbose};
+        return "";
+    }
 }
 
 # Make thumbnail and large image for each filename, use same img filename in dest dir
+# Args: Entry filename. Will determine format from extension
 sub process_entry_image {
-...
+    my $imgFn = shift;
+    my ($gd, $imgFh);
+    open $imgFh, "<", "$uc{imgDir}/$imgFn" or warn "Could not open $imgFn: $!";
+    # assume jpg for now
+    $gd = GD::Image->newFromJpeg($imgFh);
+    # Write thumbnail
+    # write resized full img or just copy src, depends on config
 }
 
 # Iterate through an entry and ensure all the specified necessary (necified?)
@@ -318,9 +333,9 @@ sub prep_tpltop {
     $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/;
 
     # Handle RSS feeds
-    if ($uc{rss_enabled}) {
+    if ($uc{rssEnabled}) {
         $cwTplTop =~ s/{% FEEDBLOCK_TOP %}/$tplRssBlockTop/;
-        $cwTplTop =~ s/{% RSRU_FEED %}/$staticRoot\/$uc{rss_filepath}/;
+        $cwTplTop =~ s/{% RSRU_FEED %}/$staticRoot\/$uc{rssFilepath}/;
         $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName}/;
     } else {
         $cwTplTop =~ s/{% FEEDBLOCK_TOP %}//;
@@ -332,10 +347,10 @@ sub prep_tpltop {
 # Appends RSS link, if configured
 sub prep_tplbottom {
     # Handle RSS feeds
-    my $rss_path = "${baseURL}/$uc{rss_filepath}";
+    my $rssPath = "${baseURL}/$uc{rssFilepath}";
     if ($uc{rss_enabled}) {
         $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}/$tplRssBlockBottom/;
-        $tplBottom =~ s/{% RSRU_FEED %}/$rss_path/;
+        $tplBottom =~ s/{% RSRU_FEED %}/$rssPath/;
     } else {
         $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}//;
     }
@@ -572,13 +587,13 @@ sub read_entrydir {
 sub write_rss {
     return unless $has_rss;
     my $t = Time::Piece->new;
-    my $build_date = $t->strftime();
-    my $entry_count;
+    my $buildDate = $t->strftime();
+    my $entryCount;
 
-    if ($uc{rss_entry_count} gt (scalar %entryKvs)) {
-        $entry_count = $uc{rss_entry_count};
+    if ($uc{rssEntryCount} gt (scalar %entryKvs)) {
+        $entryCount = $uc{rssEntryCount};
     } else {
-        $entry_count = scalar %entryKvs;
+        $entryCount = scalar %entryKvs;
     }
 
     my @sortedEntryKeys = sort_all_entries($entry_count);
@@ -587,9 +602,9 @@ sub write_rss {
     $rss->channel(
         title          => $uc{siteName},
         link           => $uc{liveUrl},
-        language       => $uc{rss_lang},
+        language       => $uc{rssLang},
         description    => $uc{siteHomepageDesc},
-        copyright      => $uc{rss_copyright},
+        copyright      => $uc{rssCopyright},
         lastBuildDate  => $build_date,
     );
 
@@ -605,7 +620,7 @@ sub write_rss {
         );
     }
 
-    $rss->save("$uc{out}/$uc{rss_filepath}");
+    $rss->save("$uc{out}/$uc{rssFilepath}");
 }
 
 #===============================================================================
@@ -630,8 +645,14 @@ say "<== Read Finished <==";
 say "==> Begin read of template files ==>";
 read_partition_template;
 
+# Check if we have the appropriate module installed for imaging
+if ($uc{imagesEnabled} && !$has_gd) {
+    warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
+    $uc{imagesEnabled} = 0;
+}
+
 # Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
-read_entry_template;
+init_entry_template;
 
 # Load in blank HTML for homepage items. Fills the global vars tplHp and tplHpEntry.
 $tplHp = read_whole_file($uc{blankTplHp});
