@@ -20,8 +20,6 @@ my $tplinc = "./tpl/softcat";
     tplinc => "$tplinc", # DO NOT CHANGE THIS, SET IT ABOVE!
     entrydir => "./entries",
     out => "./output",
-    imgDir => "./img",
-    imgOutSubdir => "img", # Appended to 'out'
     # Wipe destination directory before writing output files
     clearDest => 1,
 
@@ -41,9 +39,9 @@ my $tplinc = "./tpl/softcat";
 
     # Imaging configuration (requires GD)
     imagesEnabled => 1,
-    thumbnailSize => "",
-    imgSrcDir => "",
-    imgDestDir => "",
+    thumbnailSize => "200x200",
+    imgSrcDir => "./img",
+    imgDestDir => "img", # appended to "out" as set above, exclude path markers
     
     #======================================================================
     # Configure category and entry names. These must match the fields in your template files

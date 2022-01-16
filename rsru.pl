@@ -34,6 +34,7 @@ my $has_gd = eval
 {
     require GD;
     GD->import();
+    GD::Image->trueColor(1);
     1;
 };
 
@@ -157,12 +158,22 @@ sub get_image_filename {
 # Args: Entry filename. Will determine format from extension
 sub process_entry_image {
     my $imgFn = shift;
-    my ($gd, $imgFh);
-    open $imgFh, "<", "$uc{imgDir}/$imgFn" or warn "Could not open $imgFn: $!";
+    my ($gd, $gdOut, $imgFh, $tnFh);
+    my ($imgFnOut, $imgFmt) = split(/\./,$imgFn,2); # get filename and format
+    my ($w, $l) = split(/x/,$uc{thumbnailSize},2);
+
+    open $imgFh, "<", "$uc{imgSrcDir}/$imgFn" or warn "Could not open $imgFn: $!";
     # assume jpg for now
     $gd = GD::Image->newFromJpeg($imgFh);
+    $gdOut = new GD::Image($w,$l);
+    $gdOut->copyResampled($gd,0,0,0,0,$w,$l,$gd->width,$gd->height);
     # Write thumbnail
-    # write resized full img or just copy src, depends on config
+    open $tnFh, ">", "$uc{imgDestDir}/$imgFn" or warn "Could not open $imgFn: $!";
+    binmode $tnFh;
+    print $tnFh $gdOut->jpeg;
+    # Copy original image (TODO: later may support resizing)
+    close $imgFh;
+    close $tnFh;
 }
 
 # Iterate through an entry and ensure all the specified necessary (necified?)
@@ -596,7 +607,7 @@ sub write_rss {
         $entryCount = scalar %entryKvs;
     }
 
-    my @sortedEntryKeys = sort_all_entries($entry_count);
+    my @sortedEntryKeys = sort_all_entries($entryCount);
     my $rss = XML::RSS->new (version => '2.0');
 
     $rss->channel(
@@ -605,7 +616,7 @@ sub write_rss {
         language       => $uc{rssLang},
         description    => $uc{siteHomepageDesc},
         copyright      => $uc{rssCopyright},
-        lastBuildDate  => $build_date,
+        lastBuildDate  => $buildDate,
     );
 
     foreach my $entry (@sortedEntryKeys) {
@@ -667,6 +678,9 @@ say "<== Read Finished <==";
 say "<== Begin template interpolation... ==>";
 clear_dest if ($uc{clearDest});
 mkdir $uc{out} unless -d $uc{out};
+mkdir "$uc{out}/$uc{imgDestDir}" unless -d "$uc{out}/$uc{imgDestDir}";
+process_entry_image "sample.jpg";
+die "DEV: Dying after image writing!!";
 copy_res;
 make_category_dirs;
 prep_tplbottom;
