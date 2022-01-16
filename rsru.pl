@@ -674,11 +674,12 @@ paint_desc;
 foreach my $cat (@cats) { paint_template $cat; }
 paint_homepage;
 say "<== Template interpolation finished. ==>";
-if ($uc{rss_enabled} && !$has_rss) {
+
+if ($uc{rssEnabled} && !$has_rss) {
     warn "!! RSS configured but XML::RSS is not installed !!\n!! Please run 'cpan install XML::RSS' to enable RSS output !!";
-    $uc{rss_enabled} = 0;
+    $uc{rssEnabled} = 0;
 }
-if ($uc{rss_enabled}){
+if ($uc{rssEnabled}){
     say "==> Writing RSS 2.0 feed to $uc{rss_filepath}. ==>";
     write_rss;
     say "<== RSS composition complete. ==>";
