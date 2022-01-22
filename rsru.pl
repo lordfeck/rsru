@@ -158,20 +158,32 @@ sub get_image_filename {
 # Args: Entry filename. Will determine format from extension
 sub process_entry_image {
     my $imgFn = shift;
-    my ($gd, $gdOut, $imgFh, $tnFh);
-    my ($imgFnOut, $imgFmt) = split(/\./,$imgFn,2); # get filename and format
-    my ($w, $l) = split(/x/,$uc{thumbnailSize},2);
+    my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgTnPath, $imgSrcPath);
+    my ($imgFnOut, $imgFmt) = split(/\./, $imgFn, 2); # get filename and format
+    my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
+    
+    $imgTnPath = "$uc{imgDestDir}/${imgFnOut}_tn.${imgFmt}";
+    $imgPath = "$uc{imgDestDir}/${imgFn}";
+    $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
 
-    open $imgFh, "<", "$uc{imgSrcDir}/$imgFn" or warn "Could not open $imgFn: $!";
+    say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgFmt=$imgFmt, TnSz=$uc{thumbnailSize}" if $uc{debug};
+    open $imgFh, "<", "$imgPath" or warn "Could not open $imgPath: $!";
+
     # assume jpg for now
-    $gd = GD::Image->newFromJpeg($imgFh);
-    $gdOut = new GD::Image($w,$l);
+    say "Opening $imgPath..." if $uc{verbose};
+    warn "Invalid JPEG in $imgPath" unless $gd = GD::Image->newFromJpeg($imgFh);
+    $gdOut = GD::Image->new;
     $gdOut->copyResampled($gd,0,0,0,0,$w,$l,$gd->width,$gd->height);
+
     # Write thumbnail
-    open $tnFh, ">", "$uc{imgDestDir}/$imgFn" or warn "Could not open $imgFn: $!";
+    say "Writing thumbnail to $imgTnPath" if $uc{verbose};
+    open $tnFh, ">", "$imgTnPath" or warn "Could not open $imgTnPath: $!";
     binmode $tnFh;
-    print $tnFh $gdOut->jpeg;
+    print $tnFh $gd->jpeg or warn "Couldn't write $imgFn!";
+
     # Copy original image (TODO: later may support resizing)
+    say "Copying fullres to $imgPath" if $uc{verbose};
+    copy ($imgSrcPath, $imgPath);
     close $imgFh;
     close $tnFh;
 }

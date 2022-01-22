@@ -21,7 +21,7 @@ my $tplinc = "./tpl/softcat";
     entrydir => "./entries",
     out => "./output",
     # Wipe destination directory before writing output files
-    clearDest => 1,
+    clearDest => 0,
 
     # Presentation Config
     siteName => "RSRU",
@@ -41,7 +41,7 @@ my $tplinc = "./tpl/softcat";
     imagesEnabled => 1,
     thumbnailSize => "200x200",
     imgSrcDir => "./img",
-    imgDestDir => "img", # appended to "out" as set above, exclude path markers
+    imgDestDir => "./output/img",
     
     #======================================================================
     # Configure category and entry names. These must match the fields in your template files
@@ -76,8 +76,8 @@ my $tplinc = "./tpl/softcat";
     rssBlockBottom => "$tplinc/rsru_rss_bottom.html",
 
     # Logging levels
-    debug => 0,
-    verbose => 0,
+    debug => 1,
+    verbose => 1,
     
 )
 
