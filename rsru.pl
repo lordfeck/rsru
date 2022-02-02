@@ -155,35 +155,54 @@ sub get_image_filename {
 }
 
 # Make thumbnail and large image for each filename, use same img filename in dest dir
-# Args: Entry filename. Will determine format from extension
+# Args: Entry filename, entryID. Will determine format from extension
 sub process_entry_image {
-    my $imgFn = shift;
+    my ($imgFn, $entryId) = @_;
+
     my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgTnPath, $imgSrcPath);
-    my ($imgFnOut, $imgFmt) = split(/\./, $imgFn, 2); # get filename and format
+    my ($imgFnOut, $imgExt) = split(/\./, $imgFn, 2); # get filename and format
     my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
     
-    $imgTnPath = "$uc{imgDestDir}/${imgFnOut}_tn.${imgFmt}";
     $imgPath = "$uc{imgDestDir}/${imgFn}";
     $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
+    $imgTnPath = "$uc{imgDestDir}/${imgFnOut}_tn.jpg"; # thumbnail is always jpg
 
-    say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgFmt=$imgFmt, TnSz=$uc{thumbnailSize}" if $uc{debug};
-    open $imgFh, "<", "$imgPath" or warn "Could not open $imgPath: $!";
+    say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgExt=$imgExt TnSz=$uc{thumbnailSize}" if $uc{debug};
+    open $imgFh, "<", "$imgSrcPath" or warn "Could not open $imgPath: $!";
 
-    # assume jpg for now
-    say "Opening $imgPath..." if $uc{verbose};
-    warn "Invalid JPEG in $imgPath" unless $gd = GD::Image->newFromJpeg($imgFh);
     $gdOut = GD::Image->new;
+
+    say "Opening $imgPath..." if $uc{verbose};
+
+    if (first { /$imgExt/ } ("jpeg", "jpg", "JPG", "JPEG")) {
+        $imgExt = "jpg";    # set this for a flag later
+        warn "Invalid JPEG in $imgPath" unless $gd = GD::Image->newFromJpeg($imgFh);
+    } elsif (first { /$imgExt/} ("png", "PNG")) {
+        $imgExt = "png";    # set this for a flag later
+        warn "Invalid PNG in $imgPath" unless $gd = GD::Image->newFromPng($imgFh);
+    }
+
     $gdOut->copyResampled($gd,0,0,0,0,$w,$l,$gd->width,$gd->height);
 
-    # Write thumbnail
+    # Write thumbnail (always jpeg!)
     say "Writing thumbnail to $imgTnPath" if $uc{verbose};
     open $tnFh, ">", "$imgTnPath" or warn "Could not open $imgTnPath: $!";
     binmode $tnFh;
-    print $tnFh $gd->jpeg or warn "Couldn't write $imgFn!";
+    print $tnFh $gdOut->jpeg or warn "Couldn't write $imgFn!";
 
-    # Copy original image (TODO: later may support resizing)
-    say "Copying fullres to $imgPath" if $uc{verbose};
-    copy ($imgSrcPath, $imgPath);
+    if ($uc{imgToJpeg} && $imgExt eq "png") {
+        $imgPath = "$uc{imgDestDir}/${imgFnOut}.jpg";
+        open my $imgFhFullRes, ">", $imgPath or warn "Could not open $imgPath: $!";
+        binmode $imgFhFullRes;
+        print $imgFhFullRes $gd->jpeg or warn "Couldn't write $imgFn!";
+        close $imgFhFullRes;
+        $entryKvs{$entryId}{img_src} = $imgPath;
+    } else {
+        # Copy original image (TODO: later may support resizing)
+        say "Copying fullres to $imgPath" if $uc{verbose};
+        copy ($imgSrcPath, $imgPath);
+        $entryKvs{$entryId}{img_src} = $imgPath;
+    }
     close $imgFh;
     close $tnFh;
 }
@@ -691,7 +710,8 @@ say "<== Begin template interpolation... ==>";
 clear_dest if ($uc{clearDest});
 mkdir $uc{out} unless -d $uc{out};
 mkdir "$uc{out}/$uc{imgDestDir}" unless -d "$uc{out}/$uc{imgDestDir}";
-process_entry_image "sample.jpg";
+process_entry_image "sample.jpg", "sample";
+#process_entry_image "sample.png", "sample";
 die "DEV: Dying after image writing!!";
 copy_res;
 make_category_dirs;

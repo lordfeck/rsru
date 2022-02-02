@@ -42,6 +42,7 @@ my $tplinc = "./tpl/softcat";
     thumbnailSize => "200x200",
     imgSrcDir => "./img",
     imgDestDir => "./output/img",
+    imgToJpeg => 1,                 # Convert fullres PNG to JPEG
     
     #======================================================================
     # Configure category and entry names. These must match the fields in your template files
