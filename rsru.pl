@@ -69,6 +69,7 @@ my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 my $writtenEntries = 0;     # total count of written entries in all files
 my $baseURL = '.';  # Relative is default
+my @imgDirList;
 
 # Consts
 my $DATE_FORMAT = "%Y-%m-%d";
@@ -78,6 +79,7 @@ my $MAX_ENTRIES = 5;
 my $YES = 'yes';
 my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
+my @EXTLIST = qw(jpg, jpeg, png, JPEG, PNG);
 
 # List of known keys for each entry
 my @knownKeys = @{$uc{knownKeys}};
@@ -140,23 +142,32 @@ sub init_entry_template {
 # $entryId.jpg/png and return it instead. If neither exists return blank (evals to false)
 # ARGS: EntryID
 sub get_image_filename {
-    my $entryId = shift;    
+    my $entryId = shift;
+    my (@possibleFns, @fileSpecMatch);
     
-    # TODO: rewrite: List all of imgSrcDir before calling this
+    # TODO: rewrite: List all of imgSrcDir before calling this and store it
     # new function, check if text matches any valid file ext (regex, ignore case)
     # if it do, return that. if it don#t, return blank
     # 
+    # or can use fileparse?
+#    my $fileSpec = fileparse($path, @suffixes);
 
     my $imgFn = $entryKvs{$entryId}{img_fn};
     if ($imgFn && -f "$uc{imgSrcDir}/$imgFn") {
         return $imgFn;
-    } elsif (-f "$uc{imgSrcDir}/${entryId}.jpg") {
-        return "${entryId}.jpg";
-    } elsif (-f "$uc{imgSrcDir}/${entryId}.png") {
-        return "${entryId}.png";
     } else {
-        say "No image filename found for $entryId" if $uc{verbose};
-        return "";
+        @possibleFns = map { "${entryId}.$_" } @EXTLIST;
+        say "possible fns = @possibleFns";
+        # FIXME: this
+        @fileSpecMatch = map ( sub { return $_[0] if (-f "$uc{imgSrcDir}$_[0]" ) }, @possibleFns); 
+        say "FileSpec Match = @fileSpecMatch";
+        if (scalar @fileSpecMatch > 0) {
+            say "Found: $fileSpecMatch[0]";
+            return $fileSpecMatch[0];
+        } else {
+            say "No image filename found for $entryId" if $uc{verbose};
+            return "";
+        }
     }
 }
 
@@ -197,6 +208,7 @@ sub process_entry_image {
     open $tnFh, ">", "$imgTnPath" or warn "Could not open $imgTnPath: $!";
     binmode $tnFh;
     print $tnFh $gdOut->jpeg or warn "Couldn't write $imgFn!";
+    $entryKvs{$entryId}{img_tn} = $imgTnPath;
 
     if ($uc{imgToJpeg} && $imgExt eq "png") {
         $imgPath = "$uc{imgDestDir}/${imgFnOut}.jpg";
@@ -204,12 +216,12 @@ sub process_entry_image {
         binmode $imgFhFullRes;
         print $imgFhFullRes $gd->jpeg(70) or warn "Couldn't write $imgFn!";
         close $imgFhFullRes;
-        $entryKvs{$entryId}{img_src} = $imgPath;
+        $entryKvs{$entryId}{img_full} = $imgPath;
     } else {
         # Copy original image (TODO: later may support resizing)
         say "Copying fullres to $imgPath" if $uc{verbose};
         copy ($imgSrcPath, $imgPath);
-        $entryKvs{$entryId}{img_src} = $imgPath;
+        $entryKvs{$entryId}{img_full} = $imgPath;
     }
     close $imgFh;
     close $tnFh;
@@ -239,12 +251,11 @@ sub entrykvs_to_html {
     # the image files, otherwise use text-only tplEntry
     if ($localImgPath = get_image_filename($entryId)) {
         $filledEntry = $tplEntryImg;
-        # TODO: finish this
-        #$imgSrc = process_entry_image($localImgPath, $entryId);
+        process_entry_image($localImgPath, $entryId);
         # dont use imgsrc fetch it from kvs...
-         # $filledEntry =~ s/{% img_src %}/$imgSrc/g;
-         # $filledEntry =~ s/{% img_full %}/$imgSrc/g;
-         # $filledEntry =~ s/{% img_desc %}/$imgSrc/g;
+        $filledEntry =~ s/{% img_src %}/$entryKvs{$entryId}{img_tn}/g;
+        $filledEntry =~ s/{% img_full %}/$entryKvs{$entryId}{img_full}/g;
+#        $filledEntry =~ s/{% img_desc %}/$imgSrc/g;
     } else {
         $filledEntry = $tplEntry;
     }
@@ -733,9 +744,9 @@ say "<== Begin template interpolation... ==>";
 clear_dest if ($uc{clearDest});
 mkdir $uc{out} unless -d $uc{out};
 mkdir "$uc{out}/$uc{imgDestDir}" unless -d "$uc{out}/$uc{imgDestDir}";
-process_entry_image "sample.jpg", "sample";
-process_entry_image "sample2.png", "sample";
-die "DEV: Dying after image writing!!";
+#process_entry_image "sample.jpg", "sample";
+#process_entry_image "sample2.png", "sample";
+#die "DEV: Dying after image writing!!";
 copy_res;
 make_category_dirs;
 prep_tplbottom;
@@ -749,7 +760,7 @@ if ($uc{rssEnabled} && !$has_rss) {
     $uc{rssEnabled} = 0;
 }
 if ($uc{rssEnabled}){
-    say "==> Writing RSS 2.0 feed to $uc{rss_filepath}. ==>";
+    say "==> Writing RSS 2.0 feed to $uc{rssFilepath}. ==>";
     write_rss;
     say "<== RSS composition complete. ==>";
 }
