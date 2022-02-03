@@ -141,12 +141,18 @@ sub init_entry_template {
 # ARGS: EntryID
 sub get_image_filename {
     my $entryId = shift;    
-    my $imgSrc = $entryKvs{$entryId}{img_src};
-    if ($imgSrc && -f "$uc{imgDir}/$imgSrc") {
-        return $imgSrc;
-    } elsif (-f "$uc{imgDir}/${entryId}.jpg") {
+    
+    # TODO: rewrite: List all of imgSrcDir before calling this
+    # new function, check if text matches any valid file ext (regex, ignore case)
+    # if it do, return that. if it don#t, return blank
+    # 
+
+    my $imgFn = $entryKvs{$entryId}{img_fn};
+    if ($imgFn && -f "$uc{imgSrcDir}/$imgFn") {
+        return $imgFn;
+    } elsif (-f "$uc{imgSrcDir}/${entryId}.jpg") {
         return "${entryId}.jpg";
-    } elsif (-f "$uc{imgDir}/${entryId}.png") {
+    } elsif (-f "$uc{imgSrcDir}/${entryId}.png") {
         return "${entryId}.png";
     } else {
         say "No image filename found for $entryId" if $uc{verbose};
@@ -170,16 +176,18 @@ sub process_entry_image {
     say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgExt=$imgExt TnSz=$uc{thumbnailSize}" if $uc{debug};
     open $imgFh, "<", "$imgSrcPath" or warn "Could not open $imgPath: $!";
 
-    $gdOut = GD::Image->new;
+    $gdOut = GD::Image->new($w,$l);
 
     say "Opening $imgPath..." if $uc{verbose};
 
     if (first { /$imgExt/ } ("jpeg", "jpg", "JPG", "JPEG")) {
-        $imgExt = "jpg";    # set this for a flag later
-        warn "Invalid JPEG in $imgPath" unless $gd = GD::Image->newFromJpeg($imgFh);
+        $imgExt = "jpg";
+        warn "Invalid JPEG in $imgPath" unless 
+            $gd = GD::Image->newFromJpeg($imgFh);
     } elsif (first { /$imgExt/} ("png", "PNG")) {
-        $imgExt = "png";    # set this for a flag later
-        warn "Invalid PNG in $imgPath" unless $gd = GD::Image->newFromPng($imgFh);
+        $imgExt = "png";
+        warn "Invalid PNG in $imgPath" unless 
+            $gd = GD::Image->newFromPng($imgFh);
     }
 
     $gdOut->copyResampled($gd,0,0,0,0,$w,$l,$gd->width,$gd->height);
@@ -194,7 +202,7 @@ sub process_entry_image {
         $imgPath = "$uc{imgDestDir}/${imgFnOut}.jpg";
         open my $imgFhFullRes, ">", $imgPath or warn "Could not open $imgPath: $!";
         binmode $imgFhFullRes;
-        print $imgFhFullRes $gd->jpeg or warn "Couldn't write $imgFn!";
+        print $imgFhFullRes $gd->jpeg(70) or warn "Couldn't write $imgFn!";
         close $imgFhFullRes;
         $entryKvs{$entryId}{img_src} = $imgPath;
     } else {
@@ -222,10 +230,25 @@ sub verify_necessary_keys {
 # RETURNS: Scalar reference to woven template
 sub entrykvs_to_html {
     my $entryId = shift;
-    my $filledEntry = $tplEntry;
+    my $filledEntry;
+    my ($localImgPath, $imgSrc);
     
     verify_necessary_keys ($entryId);
 
+    # If image file exists, assign entry template with image field and prepare
+    # the image files, otherwise use text-only tplEntry
+    if ($localImgPath = get_image_filename($entryId)) {
+        $filledEntry = $tplEntryImg;
+        # TODO: finish this
+        #$imgSrc = process_entry_image($localImgPath, $entryId);
+        # dont use imgsrc fetch it from kvs...
+         # $filledEntry =~ s/{% img_src %}/$imgSrc/g;
+         # $filledEntry =~ s/{% img_full %}/$imgSrc/g;
+         # $filledEntry =~ s/{% img_desc %}/$imgSrc/g;
+    } else {
+        $filledEntry = $tplEntry;
+    }
+    
     # Find and replace, boys. Find and replace.
     foreach my $key (@knownKeys) {
         if ($key eq "date") {
@@ -237,7 +260,7 @@ sub entrykvs_to_html {
     }
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
-    
+
     say "Filled $entryId:\n$filledEntry" if ($uc{debug});
     $writtenEntries++;
     return \$filledEntry;
@@ -711,7 +734,7 @@ clear_dest if ($uc{clearDest});
 mkdir $uc{out} unless -d $uc{out};
 mkdir "$uc{out}/$uc{imgDestDir}" unless -d "$uc{out}/$uc{imgDestDir}";
 process_entry_image "sample.jpg", "sample";
-#process_entry_image "sample.png", "sample";
+process_entry_image "sample2.png", "sample";
 die "DEV: Dying after image writing!!";
 copy_res;
 make_category_dirs;
