@@ -39,7 +39,7 @@ my $tplinc = "./tpl/softcat";
 
     # Imaging configuration (requires GD)
     imagesEnabled => 1,
-    thumbnailSize => "200x200",
+    thumbnailSize => "150x150",
     imgSrcDir => "./img",
     imgDestDir => "img",            # Destination subdir, appended to liveURL or out path
     imgToJpeg => 1,                 # Convert fullres PNG to JPEG

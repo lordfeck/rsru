@@ -299,7 +299,7 @@ sub entrykvs_to_html {
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
 
-    say "Filled $entryId:\n$filledEntry" if ($uc{debug});
+#    say "Filled $entryId:\n$filledEntry" if ($uc{debug});
     $writtenEntries++;
     return \$filledEntry;
 }
@@ -738,8 +738,9 @@ if (scalar @ARGV and ($ARGV[0] eq '-p') or $uc{target} eq 'production') {
 if ($uc{imagesEnabled} && !$has_gd) {
     warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
     $uc{imagesEnabled} = 0;
-    $imgOutDir = "./$uc{out}/$uc{imgDestDir}/";
 }
+
+$imgOutDir = "$uc{out}/$uc{imgDestDir}/";
 
 if ($uc{target} eq "production") {
     $imgBasePath = "${baseURL}/$uc{imgDestDir}";
