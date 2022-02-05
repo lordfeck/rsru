@@ -143,16 +143,31 @@ a, a:visited {
 
 /* rsru table */
 table.rsru {
-    border: 1px solid black;
+    border: 0px;
     width: 100%;
     margin-bottom: 15px;
     background-color: #dbd1a1;
 }
 .rsru td {
-    border: 1px solid black;
+    border: 0px;
 }
+
+img.imgThumbnail {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.rsru .img {
+    text-align: center;
+}
+
 .rsru .desc {
     height: 50px;
+}
+
+.rsru .date {
+    text-align: right;
 }
 
 .rsru .title {
