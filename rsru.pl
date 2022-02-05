@@ -181,7 +181,6 @@ sub get_image_filename {
     } else {
         @possibleFns = map { "${entryId}.$_" } @EXTLIST;
         $fileSpecMatch = get_first (\@imgDirList, \@possibleFns);
-        say "imgdirlist  @imgDirList\n possible fns  @possibleFns";
 
         if ($fileSpecMatch) {
             say "Img filename $fileSpecMatch found for $entryId" if $uc{verbose};
@@ -695,9 +694,9 @@ sub write_rss {
     } else {
         $entryMax = scalar %entryKvs;
     }
-    say "$entryMax is entrycount";
+
     my @sortedEntryKeys = sort_all_entries($entryMax);
-    my $rss = XML::RSS->new (version => '2.0');
+    my $rss = XML::RSS->new (version => '2.0', encode_output=>0);
 
     $rss->channel(
         title          => $uc{siteName},
@@ -711,10 +710,11 @@ sub write_rss {
     foreach my $entry (@sortedEntryKeys) {
         # it isn't a permalink (yet)
         my $flimsyLink = "$uc{liveURL}/$entryKvs{$entry}{path}#$entry";
+        my $href = "<a href=\"$flimsyLink\" target=\"_blank\">View $entryKvs{$entry}{title} on $uc{siteName}.</a>";
         $rss->add_item(
             title => $entryKvs{$entry}{title},
             permaLink  => $flimsyLink,
-            description => $entryKvs{$entry}{desc},
+            description => "$entryKvs{$entry}{desc}\n$href",
             category => [ $entryKvs{$entry}{category} ],
             pubDate => $entryKvs{$entry}{date}->strftime(),
         );

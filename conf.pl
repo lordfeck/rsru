@@ -77,8 +77,7 @@ my $tplinc = "./tpl/softcat";
     rssBlockBottom => "$tplinc/rsru_rss_bottom.html",
 
     # Logging levels
-    debug => 1,
-    verbose => 1,
-    
+    debug => 0,
+    verbose => 0,
 )
 
