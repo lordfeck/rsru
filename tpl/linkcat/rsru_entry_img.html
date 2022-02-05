@@ -4,7 +4,7 @@
                 <td class="title" colspan="3"><span id="entryTitle">{% title %}</span> <span class="anchor">[<a href="#{% KEY %}" id="{% KEY %}">jump here</a>]</span></td>
             <tr>
                 <td class="desc" colspan="3" rowspan="1">{% desc %}</td>
-<!--                <td class="image" rowspan="2">{% img_desc %}</td>-->
+                <td class="imageWrapper" rowspan="2"><a href="{% img_full %}" class="imgThumbnail"><img src="{% img_tn %}" title="{% img_desc %}" alt="{% img_desc %}"></a></td>
             </tr>
             <tr>
                 <td class="iface"><b>Heaviness:</b> {% heaviness %}</td>

@@ -69,7 +69,9 @@ my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 my $writtenEntries = 0;     # total count of written entries in all files
 my $baseURL = '.';  # Relative is default
-my @imgDirList;
+my @imgDirList;     # Listing of everything in source image dir
+my $imgBasePath;    # Base path for "img src=" in output files
+my $imgOutDir;    # Concatenation of root output dir + user image output dir
 
 # Consts
 my $DATE_FORMAT = "%Y-%m-%d";
@@ -79,7 +81,7 @@ my $MAX_ENTRIES = 5;
 my $YES = 'yes';
 my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
-my @EXTLIST = qw(jpg, jpeg, png, JPEG, PNG);
+my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 
 # List of known keys for each entry
 my @knownKeys = @{$uc{knownKeys}};
@@ -99,6 +101,32 @@ sub read_whole_file {
     $fileContent .= $_ while <$fh>;
     close $fh;
     return $fileContent;
+}
+
+# Arguments: the directory to list. Returns: ref to the directory contents as an array
+sub list_dir {
+    my $dirName = shift;
+    my @dirContents;
+
+    say "Listing $dirName" if $uc{debug};
+    opendir(my $DIR, "$dirName") or die "Problem opening $dirName: $!."; 
+    # Read in dir contents, exclude dotfiles
+    @dirContents = grep !/^\./, readdir $DIR;
+    closedir $DIR;
+
+    return \@dirContents;
+}
+
+# Arguments: two arrays refs, walk these and return the first entry that is in both
+# TODO: Is there an easier or more performant way to do this??
+sub get_first {
+    my ($ar1, $ar2) = @_;
+    for my $idx ( @{$ar1} ) {
+        for my $idy ( @{$ar2} ) {
+            return $idx if $idx eq $idy;
+        }
+    }
+    return 0;
 }
 
 # Dump everything we've gathered into our KVS to stdout, format nicely. Intended for verbose mode.
@@ -143,27 +171,21 @@ sub init_entry_template {
 # ARGS: EntryID
 sub get_image_filename {
     my $entryId = shift;
-    my (@possibleFns, @fileSpecMatch);
+    my (@possibleFns, $fileSpecMatch);
     
-    # TODO: rewrite: List all of imgSrcDir before calling this and store it
-    # new function, check if text matches any valid file ext (regex, ignore case)
-    # if it do, return that. if it don#t, return blank
-    # 
-    # or can use fileparse?
-#    my $fileSpec = fileparse($path, @suffixes);
+    # return file extension and filename
 
-    my $imgFn = $entryKvs{$entryId}{img_fn};
+    my $imgFn = $entryKvs{$entryId}{img_src};
     if ($imgFn && -f "$uc{imgSrcDir}/$imgFn") {
         return $imgFn;
     } else {
         @possibleFns = map { "${entryId}.$_" } @EXTLIST;
-        say "possible fns = @possibleFns";
-        # FIXME: this
-        @fileSpecMatch = map ( sub { return $_[0] if (-f "$uc{imgSrcDir}$_[0]" ) }, @possibleFns); 
-        say "FileSpec Match = @fileSpecMatch";
-        if (scalar @fileSpecMatch > 0) {
-            say "Found: $fileSpecMatch[0]";
-            return $fileSpecMatch[0];
+        $fileSpecMatch = get_first (\@imgDirList, \@possibleFns);
+        say "imgdirlist  @imgDirList\n possible fns  @possibleFns";
+
+        if ($fileSpecMatch) {
+            say "Img filename $fileSpecMatch found for $entryId" if $uc{verbose};
+            return $fileSpecMatch;
         } else {
             say "No image filename found for $entryId" if $uc{verbose};
             return "";
@@ -173,16 +195,18 @@ sub get_image_filename {
 
 # Make thumbnail and large image for each filename, use same img filename in dest dir
 # Args: Entry filename, entryID. Will determine format from extension
+# TODO: this could certainly be optimised
 sub process_entry_image {
     my ($imgFn, $entryId) = @_;
 
-    my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgTnPath, $imgSrcPath);
+    my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgFullFn, $imgTnPath, $imgTnFn, $imgSrcPath);
     my ($imgFnOut, $imgExt) = split(/\./, $imgFn, 2); # get filename and format
     my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
     
-    $imgPath = "$uc{imgDestDir}/${imgFn}";
+    $imgPath = "${imgOutDir}/${imgFn}";
     $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
-    $imgTnPath = "$uc{imgDestDir}/${imgFnOut}_tn.jpg"; # thumbnail is always jpg
+    $imgTnFn = "${imgFnOut}_tn.jpg"; # thumbnail is always jpg
+    $imgTnPath = "${imgOutDir}/${imgTnFn}";
 
     say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgExt=$imgExt TnSz=$uc{thumbnailSize}" if $uc{debug};
     open $imgFh, "<", "$imgSrcPath" or warn "Could not open $imgPath: $!";
@@ -195,6 +219,7 @@ sub process_entry_image {
         $imgExt = "jpg";
         warn "Invalid JPEG in $imgPath" unless 
             $gd = GD::Image->newFromJpeg($imgFh);
+
     } elsif (first { /$imgExt/} ("png", "PNG")) {
         $imgExt = "png";
         warn "Invalid PNG in $imgPath" unless 
@@ -208,20 +233,22 @@ sub process_entry_image {
     open $tnFh, ">", "$imgTnPath" or warn "Could not open $imgTnPath: $!";
     binmode $tnFh;
     print $tnFh $gdOut->jpeg or warn "Couldn't write $imgFn!";
-    $entryKvs{$entryId}{img_tn} = $imgTnPath;
+    $entryKvs{$entryId}{img_tn} = $imgTnFn;
 
     if ($uc{imgToJpeg} && $imgExt eq "png") {
-        $imgPath = "$uc{imgDestDir}/${imgFnOut}.jpg";
+        $imgFullFn = "${imgFnOut}.jpg";
+        $imgPath = "${imgOutDir}/$imgFullFn";
         open my $imgFhFullRes, ">", $imgPath or warn "Could not open $imgPath: $!";
         binmode $imgFhFullRes;
         print $imgFhFullRes $gd->jpeg(70) or warn "Couldn't write $imgFn!";
         close $imgFhFullRes;
-        $entryKvs{$entryId}{img_full} = $imgPath;
+        $entryKvs{$entryId}{img_full} = $imgFullFn;
     } else {
         # Copy original image (TODO: later may support resizing)
+        $imgFullFn = "${imgFnOut}.$imgExt";
         say "Copying fullres to $imgPath" if $uc{verbose};
         copy ($imgSrcPath, $imgPath);
-        $entryKvs{$entryId}{img_full} = $imgPath;
+        $entryKvs{$entryId}{img_full} = $imgFullFn;
     }
     close $imgFh;
     close $tnFh;
@@ -233,7 +260,8 @@ sub process_entry_image {
 sub verify_necessary_keys {
     my $entryId = shift;
     foreach my $key (@necessaryKeys){
-        die "Key $key missing from $entryId.txt; please add $key: <value> to the entry file!" unless (first { /$key/ } keys %{$entryKvs{$entryId}});
+        die "Key $key missing from $entryId.txt; please add $key: <value> to the entry file!" 
+            unless (first { /$key/ } keys %{$entryKvs{$entryId}});
     }
 }
 
@@ -252,10 +280,9 @@ sub entrykvs_to_html {
     if ($localImgPath = get_image_filename($entryId)) {
         $filledEntry = $tplEntryImg;
         process_entry_image($localImgPath, $entryId);
-        # dont use imgsrc fetch it from kvs...
-        $filledEntry =~ s/{% img_src %}/$entryKvs{$entryId}{img_tn}/g;
-        $filledEntry =~ s/{% img_full %}/$entryKvs{$entryId}{img_full}/g;
-#        $filledEntry =~ s/{% img_desc %}/$imgSrc/g;
+        $filledEntry =~ s/{% img_tn %}/${imgBasePath}\/$entryKvs{$entryId}{img_tn}/g;
+        $filledEntry =~ s/{% img_full %}/${imgBasePath}\/$entryKvs{$entryId}{img_full}/g;
+        $filledEntry =~ s/{% img_desc %}/$entryKvs{$entryId}{img_desc}/g;
     } else {
         $filledEntry = $tplEntry;
     }
@@ -286,8 +313,8 @@ sub clear_dest {
 
 # Copy any resources to outdir. 
 sub copy_res {
-    for my $cssFile (glob "$uc{tplinc}/static/*") {
-        copy($cssFile,"$uc{out}/") or die ("Problem copying $cssFile to $uc{out}.");
+    for my $file (glob "$uc{tplinc}/static/*") {
+        copy($file,"$uc{out}/") or die ("Problem copying $file to $uc{out}.");
     }
 }
 
@@ -645,10 +672,7 @@ sub read_entry {
 # on each text file therein. We will use this to fill our
 # entryKvs.
 sub read_entrydir {
-    opendir(my $ENTRIES, "$uc{entrydir}") or die "Directory of entries not found."; 
-    # Read in entries, exclude dotfiles
-    my @entries = grep !/^\./, readdir $ENTRIES;
-    closedir $ENTRIES;
+    my @entries = @{ list_dir($uc{entrydir}) };
     say "Entrydir listing: @entries" if ($uc{debug});
 
     # $entryID is assigned inside read_entry
@@ -706,7 +730,21 @@ say "RSRU starting. Master template: $uc{tpl}";
 
 if (scalar @ARGV and ($ARGV[0] eq '-p') or $uc{target} eq 'production') {
     $baseURL = $uc{liveURL};
+    $uc{target} = 'production';
     say "Production mode configured, base URL: $baseURL";
+}
+
+# Check if we have the appropriate module installed for imaging
+if ($uc{imagesEnabled} && !$has_gd) {
+    warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
+    $uc{imagesEnabled} = 0;
+    $imgOutDir = "./$uc{out}/$uc{imgDestDir}/";
+}
+
+if ($uc{target} eq "production") {
+    $imgBasePath = "${baseURL}/$uc{imgDestDir}";
+} else {
+    $imgBasePath = "${baseURL}/../$uc{imgDestDir}";
 }
 
 # Check we have what's needed.
@@ -721,12 +759,6 @@ say "<== Read Finished <==";
 say "==> Begin read of template files ==>";
 read_partition_template;
 
-# Check if we have the appropriate module installed for imaging
-if ($uc{imagesEnabled} && !$has_gd) {
-    warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
-    $uc{imagesEnabled} = 0;
-}
-
 # Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
 init_entry_template;
 
@@ -738,15 +770,14 @@ $tplNav = read_whole_file($uc{blankTplNav});
 $tplCatTab = read_whole_file($uc{blankCatEntry});
 $tplRssBlockTop = read_whole_file($uc{rssBlockTop});
 $tplRssBlockBottom = read_whole_file($uc{rssBlockBottom});
+@imgDirList = @{list_dir($uc{imgSrcDir})};
+
 say "<== Read Finished <==";
 
 say "<== Begin template interpolation... ==>";
 clear_dest if ($uc{clearDest});
 mkdir $uc{out} unless -d $uc{out};
 mkdir "$uc{out}/$uc{imgDestDir}" unless -d "$uc{out}/$uc{imgDestDir}";
-#process_entry_image "sample.jpg", "sample";
-#process_entry_image "sample2.png", "sample";
-#die "DEV: Dying after image writing!!";
 copy_res;
 make_category_dirs;
 prep_tplbottom;

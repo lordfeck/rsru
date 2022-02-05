@@ -2,7 +2,8 @@ title: Sample Soft
 version: 1
 category: utility
 interface: console
-img_desc: 
+img_desc: sample soft screen shot
+img_src: sample.jpg
 os_support: Linux
 order: 3
 date: 2020-01-01
