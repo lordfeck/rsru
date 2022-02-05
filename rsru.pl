@@ -689,7 +689,7 @@ sub write_rss {
     my $buildDate = $t->strftime();
     my $entryMax;
 
-    if ($uc{rssEntryMax} gt (scalar %entryKvs)) {
+    if (scalar %entryKvs gt $uc{rssEntryMax}) {
         $entryMax = $uc{rssEntryMax};
     } else {
         $entryMax = scalar %entryKvs;
@@ -720,7 +720,7 @@ sub write_rss {
         );
     }
 
-    $rss->save("$uc{out}/$uc{rssFilepath}");
+    $rss->save( "$uc{out}/$uc{rssFilepath}" );
 }
 
 #===============================================================================
