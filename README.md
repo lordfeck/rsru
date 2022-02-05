@@ -29,7 +29,7 @@ title: Sample Soft
 version: 1
 category: utility
 interface: console
-img_desc: img.jpg
+img_desc: screenshot of sample soft
 os_support: Linux
 order: 3
 date: 2020-01-01
@@ -98,14 +98,13 @@ The author suggests use of [rsync](http://rsync.samba.org) to drop the files on 
 RSRU's core functionality operates using only standard library modules. The project goals will not require any hard dependencies on any CPAN modules. Future non-essential features (eg, RSS) may depend upon CPAN modules, but RSRU will still perform its core duties without them.
 
 - Time::Piece is mandatory. It is 'core' everywhere except Fedora/Red Hat, for some strange reason.
-- XML::RSS is optional. It is surprisingly for enabling RSS support in RSRU.
+- XML::RSS is optional. It is (surprisingly) used by RSRU to generate an RSS feed.
+- GD is optional. It is used to generate thumbnails and convert PNG to JPEG, if desired.
 
 ## Future hackery for RSRU
 * I've plans to hack it into a "microblogger" system. Think of a way to share clips of sites, quotes, images, whatever else.
 * Run as CGI. This may be possible if we write to stdout instead of files. (_I've no interest in writing this, but the door is always open to friendly PRs..._)
 * Support multiple config files
-* Support image resizing and thumbnailing
-* Improve the layouts to have more variety
 * Performance optimisations, deduplicate where necessary (many places look similar)
 
 ## Sample Screenshot
