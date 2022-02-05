@@ -688,20 +688,20 @@ sub write_rss {
     return unless $has_rss;
     my $t = Time::Piece->new;
     my $buildDate = $t->strftime();
-    my $entryCount;
+    my $entryMax;
 
-    if ($uc{rssEntryCount} gt (scalar %entryKvs)) {
-        $entryCount = $uc{rssEntryCount};
+    if ($uc{rssEntryMax} gt (scalar %entryKvs)) {
+        $entryMax = $uc{rssEntryMax};
     } else {
-        $entryCount = scalar %entryKvs;
+        $entryMax = scalar %entryKvs;
     }
-
-    my @sortedEntryKeys = sort_all_entries($entryCount);
+    say "$entryMax is entrycount";
+    my @sortedEntryKeys = sort_all_entries($entryMax);
     my $rss = XML::RSS->new (version => '2.0');
 
     $rss->channel(
         title          => $uc{siteName},
-        link           => $uc{liveUrl},
+        link           => $uc{liveURL},
         language       => $uc{rssLang},
         description    => $uc{siteHomepageDesc},
         copyright      => $uc{rssCopyright},
@@ -709,7 +709,7 @@ sub write_rss {
     );
 
     foreach my $entry (@sortedEntryKeys) {
-        # it isn't a permalink
+        # it isn't a permalink (yet)
         my $flimsyLink = "$uc{liveURL}/$entryKvs{$entry}{path}#$entry";
         $rss->add_item(
             title => $entryKvs{$entry}{title},

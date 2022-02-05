@@ -13,7 +13,7 @@ my $tplinc = "./tpl/softcat";
     # Target: dev or production. Dev uses relative URLs, production uses live URL
     target => "dev",
 
-    # Production URL, excluding forward stroke 
+    # Production URL, excluding trailing stroke. May be a subdir
     liveURL => "http://www.example.com",
 
     # Path Configuration
@@ -32,8 +32,8 @@ my $tplinc = "./tpl/softcat";
 
     # RSS Configuration (requires XML::RSS)
     rssEnabled => 1,
-    rssFilepath => "rss.xml",
-    rssEntryCount => 10,
+    rssFilepath => "rss.xml",       # Saved at the root of the output path
+    rssEntryMax => 10,
     rssLang => "en",
     rssCopyright => "No Copyright",
 
