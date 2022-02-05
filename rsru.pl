@@ -492,7 +492,7 @@ sub paint_template {
             $writtenOut++;
             $currentPgIdx = 0;
         }
-        next unless ($entryKvs{$entryId}{"category"} eq $catName);
+        next unless ($entryKvs{$entryId}{category} eq $catName);
         $entryKvs{$entryId}{pgIdx} = $pgIdx;
         $entryKvs{$entryId}{path} = $outFn;
         $currentEntry = entrykvs_to_html $entryId;
@@ -527,14 +527,14 @@ sub generate_entries_hp {
     for my $entry (@_) {
        $cwHpEntry = $tplHpEntry;
         
-       $cwHpEntry =~ s/{% ENTRY_NAME %}/$entryKvs{$entry}{"title"}/;
-       if ($entryKvs{$entry}{'summary'}) {
-           $cwHpEntry =~ s/{% ENTRY_DESC %}/$entryKvs{$entry}{'summary'}/;
+       $cwHpEntry =~ s/{% ENTRY_NAME %}/$entryKvs{$entry}{title}/;
+       if ($entryKvs{$entry}{summary}) {
+           $cwHpEntry =~ s/{% ENTRY_DESC %}/$entryKvs{$entry}{summary}/;
        } else {
             say "No summary found for $entry; its summary will be omitted on homepage." if $uc{verbose};
             $cwHpEntry =~ s/{% ENTRY_DESC %}/$NO_SUMMARY/;
        }
-       $cat = $entryKvs{$entry}{"category"};
+       $cat = $entryKvs{$entry}{category};
        $cwHpEntry =~ s/{% ENTRY_CAT %}/$cat/;
        $date = $entryKvs{$entry}{date}->strftime('%d/%m/%Y');
        $cwHpEntry =~ s/{% ENTRY_DATE %}/$date/;
@@ -715,7 +715,7 @@ sub write_rss {
             title => $entryKvs{$entry}{title},
             permaLink  => $flimsyLink,
             description => $entryKvs{$entry}{desc},
-            categories => [$entryKvs{$entry}{category}],
+            category => [ $entryKvs{$entry}{category} ],
             pubDate => $entryKvs{$entry}{date}->strftime(),
         );
     }
