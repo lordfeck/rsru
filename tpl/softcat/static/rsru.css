@@ -75,24 +75,6 @@ span.anchor {
     padding-right: 3px;
 }
 
-/* make sure it's presentable on the small screen */
-@media only screen and (max-width: 650px) {
-    div.catName {
-        font-size: 0.9em;
-        padding: 0px 2px 0px 2px;
-    }
-    
-    div.active {
-        background-color: #EFE4B0;
-        font-weight: bold;
-        border-bottom: 0;
-        padding-bottom: 1px;
-    }
-    
-    div#rsruCanvas {
-        max-width: 100%;
-    }
-}
 /* text style */
 h1#top{
     color: #D8D9F1;
@@ -148,7 +130,7 @@ table.rsru {
     margin-bottom: 15px;
     background-color: #dbd1a1;
 }
-.rsru td {
+table.rsru td {
     border: 0px;
 }
 
@@ -158,23 +140,63 @@ img.imgThumbnail {
     display: block;
 }
 
-.rsru .img {
+table.rsru .img {
     text-align: center;
+    width: 20%;
+    max-width: 150px;
 }
 
-.rsru .desc {
-    height: 50px;
+table.rsru .desc {
+    min-height: 50px;
+    max-height: 100%;
+    min-width: 80%;
+    vertical-align: top;
 }
 
-.rsru .date {
+table.rsru .ossp {
     text-align: right;
 }
 
-.rsru .title {
-    min-width: 80%;
+table.rsru .title {
+    border-bottom: 1px solid black;
 }
 
-.rsru .dl_url, .rsru .iface {
-    width: 40%;
+table.rsru .date {
+    text-align: right;
+    vertical-align: bottom;
 }
 
+table.rsru .dl_url {
+    text-align: left;
+    vertical-align: bottom;
+}
+
+table.rsru .iface {
+    text-align: left;
+    vertical-align: bottom;
+}
+
+/* make sure it's presentable on the small screen */
+@media only screen and (max-width: 650px) {
+    div.catName {
+        font-size: 0.9em;
+        padding: 0px 2px 0px 2px;
+    }
+    
+    div.active {
+        background-color: #EFE4B0;
+        font-weight: bold;
+        border-bottom: 0;
+        padding-bottom: 1px;
+    }
+    
+    div#rsruCanvas {
+        max-width: 100%;
+    }
+
+    /* this might scape UP unintentionally */
+    table.rsru .img {
+        width: 100px;
+        height: 100px;
+    }
+}

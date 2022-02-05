@@ -1,18 +1,17 @@
             
             <table class="rsru">
             <tr>
-                <td class="title" colspan="2"><span id="entryTitle">{% title %}</span> <span class="anchor">[<a href="#{% KEY %}" id="{% KEY %}">jump here</a>]</span></td>
-                <td class="version" title="Version Reviewed"> {% version %}</td>
+                <td class="title" colspan="3"><span id="entryTitle">{% title %}</span> {% version %} <span class="anchor">[<a href="#{% KEY %}" id="{% KEY %}">jump here</a>]</span></td>
             <tr>
-                <td class="desc" colspan="2">{% desc %}</td>
-                <td class ="img" rowspan="2"><a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a></td>
+                <td class="desc" colspan="2" rowspan="1">{% desc %}</td>
+                <td class ="img" rowspan="2" rowspan="2"><a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a></td>
             </tr>
             <tr>
-                <td class="dl_url"><a href="{% dl_url %}" target="_blank">Download {% title %}</a></td>
-                <td class="iface">Interface: {% interface %}</td>
+                <td class="iface"><b>Interface:</b> {% interface %}</td>
+                <td class="date" title="Submission date"><b>Submitted:</b> {% date %}</td>
             </tr>
             <tr>
-                <td class="ossp" colspan="2">Systems supported: {% os_support %}</td>
-                <td class="date" title="Submission date"> {% date %}</td>
+                <td class="dl_url" colspan="1"><a href="{% dl_url %}" target="_blank">Download {% title %}</a></td>
+                <td class="ossp" colspan="1"><b>Systems supported:</b> {% os_support %}</td>
             </tr>
             </table>

@@ -689,10 +689,10 @@ sub write_rss {
     my $buildDate = $t->strftime();
     my $entryMax;
 
-    if (scalar %entryKvs gt $uc{rssEntryMax}) {
+    if ((scalar %entryKvs) > $uc{rssEntryMax}) {
         $entryMax = $uc{rssEntryMax};
     } else {
-        $entryMax = scalar %entryKvs;
+        $entryMax = (scalar %entryKvs);
     }
 
     my @sortedEntryKeys = sort_all_entries($entryMax);
