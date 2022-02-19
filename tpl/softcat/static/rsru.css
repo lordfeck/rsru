@@ -49,7 +49,6 @@ div.catName {
     border-left: 1px solid black;
     border-right: 1px solid black;
     border-top: 1px solid black;
-    border-bottom: 1px solid black;
     height: 25px;
     padding: 0px 8px 0px 8px;
     background-color: #c7be92;
@@ -63,7 +62,7 @@ div.active {
 }
 
 div#rsruCanvas {
-    padding-top: 10px;
+    padding-top: 5px;
     margin-left: auto;
     margin-right: auto;
     font-size: 0.9em;
@@ -109,6 +108,7 @@ span#entryTitle {
 p#catDesc {
     font-style: italic;
     letter-spacing: 1.1px;
+    margin-top: 0px;
 }
 
 
@@ -140,21 +140,28 @@ img.imgThumbnail {
     display: block;
 }
 
-table.rsru .img {
+table.rsru .img_td {
     text-align: center;
-    width: 20%;
-    max-width: 150px;
+}
+
+table.rsru .imgWrap {
+    width: 150px;
+    display: block;
+    margin-left: 5px;
+}
+
+table.rsru .imgBorder {
+    border: 1px solid gold;
 }
 
 table.rsru .desc {
     min-height: 50px;
     max-height: 100%;
-    min-width: 80%;
     vertical-align: top;
 }
 
 table.rsru .ossp {
-    text-align: right;
+    text-align: left;
 }
 
 table.rsru .title {
@@ -164,10 +171,11 @@ table.rsru .title {
 table.rsru .date {
     text-align: right;
     vertical-align: bottom;
+    max-height: 2em;
 }
 
 table.rsru .dl_url {
-    text-align: left;
+    text-align: right;
     vertical-align: bottom;
 }
 
@@ -180,7 +188,12 @@ table.rsru .iface {
 @media only screen and (max-width: 650px) {
     div.catName {
         font-size: 0.9em;
-        padding: 0px 2px 0px 2px;
+        padding: 0px 1px 0px 1px;
+        height: 22px;
+    }
+    div#catBar {
+        height: 25px;
+        margin-bottom: 2px;
     }
     
     div.active {
@@ -191,12 +204,29 @@ table.rsru .iface {
     }
     
     div#rsruCanvas {
+        padding-top: 0px;
         max-width: 100%;
     }
 
-    /* this might scape UP unintentionally */
-    table.rsru .img {
-        width: 100px;
-        height: 100px;
+    table.rsru .imgThumbnail {
+        width: 80px;
+        height: 80px;
+    }
+
+    table.rsru .imgWrap {
+        max-width: 80px;
+        margin-left: 2px
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    div.catName {
+        font-size: 0.8em;
+        padding: 0px 1px 0px 1px;
+        height: 20px;
+    }
+    div#catBar {
+        height: 23px;
+        margin-bottom: 2px;
     }
 }
