@@ -129,7 +129,7 @@ sub get_first {
     return 0;
 }
 
-# Dump everything we've gathered into our KVS to stdout, format nicely. Intended for verbose mode.
+# Dump everything we've gathered into our KVS to stdout, format nicely. Intended for debug mode.
 sub dump_kvs {
     print "Dumping contents of entry KVS. All keys read in: ";
     print (keys %entryKvs, "\n");
@@ -159,8 +159,6 @@ sub read_partition_template {
     close $TPL;
 }
 
-# Check whether image support is enabled; if so, load entry tpl with image section
-# otherwise load text-only entry template to global tplEntry.
 sub init_entry_template {
     $tplEntryImg = read_whole_file($uc{blankEntryImg});
     $tplEntry = read_whole_file($uc{blankEntry});
@@ -363,7 +361,6 @@ sub generate_cat_tabs {
 }
 
 # Calculate the max page index for a category
-# Note: This will be easier once entryKvs is restructured
 # ARGS: Cat name
 # RETURNS: Max page index
 sub calculate_max_page {
@@ -491,8 +488,8 @@ sub paint_template {
             $writtenOut++;
             $currentPgIdx = 0;
         }
-        next unless ($entryKvs{$entryId}{category} eq $catName);
-        $entryKvs{$entryId}{pgIdx} = $pgIdx;
+#        next unless ($entryKvs{$entryId}{category} eq $catName); # necessary?
+#        $entryKvs{$entryId}{pgIdx} = $pgIdx;
         $entryKvs{$entryId}{path} = $outFn;
         $currentEntry = entrykvs_to_html $entryId;
         $catIsEmpty = 0;
@@ -592,9 +589,9 @@ sub sort_entries {
         } 
     }
 
-    # First sort alphabetically, then by date
+    # First sort alphabetically, then by date desc
     my @sorted = sort keys %entryDate;
-    @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
+    @sorted = sort { $entryDate{$a} <=> $entryDate{$b} } @sorted;
 
     say "SORTED: @sorted, Length: ". scalar @sorted . " " if $uc{debug};
     return @sorted;
@@ -678,7 +675,7 @@ sub read_entrydir {
     $entryKvs{$entryId} = read_entry $_ for @entries;
     print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($uc{debug});
     print (values %entryKvs, " values in entrykvs.\n") if ($uc{debug});
-    dump_kvs if ($uc{verbose});
+    dump_kvs if ($uc{debug});
 }
 
 # Write the latest amount of entries, as configured, to a RSS 2.0 file

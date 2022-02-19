@@ -28,7 +28,7 @@ my $tplinc = "./tpl/softcat";
     siteHeaderDesc => "Really Small, Really Useful software listings.",
     siteHomepageHeader => 'Welcome to RSRU!',
     siteHomepageDesc => "How do you do? Please enjoy your time browsing our lightweight software catalogue.",
-    maxPerPage => 10,
+    maxPerPage => 2,
 
     # RSS Configuration (requires XML::RSS)
     rssEnabled => 1,
