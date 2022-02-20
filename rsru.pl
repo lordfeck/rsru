@@ -391,6 +391,8 @@ sub prep_navbar {
     my $baseURL = $baseURL eq "." ? ".." : $baseURL;
 
     $max = calculate_max_page($catName);
+    say "Max page for $catName is $max" if $uc{debug};
+
     if ($max == 1) {
         $url{max} = "$baseURL/${catName}/index.html";
     } else {
@@ -399,7 +401,7 @@ sub prep_navbar {
 
     if ($pgIdx == 1) {
         $url{prev} = "#"     
-    } elsif ($prev  == 2){
+    } elsif ($pgIdx  == 2){
         $url{prev} = "$baseURL/${catName}/index.html";
     } else {
         $url{prev} = "$baseURL/${catName}/$prev.html";
@@ -411,6 +413,8 @@ sub prep_navbar {
     } else {
         $url{next} = "#";
     }
+
+    say "Generated previous=$prev, next=$next" if $uc{debug};
 
     $cwNavbar =~ s/{% IDX_PREV %}/$url{prev}/;
     $cwNavbar =~ s/{% IDX_NEXT %}/$url{next}/;
@@ -711,7 +715,7 @@ sub write_rss {
         my $href = "<a href=\"$flimsyLink\" target=\"_blank\">View $entryKvs{$entry}{title} on $uc{siteName}.</a>";
         $rss->add_item(
             title => $entryKvs{$entry}{title},
-            permaLink  => $flimsyLink,
+            link  => $flimsyLink,
             description => "$entryKvs{$entry}{desc}\n$href",
             category => [ $entryKvs{$entry}{category} ],
             pubDate => $entryKvs{$entry}{date}->strftime(),
