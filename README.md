@@ -112,7 +112,7 @@ RSRU's core functionality operates using only standard library modules. The proj
 
 ## Sample Screenshot
 
-![RSRU Screenshot](misc/rsru1.png)
+![RSRU Screenshot](misc/rsru3.png)
 
 ## Release history
 [Devlog](./DEVLOG.md)
