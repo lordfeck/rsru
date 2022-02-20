@@ -155,6 +155,7 @@ table.rsru .imgWrap {
     width: 150px;
     display: block;
     margin-left: 5px;
+    float: right;
 }
 
 table.rsru .imgBorder {
@@ -174,6 +175,7 @@ table.rsru a, table.rsru a:visited {
 table.rsru .desc {
     min-height: 50px;
     vertical-align: top;
+    width: 100%;
 }
 
 table.rsru .title {
