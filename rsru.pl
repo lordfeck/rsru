@@ -219,7 +219,7 @@ sub process_entry_image {
         warn "Invalid JPEG in $imgPath" unless 
             $gd = GD::Image->newFromJpeg($imgFh);
 
-    } elsif (first { /$imgExt/} ("png", "PNG")) {
+    } elsif (first { /$imgExt/ } ("png", "PNG")) {
         $imgExt = "png";
         warn "Invalid PNG in $imgPath" unless 
             $gd = GD::Image->newFromPng($imgFh);
@@ -491,8 +491,6 @@ sub paint_template {
             $writtenOut++;
             $currentPgIdx = 0;
         }
-        next unless ($entryKvs{$entryId}{category} eq $catName);
-        $entryKvs{$entryId}{pgIdx} = $pgIdx;
         $entryKvs{$entryId}{path} = $outFn;
         $currentEntry = entrykvs_to_html $entryId;
         $catIsEmpty = 0;
@@ -753,7 +751,11 @@ die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
 
 say "==> Begin read of $uc{entrydir} contents ==>";
 read_entrydir;
-say "CATS: @cats" if ($uc{debug});
+say "Categories read: @cats" if ($uc{debug});
+
+warn "Image destination directory $uc{imgDestDir} matches a category name. This may lead to conflicts."
+    if first { /$uc{imgDestDir}/ } @cats;
+
 warn "Warning: More than $MAX_CATS exist in file. Template may be malformed.\n" if (scalar (@cats) > $MAX_CATS);
 say "<== Read Finished <==";
 
