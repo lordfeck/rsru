@@ -17,11 +17,12 @@ use v5.10;
 use File::Copy;
 use File::Path qw(make_path remove_tree);
 use Time::Piece;
+use Getopt::Std;
 use List::Util qw(first);
 use Cwd qw(getcwd);
 
 #===============================================================================
-# Load optional modules if available
+# Load optional modules if available. Set flag so we know whether they are
 #===============================================================================
 my $has_rss = eval
 {
@@ -39,25 +40,21 @@ my $has_gd = eval
 };
 
 #===============================================================================
-# Read in user-configurable values
-#===============================================================================
-
-my %uc = do getcwd . "/conf.pl";
-die 'Problem reading config' if $!;
-# Copy cats list from the user conf and make it a mutable array.
-my @cats = @{$uc{cats}};
-
-#===============================================================================
-# End usr config, begin function defs and global vars.
+# Begin function defs and global vars.
 #===============================================================================
 my %entryKvs;       # Master key-value store, holds all read-in entries
 my %catTotal;       # Integer value of total entries in each category
 my $entryId;        # Entry-id variable of current working entry, used for reads
+my %opts;           # CLI flags + args
+my %uc;             # Contents of default or specified conf.pl
+my @cats;           # Array of categories
+my @knownKeys;      # List of known keys for each entry
+my @necessaryKeys;  # RSRU will fail if any of these keys are missing in an entry
 
 my $tplTop;         # The 'top' half of the per-category template
 my $tplBottom;      # The 'bottom' half of the same. Entries will go between
 my $tplEntry;       # The blank HTML for each entry
-my $tplEntryImg;       # The blank HTML for each entry, with space for thumbnails
+my $tplEntryImg;    # The blank HTML for each entry, with space for thumbnails
 my $tplCatTab;      # Blank HTML for each category
 my $tplHp;          # Blank HTML for homepage
 my $tplHpEntry;     # Blank HTML for entries on the homepage
@@ -65,13 +62,12 @@ my $tplNav;         # Blank HTML for nav section
 my $tplRssBlockTop; # Blank HTML for RSS block - top
 my $tplRssBlockBottom;      # Blank HTML for RSS block - bottom
 
-my %catsFilledEntries;      # Hash of filled entries in HTML for each category
 my $writtenOut = 0; # A count of written out files.
 my $writtenEntries = 0;     # total count of written entries in all files
 my $baseURL = '.';  # Relative is default
 my @imgDirList;     # Listing of everything in source image dir
 my $imgBasePath;    # Base path for "img src=" in output files
-my $imgOutDir;    # Concatenation of root output dir + user image output dir
+my $imgOutDir;      # Concatenation of root output dir + user image output dir
 
 # Consts
 my $DATE_FORMAT = "%Y-%m-%d";
@@ -82,10 +78,22 @@ my $YES = 'yes';
 my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
 my @EXTLIST = qw(jpg jpeg png JPEG PNG);
+my $DEFAULT_CONF = "conf.pl";
+my $RELEASE = "RSRU Release 3, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
+my $BANNER = <<"EOF";
+RSRU: Really Small, Really Useful. 
+A static website weaver.
 
-# List of known keys for each entry
-my @knownKeys = @{$uc{knownKeys}};
-my @necessaryKeys = @{$uc{necessaryKeys}};
+Usage:
+-h : Show this message
+-p : Use Productuion mode (uses Live URL as basepath)
+-c <conf> : Use this conf file
+-v : Show version
+
+Call with no args, RSRU will read in conf.pl and build a website.
+
+$RELEASE
+EOF
 
 # Declare some fn prototypes
 sub sort_entries;
@@ -728,15 +736,35 @@ sub write_rss {
 #===============================================================================
 # End Fndefs, begin exec.
 #===============================================================================
-say "RSRU starting. Master template: $uc{tpl}";
 
-if (scalar @ARGV and ($ARGV[0] eq '-p') or $uc{target} eq 'production') {
+# Handle user flags, if any
+getopts('c:vhp', \%opts);
+
+if (defined $opts{h}) { say $BANNER; exit; }
+if (defined $opts{v}) { say $RELEASE; exit; }
+
+print "RSRU starting. ";
+
+# Read in user-configurable values
+my $conf = (defined $opts{c} ? $opts{c} : $DEFAULT_CONF);
+say "Using config file: $conf";
+my $cwd = getcwd;
+%uc = do ("$cwd/$conf");
+die "Problem reading config file $conf, cannot continue." unless $uc{tpl};
+
+# Copy cats list from the user conf and make it a mutable array.
+@cats = @{$uc{cats}};
+# Assign other vals from user conf
+@knownKeys = @{$uc{knownKeys}};
+@necessaryKeys = @{$uc{necessaryKeys}};
+
+if ((defined $opts{p}) or $uc{target} eq 'production') {
     $baseURL = $uc{liveURL};
     $uc{target} = 'production';
     say "Production mode configured, base URL: $baseURL";
 }
 
-# Check if we have the appropriate module installed for imaging
+# Check we have the appropriate module installed for imaging
 if ($uc{imagesEnabled} && !$has_gd) {
     warn "!! Images configured but GD is not installed. Please run 'cpan install GD' !!";
     $uc{imagesEnabled} = 0;
@@ -750,7 +778,9 @@ if ($uc{target} eq "production") {
     $imgBasePath = "${baseURL}/../$uc{imgDestDir}";
 }
 
-# Check we have what's needed.
+#===============================================================================
+# Check we have what's needed, then get to work
+#===============================================================================
 die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
 
 say "==> Begin read of $uc{entrydir} contents ==>";

@@ -13,7 +13,7 @@ RSRU will read each text file in the `entries/` directory. It will determine the
 
 Each entry will belong to a category. Each category will appear as tab-style HTML pages. So for each, you get a category page with all the entries listed below.
 
-RSRU will also generate RSS feeds for you.
+RSRU will also generate image thumbnails and RSS feeds for you.
 
 ## Add an entry to RSRU
 Add a new file under `./entries/`. It should have the extension `.txt`.
@@ -23,6 +23,8 @@ Fill in the text file like the example that follows. Each of the 'fields' have t
 The rest of the file is read until the end and any text there serves as a description. It can be anything in HTML.
 
 ### An example entry
+
+This uses the "softcat" template.
 
 ```
 title: Sample Soft
@@ -57,8 +59,6 @@ Before the script may be used, it is first necessary to tailor `conf.pl` to your
 Various RSS options to enable and configure RSS feed generation.
 
 ### Presentation config
-`fnPre` a value prepnded to all HTML files. Default is `rsru`, change to something that fits your site. Eg, for category 'utility' rsru.pl will render `rsru_utility_1.html`.
-
 `siteName`, `siteHeaderDesc`. Site Name is used in the page title and the masthead of each page. HeaderDesc is a brief description printed beneath.
 
 `siteHomepageHeader`, `siteHomepageDesc` are used to fill in the homepage.
@@ -67,10 +67,13 @@ Various RSS options to enable and configure RSS feed generation.
 
 `cats` a Perl list of the default categories. The categories in your entries should match one of these, but this isn't necessary. Unknown categories will have pages generated regardless.
 
-## Command Line Flags
+## Command Line Flags (optional)
 
-`-p` for *P*roduction mode. Call `./rsru.pl -p`. The configured live URL will be used as the base URL for all internal links.Without this flag, relative links are instead used.
-
+- `-p` for *P*roduction mode. Call `./rsru.pl -p`. The configured live URL will be used as the base URL for all internal links. Without this flag, relative links are instead used.
+- `-c <conf>` to load in the specified *C*onfig file. Call `./rsru.pl -c <conf_file>.pl`. The specified configuration file is used to configure your site.
+- `-h` for *H*elp. Prints command line options then exits.
+- `-v` for *V*ersion. Prints release information then exists.
+- *None*. Call `./rsru.pl` with no command line flags. It will read in `./conf.pl` and build its configured website.
 
 ### Running RSRU
 
@@ -83,7 +86,7 @@ Any entries with the value 'yes' for `is_highlight:` will be added to the 'Highl
 ## Templating
 The template files are read by default from `./tpl/softcat`. Each HTML file under here is essential and used to weave the output.
 
-See [TPL_README](TPL_README.md), which will describe each file and how to customise it.
+See [TPL_README](TPL_README.md), which will describe each file and how to customise it. (This guide is due a revamp)
 
 ## Publishing
 RSRU has no self-publishing features. While such is possible with the right CPAN modules, such is beyond the scope of this project. 
@@ -92,7 +95,7 @@ The author suggests use of [rsync](http://rsync.samba.org) to drop the files on 
 
 ## Requirements
 * Perl, at least version 5.10 and List::Util present. This should be available in the standard library of most recent Perls.
-* Anything that runs Perl. The author has tested only on Linux. Some I/O features should probably `use File;` for better Windows support.
+* Anything that runs Perl. The author has tested on Linux and Windows (Strawberry Perl). 
 
 ### CPAN Modules
 RSRU's core functionality operates using only standard library modules. The project goals will not require any hard dependencies on any CPAN modules. Future non-essential features (eg, RSS) may depend upon CPAN modules, but RSRU will still perform its core duties without them.
