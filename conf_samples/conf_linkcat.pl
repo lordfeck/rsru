@@ -28,7 +28,7 @@ my $tplinc = "./tpl/linkcat";
     siteName => "Link Catalogue",
     siteHeaderDesc => "Found on the web.",
     siteHomepageHeader => 'Linkcat',
-    siteHomepageDesc => "Interesting websites I found.";
+    siteHomepageDesc => "Interesting websites I found.",
     maxPerPage => 10,
 
     # RSS Configuration (requires XML::RSS)
@@ -50,7 +50,7 @@ my $tplinc = "./tpl/linkcat";
     #======================================================================
     # These default cats are always generated, even if empty.
     # Hitherto unknown cats will be appended to a derived array if found.
-    cats => ["fun", "tech", "news", "games"];
+    cats => ["fun", "tech", "news", "games"],
     # List of known keys for each entry
     knownKeys => [qw(title ecc category img_desc heaviness order date desc url is_highlight)],
     # Necessary keys. RSRU will fail if these are not present in any entry.

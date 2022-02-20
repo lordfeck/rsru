@@ -209,6 +209,7 @@ sub process_entry_image {
     my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgFullFn, $imgTnPath, $imgTnFn, $imgSrcPath);
     my ($imgFnOut, $imgExt) = split(/\./, $imgFn, 2); # get filename and format
     my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
+    my ($srcX, $srcY);
     
     $imgPath = "${imgOutDir}/${imgFn}";
     $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
@@ -231,15 +232,21 @@ sub process_entry_image {
         $imgExt = "png";
         warn "Invalid PNG in $imgPath" unless 
             $gd = GD::Image->newFromPng($imgFh);
+    } else {
+        warn "$imgPath is not supported.";
+        return;
     }
 
-    $gdOut->copyResampled($gd,0,0,0,0,$w,$l,$gd->width,$gd->height);
+    # TODO: make square
+    $srcX = 0;
+    $srcY = 0;
+    $gdOut->copyResampled($gd,0,0,$srcX,$srcY,$w,$l,$gd->width,$gd->height);
 
     # Write thumbnail (always jpeg!)
     say "Writing thumbnail to $imgTnPath" if $uc{verbose};
     open $tnFh, ">", "$imgTnPath" or warn "Could not open $imgTnPath: $!";
     binmode $tnFh;
-    print $tnFh $gdOut->jpeg or warn "Couldn't write $imgFn!";
+    print $tnFh $gdOut->jpeg(80) or warn "Couldn't write $imgFn!";
     $entryKvs{$entryId}{img_tn} = $imgTnFn;
 
     if ($uc{imgToJpeg} && $imgExt eq "png") {
