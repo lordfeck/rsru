@@ -713,7 +713,7 @@ sub write_rss {
     }
 
     my @sortedEntryKeys = sort_all_entries($entryMax);
-    my $rss = XML::RSS->new (version => '2.0', encode_output=>0);
+    my $rss = XML::RSS->new (version => '2.0', encode_output=>1);
 
     $rss->channel(
         title          => $uc{siteName},
