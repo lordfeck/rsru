@@ -469,7 +469,7 @@ sub prep_tpltop {
 sub prep_tplbottom {
     # Handle RSS feeds
     my $rssPath = "${baseURL}/$uc{rssFilepath}";
-    if ($uc{rss_enabled}) {
+    if ($uc{rssEnabled}) {
         $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}/$tplRssBlockBottom/;
         $tplBottom =~ s/{% RSRU_FEED %}/$rssPath/;
     } else {
