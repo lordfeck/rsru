@@ -44,6 +44,7 @@ my $tplinc = "./tpl/softcat";
     imgSrcDir => "./img",
     imgDestDir => "img",            # Destination subdir, appended to liveURL or out path
     imgToJpeg => 1,                 # Convert fullres PNG to JPEG
+    noClobberImg => 1,              # Skip images if they already exist
     
     #======================================================================
     # Configure category and entry names. These must match the fields in your template files

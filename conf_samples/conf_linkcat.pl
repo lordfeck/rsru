@@ -45,6 +45,7 @@ my $tplinc = "./tpl/linkcat";
     imgSrcDir => "./img",
     imgDestDir => "img",            # Destination subdir, appended to liveURL or out path
     imgToJpeg => 1,                 # Convert fullres PNG to JPEG
+    noClobberImg => 1,              # Skip images if they already exist
     
     #======================================================================
     # Edit these to switch from 'software catalogue' configuration

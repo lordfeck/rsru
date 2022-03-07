@@ -81,18 +81,18 @@ my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 my $DEFAULT_CONF = "conf.pl";
 my $RELEASE = "RSRU Release 3, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
 my $BANNER = <<"EOF";
+$RELEASE
 RSRU: Really Small, Really Useful. 
 A static website weaver.
 
 Usage:
 -h : Show this message
 -p : Use Productuion mode (uses Live URL as basepath)
+-r : Rebuild. Will ignore no-clobber and recreates all outfiles (including images).
 -c <conf> : Use this conf file
 -v : Show version
 
 Call with no args, RSRU will read in conf.pl and build a website.
-
-$RELEASE
 EOF
 
 # Declare some fn prototypes
@@ -209,12 +209,15 @@ sub process_entry_image {
     my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgFullFn, $imgTnPath, $imgTnFn, $imgSrcPath);
     my ($imgFnOut, $imgExt) = split(/\./, $imgFn, 2); # get filename and format
     my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
-    my ($srcX, $srcY);
+    my ($srcX, $srcY, $tnExists, $imgExists);
     
     $imgPath = "${imgOutDir}/${imgFn}";
     $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
     $imgTnFn = "${imgFnOut}_tn.jpg"; # thumbnail is always jpg
     $imgTnPath = "${imgOutDir}/${imgTnFn}";
+
+    my $imgExists = (-f $imgPath);
+    my $tnExists = (-f $imgTnPath);
 
     say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgExt=$imgExt TnSz=$uc{thumbnailSize}" if $uc{debug};
     open $imgFh, "<", "$imgSrcPath" or warn "Could not open $imgPath: $!";
@@ -747,7 +750,7 @@ sub write_rss {
 #===============================================================================
 
 # Handle user flags, if any
-getopts('c:vhp', \%opts);
+getopts('c:vhpr', \%opts);
 
 if (defined $opts{h}) { say $BANNER; exit; }
 if (defined $opts{v}) { say $RELEASE; exit; }
@@ -767,6 +770,7 @@ die "Problem reading config file $conf, cannot continue." unless $uc{tpl};
 @knownKeys = @{$uc{knownKeys}};
 @necessaryKeys = @{$uc{necessaryKeys}};
 
+if (defined $opts{r}) { $uc{noCobberImg} = 0; }
 if ((defined $opts{p}) or $uc{target} eq 'production') {
     $baseURL = $uc{liveURL};
     $uc{target} = 'production';
