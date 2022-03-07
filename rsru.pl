@@ -636,7 +636,9 @@ sub sort_all_entries {
 
 sub get_highlighted_entries {
     my @highlights;
+
     foreach (keys %entryKvs) {
+        last if (scalar @highlights ge $uc{maxHpHighlights});
         next unless ($entryKvs{$_}{is_highlight});
         push (@highlights, $_) if ($entryKvs{$_}{is_highlight} eq $YES);
     }

@@ -30,6 +30,7 @@ my $tplinc = "./tpl/linkcat";
     siteHomepageHeader => 'Linkcat',
     siteHomepageDesc => "Interesting websites I found.",
     maxPerPage => 10,
+    maxHpHighlights => 6,
 
     # RSS Configuration (requires XML::RSS)
     rssEnabled => 1,
