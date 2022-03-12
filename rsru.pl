@@ -216,21 +216,28 @@ sub process_entry_image {
     $imgTnFn = "${imgFnOut}_tn.jpg"; # thumbnail is always jpg
     $imgTnPath = "${imgOutDir}/${imgTnFn}";
 
-    my $imgExists = (-f $imgPath);
-    my $tnExists = (-f $imgTnPath);
+    # Assume just lowercase PNG files for now when checking for existence
+    $imgExists = (-f $imgPath or -f "${imgOutDir}/${imgFn}.png");
+    $tnExists = (-f $imgTnPath);
+
+    if ($imgExists && $tnExists && $uc{noClobberImg}) {
+        say "Image file $imgPath and thumbnail $imgTnPath already exists, skipping..." if $uc{verbose};
+        $entryKvs{$entryId}{img_tn} = $imgTnFn;
+        $entryKvs{$entryId}{img_full} = $imgPath;
+        return;
+    }
 
     say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgExt=$imgExt TnSz=$uc{thumbnailSize}" if $uc{debug};
     open $imgFh, "<", "$imgSrcPath" or warn "Could not open $imgPath: $!";
 
     $gdOut = GD::Image->new($w,$l);
 
-    say "Opening $imgPath..." if $uc{verbose};
+    say "Opening $imgPath..." if $uc{debug};
 
     if (first { /$imgExt/ } ("jpeg", "jpg", "JPG", "JPEG")) {
         $imgExt = "jpg";
         warn "Invalid JPEG in $imgPath" unless 
             $gd = GD::Image->newFromJpeg($imgFh);
-
     } elsif (first { /$imgExt/ } ("png", "PNG")) {
         $imgExt = "png";
         warn "Invalid PNG in $imgPath" unless 
@@ -239,7 +246,7 @@ sub process_entry_image {
         warn "$imgPath is not supported.";
         return;
     }
-
+    
     # TODO: make square
     $srcX = 0;
     $srcY = 0;
@@ -323,7 +330,7 @@ sub entrykvs_to_html {
 
 # Clear destination before write (configurable)
 sub clear_dest {
-    say "clear_dest: Removing $uc{out}..." if ($uc{debug});
+    say "clear_dest: wiping $uc{out}..." if ($uc{verbose});
     remove_tree("$uc{out}");
     warn "Problem clearing output dir ($uc{out}): $!" if $!;
 }
@@ -700,7 +707,7 @@ sub read_entrydir {
     $entryKvs{$entryId} = read_entry $_ for @entries;
     print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($uc{debug});
     print (values %entryKvs, " values in entrykvs.\n") if ($uc{debug});
-    dump_kvs if ($uc{verbose});
+    dump_kvs if ($uc{debug});
 }
 
 # Write the latest amount of entries, as configured, to a RSS 2.0 file
@@ -770,7 +777,8 @@ die "Problem reading config file $conf, cannot continue." unless $uc{tpl};
 @knownKeys = @{$uc{knownKeys}};
 @necessaryKeys = @{$uc{necessaryKeys}};
 
-if (defined $opts{r}) { $uc{noCobberImg} = 0; }
+if (defined $opts{r}) { $uc{noClobberImg} = 0; }
+
 if ((defined $opts{p}) or $uc{target} eq 'production') {
     $baseURL = $uc{liveURL};
     $uc{target} = 'production';

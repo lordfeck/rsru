@@ -80,6 +80,6 @@ my $tplinc = "./tpl/softcat";
 
     # Logging levels
     debug => 0,
-    verbose => 0,
+    verbose => 1,
 )
 
