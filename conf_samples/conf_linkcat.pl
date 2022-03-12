@@ -5,7 +5,7 @@
 
 # Path setup, template include dir
 #======================================================================
-my $tplinc = "./tpl/linkcat";
+my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 #======================================================================
 (
     # Target: dev or production. Dev uses relative URLs, production uses live URL
@@ -15,8 +15,8 @@ my $tplinc = "./tpl/linkcat";
     liveURL => "http://www.example.com",
 
     # Path Configuration
-
-    tplinc => "$tplinc", # DO NOT CHANGE THIS, SET IT ABOVE!
+    tplRoot => "$tplRoot",
+    tplinc => "${tplRoot}/softcat",  # Template include dir
     entrydir => "./entries",
     out => "../output",
     # Wipe destination directory before writing output files
@@ -30,6 +30,8 @@ my $tplinc = "./tpl/linkcat";
     siteHomepageHeader => 'Linkcat',
     siteHomepageDesc => "Interesting websites I found.",
     maxPerPage => 10,
+    maxHpHighlights => 6,
+    showCatTotal => 1,
 
     # RSS Configuration (requires XML::RSS)
     rssEnabled => 1,
@@ -44,6 +46,7 @@ my $tplinc = "./tpl/linkcat";
     imgSrcDir => "./img",
     imgDestDir => "img",            # Destination subdir, appended to liveURL or out path
     imgToJpeg => 1,                 # Convert fullres PNG to JPEG
+    noClobberImg => 1,              # Skip images if they already exist
     
     #======================================================================
     # Edit these to switch from 'software catalogue' configuration
@@ -66,15 +69,15 @@ my $tplinc = "./tpl/linkcat";
 
     # Master template and any other blank HTML templates
     # Typically, these should not be altered.
-    tpl => "$tplinc/rsru_template.html",
-    blankEntry => "$tplinc/rsru_entry.html",
-    blankEntryImg => "$tplinc/rsru_entry_img.html",
-    blankCatEntry => "$tplinc/rsru_cat.html",
-    blankTplHp => "$tplinc/index.html",
-    blankTplHpEntry => "$tplinc/rsru_hp_entry.html",
-    blankTplNav => "$tplinc/pagination_nav.html",
-    rssBlockTop => "$tplinc/rsru_rss_top.html",
-    rssBlockBottom => "$tplinc/rsru_rss_bottom.html",
+    tpl => "rsru_template.html",
+    blankEntry => "rsru_entry.html",
+    blankEntryImg => "rsru_entry_img.html",
+    blankCatEntry => "rsru_cat.html",
+    blankTplHp => "index.html",
+    blankTplHpEntry => "rsru_hp_entry.html",
+    blankTplNav => "pagination_nav.html",
+    rssBlockTop => "rsru_rss_top.html",
+    rssBlockBottom => "rsru_rss_bottom.html",
 
     # Logging levels
     debug => 0,

@@ -30,11 +30,12 @@ div#catBar {
 
 div#nav {
     text-align: center;
-    font-size: 0.8em;
+    font-size: 1.0em;
     padding-bottom: 2px;
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     height: 1.2em;
+    font-weight: bold;
 }
 
 div#navCount {
@@ -128,6 +129,10 @@ div#catBar a {
         color: #FFE04D;
 }
 
+span#catTotal {
+    float: right;
+}
+
 /* rsru table */
 table.rsru {
     color: #1e1e1e;
@@ -135,6 +140,10 @@ table.rsru {
     width: 100%;
     margin-bottom: 15px;
     background-color: #F84;
+}
+
+table.highlight {
+    background-color: #eeb449;
 }
 
 table.rsru td {

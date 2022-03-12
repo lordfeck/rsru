@@ -71,6 +71,7 @@ Various RSS options to enable and configure RSS feed generation.
 
 - `-p` for *P*roduction mode. Call `./rsru.pl -p`. The configured live URL will be used as the base URL for all internal links. Without this flag, relative links are instead used.
 - `-c <conf>` to load in the specified *C*onfig file. Call `./rsru.pl -c <conf_file>.pl`. The specified configuration file is used to configure your site.
+- `-r` for *R*ebuild. Will ignore no-clobber img option and will wipe outout dir.
 - `-h` for *H*elp. Prints command line options then exits.
 - `-v` for *V*ersion. Prints release information then exists.
 - *None*. Call `./rsru.pl` with no command line flags. It will read in `./conf.pl` and build its configured website.

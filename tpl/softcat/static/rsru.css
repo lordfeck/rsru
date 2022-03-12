@@ -29,7 +29,8 @@ div#catBar {
 
 div#nav {
     text-align: center;
-    font-size: 0.8em;
+    font-size: 1.0em;
+    font-weight: bold;
     padding-bottom: 2px;
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
@@ -72,6 +73,10 @@ div#rsruCanvas {
 span.anchor {
     float: right;
     padding-right: 3px;
+}
+
+span#catTotal {
+    float: right;
 }
 
 /* text style */
@@ -130,6 +135,11 @@ table.rsru {
     margin-bottom: 15px;
     background-color: #dbd1a1;
 }
+
+table.highlight {
+    background-color: #eeb449;
+}
+
 table.rsru td {
     border: 0px;
 }

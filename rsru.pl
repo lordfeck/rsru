@@ -81,18 +81,18 @@ my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 my $DEFAULT_CONF = "conf.pl";
 my $RELEASE = "RSRU Release 3, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
 my $BANNER = <<"EOF";
+$RELEASE
 RSRU: Really Small, Really Useful. 
 A static website weaver.
 
 Usage:
 -h : Show this message
 -p : Use Productuion mode (uses Live URL as basepath)
+-r : Rebuild. Will ignore no-clobber and recreates all outfiles (including images).
 -c <conf> : Use this conf file
 -v : Show version
 
 Call with no args, RSRU will read in conf.pl and build a website.
-
-$RELEASE
 EOF
 
 # Declare some fn prototypes
@@ -109,6 +109,22 @@ sub read_whole_file {
     $fileContent .= $_ while <$fh>;
     close $fh;
     return $fileContent;
+}
+
+# Check template dir for file, if exists read it. If not, check common template dir
+# and read it. If neither exists, fail. 
+# ARGUMENTS: template file name
+sub read_template_file {
+    my $tplFn = shift;
+    my $tplincFilepath = "$uc{tplinc}/$tplFn";
+    my $tplCommonFilepath = "$uc{tplRoot}/common/$tplFn";
+    if ( -f $tplincFilepath ) {
+        return read_whole_file $tplincFilepath;
+    } elsif ( -f $tplCommonFilepath ) {
+        return read_whole_file $tplCommonFilepath;
+    } else {
+        die "Could not open template file $tplFn, aborting!";
+    }
 }
 
 # Arguments: the directory to list. Returns: ref to the directory contents as an array
@@ -152,7 +168,8 @@ sub dump_kvs {
 
 # Read in the template, look for the RSRU markers, split it.
 sub read_partition_template {
-    open(my $TPL, $uc{tpl}) or die ("Fatal: Couldn't open template $uc{tpl}!");
+    my $baseTpl = -f "$uc{tplinc}/$uc{tpl}" ? "$uc{tplinc}/$uc{tpl}" : "$uc{tplRoot}/common/$uc{tpl}";
+    open(my $TPL, "$baseTpl") or die ("Fatal: Couldn't open template $baseTpl!");
     
     while (<$TPL>) {
         last if /\s*(<!--BEGIN RSRU-->)/;
@@ -167,12 +184,6 @@ sub read_partition_template {
     close $TPL;
 }
 
-# Check whether image support is enabled; if so, load entry tpl with image section
-# otherwise load text-only entry template to global tplEntry.
-sub init_entry_template {
-    $tplEntryImg = read_whole_file($uc{blankEntryImg});
-    $tplEntry = read_whole_file($uc{blankEntry});
-}
 
 # Check, does img_src exist under image dir? if so, use it. Otherwise look for
 # $entryId.jpg/png and return it instead. If neither exists return blank (evals to false)
@@ -209,25 +220,35 @@ sub process_entry_image {
     my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgFullFn, $imgTnPath, $imgTnFn, $imgSrcPath);
     my ($imgFnOut, $imgExt) = split(/\./, $imgFn, 2); # get filename and format
     my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
-    my ($srcX, $srcY);
+    my ($srcX, $srcY, $tnExists, $imgExists);
     
     $imgPath = "${imgOutDir}/${imgFn}";
     $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
     $imgTnFn = "${imgFnOut}_tn.jpg"; # thumbnail is always jpg
     $imgTnPath = "${imgOutDir}/${imgTnFn}";
 
+    # Assume just lowercase jpg files for now when checking for existence
+    $imgExists = (-f $imgPath or -f "${imgOutDir}/${imgFnOut}.jpg");
+    $tnExists = (-f $imgTnPath);
+
+    if ($imgExists && $tnExists && $uc{noClobberImg}) {
+        say "Image file $imgPath and thumbnail $imgTnPath already exists, skipping..." if $uc{verbose};
+        $entryKvs{$entryId}{img_tn} = $imgTnFn;
+        $entryKvs{$entryId}{img_full} = $imgPath;
+        return;
+    }
+
     say "ImgFn=$imgFn, ImgFnOut=$imgFnOut, ImgExt=$imgExt TnSz=$uc{thumbnailSize}" if $uc{debug};
     open $imgFh, "<", "$imgSrcPath" or warn "Could not open $imgPath: $!";
 
     $gdOut = GD::Image->new($w,$l);
 
-    say "Opening $imgPath..." if $uc{verbose};
+    say "Opening $imgPath..." if $uc{debug};
 
     if (first { /$imgExt/ } ("jpeg", "jpg", "JPG", "JPEG")) {
         $imgExt = "jpg";
         warn "Invalid JPEG in $imgPath" unless 
             $gd = GD::Image->newFromJpeg($imgFh);
-
     } elsif (first { /$imgExt/ } ("png", "PNG")) {
         $imgExt = "png";
         warn "Invalid PNG in $imgPath" unless 
@@ -236,7 +257,7 @@ sub process_entry_image {
         warn "$imgPath is not supported.";
         return;
     }
-
+    
     # TODO: make square
     $srcX = 0;
     $srcY = 0;
@@ -286,6 +307,7 @@ sub entrykvs_to_html {
     my $entryId = shift;
     my $filledEntry;
     my ($localImgPath, $imgSrc);
+    my $wasHighlight = 0;
     
     verify_necessary_keys ($entryId);
 
@@ -306,10 +328,15 @@ sub entrykvs_to_html {
         if ($key eq "date") {
             my $date = $entryKvs{$entryId}{'date'}->strftime('%d/%m/%Y');
             $filledEntry =~ s/{% $key %}/$date/g;
+        } elsif ($key eq "is_highlight" && defined $entryKvs{$entryId}{is_highlight} && $entryKvs{$entryId}{is_highlight} eq $YES) {
+            $filledEntry =~ s/{% IS_HIGHLIGHT %}/highlight/g;
+            $wasHighlight = 1;
         } else {
             $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
         }
     }
+    $filledEntry =~ s/{% IS_HIGHLIGHT %}//g unless $wasHighlight;
+
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
 
@@ -320,7 +347,7 @@ sub entrykvs_to_html {
 
 # Clear destination before write (configurable)
 sub clear_dest {
-    say "clear_dest: Removing $uc{out}..." if ($uc{debug});
+    say "clear_dest: wiping $uc{out}..." if ($uc{verbose});
     remove_tree("$uc{out}");
     warn "Problem clearing output dir ($uc{out}): $!" if $!;
 }
@@ -494,7 +521,10 @@ sub paint_template {
     open (my $fh, '>', "$uc{out}/$outFn");
     print $fh $cwTplTop;
 
-    print $fh "<p id=\"catDesc\">$uc{catDesc}{$catName}</p>" if ($uc{catDesc}{$catName} && $pgIdx == 1);
+    print $fh "<p id=\"catDesc\">"; 
+    print $fh "$uc{catDesc}{$catName}" if (defined $uc{catDesc}{$catName} && $pgIdx == 1);
+    print $fh "<span id=\"catTotal\">($catTotal{$catName} total)</span>" if ($uc{showCatTotal} && defined $catTotal{$catName} && $catTotal{$catName} > 0);
+    print $fh "</p>"; 
 
     for my $entryId (sort_entries $catName) {
         # Handle pagination
@@ -636,7 +666,9 @@ sub sort_all_entries {
 
 sub get_highlighted_entries {
     my @highlights;
+
     foreach (keys %entryKvs) {
+        last if (scalar @highlights ge $uc{maxHpHighlights});
         next unless ($entryKvs{$_}{is_highlight});
         push (@highlights, $_) if ($entryKvs{$_}{is_highlight} eq $YES);
     }
@@ -695,7 +727,7 @@ sub read_entrydir {
     $entryKvs{$entryId} = read_entry $_ for @entries;
     print (keys %entryKvs, " Keys in entrykvs. $entryId (last read)\n") if ($uc{debug});
     print (values %entryKvs, " values in entrykvs.\n") if ($uc{debug});
-    dump_kvs if ($uc{verbose});
+    dump_kvs if ($uc{debug});
 }
 
 # Write the latest amount of entries, as configured, to a RSS 2.0 file
@@ -745,7 +777,7 @@ sub write_rss {
 #===============================================================================
 
 # Handle user flags, if any
-getopts('c:vhp', \%opts);
+getopts('c:vhpr', \%opts);
 
 if (defined $opts{h}) { say $BANNER; exit; }
 if (defined $opts{v}) { say $RELEASE; exit; }
@@ -764,6 +796,12 @@ die "Problem reading config file $conf, cannot continue." unless $uc{tpl};
 # Assign other vals from user conf
 @knownKeys = @{$uc{knownKeys}};
 @necessaryKeys = @{$uc{necessaryKeys}};
+
+# If rebuild is yes
+if (defined $opts{r}) { 
+    $uc{noClobberImg} = 0;
+    $uc{clearDest} = 1;
+ }
 
 if ((defined $opts{p}) or $uc{target} eq 'production') {
     $baseURL = $uc{liveURL};
@@ -788,8 +826,6 @@ if ($uc{target} eq "production") {
 #===============================================================================
 # Check we have what's needed, then get to work
 #===============================================================================
-die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
-
 say "==> Begin read of $uc{entrydir} contents ==>";
 read_entrydir;
 say "Categories read: @cats" if ($uc{debug});
@@ -802,18 +838,18 @@ say "<== Read Finished <==";
 
 say "==> Begin read of template files ==>";
 read_partition_template;
-
-# Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
-init_entry_template;
-
 # Load in blank HTML for homepage items. Fills the global vars tplHp and tplHpEntry.
-$tplHp = read_whole_file($uc{blankTplHp});
-$tplHpEntry = read_whole_file($uc{blankTplHpEntry});
-$tplNav = read_whole_file($uc{blankTplNav});
+$tplHp = read_template_file($uc{blankTplHp});
+$tplHpEntry = read_template_file($uc{blankTplHpEntry});
+$tplNav = read_template_file($uc{blankTplNav});
 # Load in the HTML for each category in the catbar
-$tplCatTab = read_whole_file($uc{blankCatEntry});
-$tplRssBlockTop = read_whole_file($uc{rssBlockTop});
-$tplRssBlockBottom = read_whole_file($uc{rssBlockBottom});
+$tplCatTab = read_template_file($uc{blankCatEntry});
+$tplRssBlockTop = read_template_file($uc{rssBlockTop});
+$tplRssBlockBottom = read_template_file($uc{rssBlockBottom});
+# Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
+$tplEntryImg = read_template_file($uc{blankEntryImg});
+$tplEntry = read_template_file($uc{blankEntry});
+
 @imgDirList = @{list_dir($uc{imgSrcDir})};
 
 say "<== Read Finished <==";
