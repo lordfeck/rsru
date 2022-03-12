@@ -135,6 +135,11 @@ table.rsru {
     margin-bottom: 15px;
     background-color: #dbd1a1;
 }
+
+table.highlight {
+    background-color: #eeb449;
+}
+
 table.rsru td {
     border: 0px;
 }

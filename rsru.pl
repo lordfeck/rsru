@@ -307,6 +307,7 @@ sub entrykvs_to_html {
     my $entryId = shift;
     my $filledEntry;
     my ($localImgPath, $imgSrc);
+    my $wasHighlight = 0;
     
     verify_necessary_keys ($entryId);
 
@@ -327,10 +328,15 @@ sub entrykvs_to_html {
         if ($key eq "date") {
             my $date = $entryKvs{$entryId}{'date'}->strftime('%d/%m/%Y');
             $filledEntry =~ s/{% $key %}/$date/g;
+        } elsif ($key eq "is_highlight" && defined $entryKvs{$entryId}{is_highlight} && $entryKvs{$entryId}{is_highlight} eq $YES) {
+            $filledEntry =~ s/{% IS_HIGHLIGHT %}/highlight/g;
+            $wasHighlight = 1;
         } else {
             $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
         }
     }
+    $filledEntry =~ s/{% IS_HIGHLIGHT %}//g unless $wasHighlight;
+
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
 

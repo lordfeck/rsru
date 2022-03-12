@@ -142,6 +142,10 @@ table.rsru {
     background-color: #F84;
 }
 
+table.highlight {
+    background-color: #eeb449;
+}
+
 table.rsru td {
     border: 0px;
 }
