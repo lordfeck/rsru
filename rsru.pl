@@ -216,8 +216,8 @@ sub process_entry_image {
     $imgTnFn = "${imgFnOut}_tn.jpg"; # thumbnail is always jpg
     $imgTnPath = "${imgOutDir}/${imgTnFn}";
 
-    # Assume just lowercase PNG files for now when checking for existence
-    $imgExists = (-f $imgPath or -f "${imgOutDir}/${imgFn}.png");
+    # Assume just lowercase jpg files for now when checking for existence
+    $imgExists = (-f $imgPath or -f "${imgOutDir}/${imgFnOut}.jpg");
     $tnExists = (-f $imgTnPath);
 
     if ($imgExists && $tnExists && $uc{noClobberImg}) {
@@ -777,7 +777,11 @@ die "Problem reading config file $conf, cannot continue." unless $uc{tpl};
 @knownKeys = @{$uc{knownKeys}};
 @necessaryKeys = @{$uc{necessaryKeys}};
 
-if (defined $opts{r}) { $uc{noClobberImg} = 0; }
+# If rebuild is yes
+if (defined $opts{r}) { 
+    $uc{noClobberImg} = 0;
+    $uc{clearDest} = 1;
+ }
 
 if ((defined $opts{p}) or $uc{target} eq 'production') {
     $baseURL = $uc{liveURL};
