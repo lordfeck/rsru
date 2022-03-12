@@ -111,6 +111,22 @@ sub read_whole_file {
     return $fileContent;
 }
 
+# Check template dir for file, if exists read it. If not, check common template dir
+# and read it. If neither exists, fail. 
+# ARGUMENTS: template file name
+sub read_template_file {
+    my $tplFn = shift;
+    my $tplincFilepath = "$uc{tplinc}/$tplFn";
+    my $tplCommonFilepath = "$uc{tplRoot}/common/$tplFn";
+    if ( -f $tplincFilepath ) {
+        return read_whole_file $tplincFilepath;
+    } elsif ( -f $tplCommonFilepath ) {
+        return read_whole_file $tplCommonFilepath;
+    } else {
+        die "Could not open template file $tplFn, aborting!";
+    }
+}
+
 # Arguments: the directory to list. Returns: ref to the directory contents as an array
 sub list_dir {
     my $dirName = shift;
@@ -152,7 +168,8 @@ sub dump_kvs {
 
 # Read in the template, look for the RSRU markers, split it.
 sub read_partition_template {
-    open(my $TPL, $uc{tpl}) or die ("Fatal: Couldn't open template $uc{tpl}!");
+    my $baseTpl = -f "$uc{tplinc}/$uc{tpl}" ? "$uc{tplinc}/$uc{tpl}" : "$uc{tplRoot}/common/$uc{tpl}";
+    open(my $TPL, "$baseTpl") or die ("Fatal: Couldn't open template $baseTpl!");
     
     while (<$TPL>) {
         last if /\s*(<!--BEGIN RSRU-->)/;
@@ -167,12 +184,6 @@ sub read_partition_template {
     close $TPL;
 }
 
-# Check whether image support is enabled; if so, load entry tpl with image section
-# otherwise load text-only entry template to global tplEntry.
-sub init_entry_template {
-    $tplEntryImg = read_whole_file($uc{blankEntryImg});
-    $tplEntry = read_whole_file($uc{blankEntry});
-}
 
 # Check, does img_src exist under image dir? if so, use it. Otherwise look for
 # $entryId.jpg/png and return it instead. If neither exists return blank (evals to false)
@@ -806,8 +817,6 @@ if ($uc{target} eq "production") {
 #===============================================================================
 # Check we have what's needed, then get to work
 #===============================================================================
-die "Template file $uc{tpl} not found, cannot continue." unless -f $uc{tpl};
-
 say "==> Begin read of $uc{entrydir} contents ==>";
 read_entrydir;
 say "Categories read: @cats" if ($uc{debug});
@@ -820,18 +829,18 @@ say "<== Read Finished <==";
 
 say "==> Begin read of template files ==>";
 read_partition_template;
-
-# Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
-init_entry_template;
-
 # Load in blank HTML for homepage items. Fills the global vars tplHp and tplHpEntry.
-$tplHp = read_whole_file($uc{blankTplHp});
-$tplHpEntry = read_whole_file($uc{blankTplHpEntry});
-$tplNav = read_whole_file($uc{blankTplNav});
+$tplHp = read_template_file($uc{blankTplHp});
+$tplHpEntry = read_template_file($uc{blankTplHpEntry});
+$tplNav = read_template_file($uc{blankTplNav});
 # Load in the HTML for each category in the catbar
-$tplCatTab = read_whole_file($uc{blankCatEntry});
-$tplRssBlockTop = read_whole_file($uc{rssBlockTop});
-$tplRssBlockBottom = read_whole_file($uc{rssBlockBottom});
+$tplCatTab = read_template_file($uc{blankCatEntry});
+$tplRssBlockTop = read_template_file($uc{rssBlockTop});
+$tplRssBlockBottom = read_template_file($uc{rssBlockBottom});
+# Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
+$tplEntryImg = read_template_file($uc{blankEntryImg});
+$tplEntry = read_template_file($uc{blankEntry});
+
 @imgDirList = @{list_dir($uc{imgSrcDir})};
 
 say "<== Read Finished <==";
