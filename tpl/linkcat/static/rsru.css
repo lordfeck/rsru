@@ -30,11 +30,12 @@ div#catBar {
 
 div#nav {
     text-align: center;
-    font-size: 0.8em;
+    font-size: 1.0em;
     padding-bottom: 2px;
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     height: 1.2em;
+    font-weight: bold;
 }
 
 div#navCount {
