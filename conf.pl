@@ -31,6 +31,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     siteHomepageDesc => "How do you do? Please enjoy your time browsing our lightweight software catalogue.",
     maxPerPage => 10,
     maxHpHighlights => 6,
+    showCatTotal => 1,
 
     # RSS Configuration (requires XML::RSS)
     rssEnabled => 1,

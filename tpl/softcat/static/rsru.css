@@ -75,6 +75,10 @@ span.anchor {
     padding-right: 3px;
 }
 
+span#catTotal {
+    float: right;
+}
+
 /* text style */
 h1#top{
     color: #D8D9F1;

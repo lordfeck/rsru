@@ -515,7 +515,10 @@ sub paint_template {
     open (my $fh, '>', "$uc{out}/$outFn");
     print $fh $cwTplTop;
 
-    print $fh "<p id=\"catDesc\">$uc{catDesc}{$catName}</p>" if ($uc{catDesc}{$catName} && $pgIdx == 1);
+    print $fh "<p id=\"catDesc\">"; 
+    print $fh "$uc{catDesc}{$catName}" if (defined $uc{catDesc}{$catName} && $pgIdx == 1);
+    print $fh "<span id=\"catTotal\">($catTotal{$catName} total)</span>" if ($uc{showCatTotal} && defined $catTotal{$catName} && $catTotal{$catName} > 0);
+    print $fh "</p>"; 
 
     for my $entryId (sort_entries $catName) {
         # Handle pagination

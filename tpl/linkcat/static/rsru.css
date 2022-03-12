@@ -129,6 +129,10 @@ div#catBar a {
         color: #FFE04D;
 }
 
+span#catTotal {
+    float: right;
+}
+
 /* rsru table */
 table.rsru {
     color: #1e1e1e;

@@ -31,6 +31,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     siteHomepageDesc => "Interesting websites I found.",
     maxPerPage => 10,
     maxHpHighlights => 6,
+    showCatTotal => 1,
 
     # RSS Configuration (requires XML::RSS)
     rssEnabled => 1,
