@@ -1,0 +1,10 @@
+title: slashdot
+is_highlight: no
+url: https://www.slashdot.org
+ecc: 8
+heaviness: 8
+date: 2005-03-01
+category: tech
+
+old news site<br>
+still ok

@@ -85,3 +85,5 @@ run it
 command line flags
 
 how to publish it
+
+sample entries & conf files for all tpls...

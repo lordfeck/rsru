@@ -1,0 +1,9 @@
+title: yahoo japan
+is_highlight: no
+url: https://www.yahoo.co.jp/
+ecc: 8
+heaviness: 8
+date: 1998-03-01
+category: tech
+
+learn! japanese!, use! yahoo!
