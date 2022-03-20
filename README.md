@@ -2,7 +2,7 @@ Thransoft RSRU Release 3
 ========================
 
 # What is RSRU?
-A simple static HTML page generator written in Perl. It is intended for the sole task of generating a section of my website [https://wmw.thran.uk](Well Made Web), but RSRU is flexible enough that it could build other websites. GPLv3 licence.
+A simple static HTML page generator written in Perl. It is intended for the sole task of generating a section of my website [Well Made Web](https://wmw.thran.uk), but RSRU is flexible enough that it could build other websites. GPLv3 licence.
 
 RSRU works only in HTML and CSS. There are fewer than 300 lines of CSS. It is happy with or without some optional Perl modules. That's living the simple life.
 
@@ -17,7 +17,7 @@ Each entry will belong to a category. Each category will appear as tab-style HTM
 RSRU will also generate image thumbnails and RSS feeds for you.
 
 # How do I RSRU?
-If you're eager to try RSRU, instructions are available here: [docs/HOWTO.md](RSRU Howto). The documentation covers installation, configuration, customisation and everyday operation.
+If you're eager to try RSRU, instructions are available here: [RSRU Howto](docs/HOWTO.md). The documentation covers installation, configuration, customisation and everyday operation.
 
 *Note*: Documentation is currently a work in progress!
 
@@ -39,8 +39,9 @@ RSRU's core functionality operates using only standard library modules. The proj
 * Performance optimisations, deduplicate where necessary (many places look similar)
 * Very far in the future: Use a real templating engine (like Mustache) to build our pages. This would make RSRU into something approaching a full site generator.
 
+## Release history
+[Devlog](./docs/DEVLOG.md)
+
 ## Sample Screenshot
 ![RSRU Screenshot](misc/rsru3.png)
 
-## Release history
-[Devlog](./docs/DEVLOG.md)
