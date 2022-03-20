@@ -16,9 +16,9 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 
     # Path Configuration
     tplRoot => "$tplRoot",
-    tplinc => "${tplRoot}/softcat",  # Template include dir
+    tplinc => "${tplRoot}/linkcat",  # Template include dir
     entrydir => "./entries",
-    out => "../output",
+    out => "./output",
     # Wipe destination directory before writing output files
     clearDest => 0,
 

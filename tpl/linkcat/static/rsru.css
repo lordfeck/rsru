@@ -258,4 +258,7 @@ table.rsru .date {
         height: 23px;
         margin-bottom: 2px;
     }
+    div.active {
+        padding-bottom: 1px;
+    }
 }
