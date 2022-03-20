@@ -1,0 +1,9 @@
+title: ebay
+is_highlight: no
+url: https://www.ebay.co.uk
+ecc: 8
+heaviness: 8
+date: 2002-03-01
+category: fun
+
+Cool auction site!

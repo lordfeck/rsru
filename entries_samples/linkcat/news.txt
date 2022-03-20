@@ -1,0 +1,9 @@
+title: the daily mail
+is_highlight: no
+url: https://www.dailymail.co.uk
+ecc: 1
+heaviness: 192
+date: 1973-03-01
+category: news
+
+I put it here for the lulz

@@ -1,0 +1,9 @@
+title: cool math games
+is_highlight: no
+url: https://www.coolmathgames.com/
+ecc: 8
+heaviness: 8
+date: 2031-12-09
+category: fun
+
+maths is already fun we don't need games

@@ -17,7 +17,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Path Configuration
     tplRoot => "$tplRoot",
     tplinc => "${tplRoot}/linkcat",  # Template include dir
-    entrydir => "./entries",
+    entrydir => "./entries_samples/linkcat",
     out => "./output",
     # Wipe destination directory before writing output files
     clearDest => 0,
@@ -27,7 +27,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Filename Prefix, prepended to all output HTML
     siteName => "Link Catalogue",
     siteHeaderDesc => "Found on the web.",
-    siteHomepageHeader => 'Linkcat',
+    siteHomepageHeader => "Linkcat",
     siteHomepageDesc => "Interesting websites I found.",
     maxPerPage => 10,
     maxHpHighlights => 6,
@@ -55,9 +55,9 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Hitherto unknown cats will be appended to a derived array if found.
     cats => ["fun", "tech", "news", "games"],
     # List of known keys for each entry
-    knownKeys => [qw(title ecc category img_desc heaviness order date desc url is_highlight)],
+    knownKeys => [qw(title ecc category desc img_desc heaviness order date url is_highlight)],
     # Necessary keys. RSRU will fail if these are not present in any entry.
-    necessaryKeys => [qw(title ecc category date desc)],
+    necessaryKeys => [qw(title ecc category desc date url)],
     # Description for each category, will appear on the first page of each
     catDesc => {
         fun => "Fun pages",
