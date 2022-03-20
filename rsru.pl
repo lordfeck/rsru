@@ -220,7 +220,7 @@ sub process_entry_image {
     my ($gd, $gdOut, $imgFh, $tnFh, $imgPath, $imgFullFn, $imgTnPath, $imgTnFn, $imgSrcPath);
     my ($imgFnOut, $imgExt) = split(/\./, $imgFn, 2); # get filename and format
     my ($w, $l) = split(/x/, $uc{thumbnailSize}, 2);
-    my ($srcX, $srcY, $tnExists, $imgExists);
+    my ($srcX, $srcY, $tnExists, $imgExists, $existentImgPath);
     
     $imgPath = "${imgOutDir}/${imgFn}";
     $imgSrcPath = "$uc{imgSrcDir}/${imgFn}";
@@ -229,12 +229,18 @@ sub process_entry_image {
 
     # Assume just lowercase jpg files for now when checking for existence
     $imgExists = (-f $imgPath or -f "${imgOutDir}/${imgFnOut}.jpg");
+    if (-f $imgPath) {
+        $existentImgPath = "$imgFn";
+        $imgExists = 1;
+    } elsif (-f "${imgOutDir}/${imgFnOut}.jpg") {
+        $existentImgPath = "${imgFnOut}.jpg";
+    };
     $tnExists = (-f $imgTnPath);
 
     if ($imgExists && $tnExists && $uc{noClobberImg}) {
         say "Image file $imgPath and thumbnail $imgTnPath already exists, skipping..." if $uc{verbose};
         $entryKvs{$entryId}{img_tn} = $imgTnFn;
-        $entryKvs{$entryId}{img_full} = $imgPath;
+        $entryKvs{$entryId}{img_full} = "$existentImgPath";
         return;
     }
 
