@@ -3,7 +3,7 @@
 # Don't be daft: This is not executable alone. Do not amend the key names.
 #===============================================================================
 
-# Path setup, template include dir
+# Path setup, template include dir. Should be left alone!
 #=======================================================================
 my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 #=======================================================================
