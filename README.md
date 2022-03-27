@@ -4,7 +4,15 @@ Thransoft RSRU Release 3
 # What is RSRU?
 A simple static HTML page generator written in Perl. It is intended for the sole task of generating a section of my website [Well Made Web](https://wmw.thran.uk), but RSRU is flexible enough that it could build other websites. GPLv3 licence.
 
-RSRU is ideal for building any kind of catalogue website. You could build a download website, a screenshot showcase of your favourite desktops, a photo gallery, a listing of your favourite albums by genre with copious notes glorifying your pristine music taste, or just copy me and build an index of weird and wonderful websites you've discovered. Anything is possible when you tweak the template files and the keywords, then RSRU does all the hard work of building the website for you.
+RSRU is ideal for building any kind of catalogue website. You could build:
+
+- a download website
+- a screenshot showcase of your favourite desktops
+- a photo gallery
+- a listing of your favourite albums by genre with copious notes glorifying your pristine music taste
+- or just copy me and build an index of weird and wonderful websites you've discovered
+
+**Anything** is possible when you tweak the template files and the keywords. Then RSRU can do all the hard work of building the website for you.
 
 RSRU works only in HTML and CSS. There are fewer than 300 lines of CSS. It is happy with or without some optional Perl modules. That's living the simple life.
 
