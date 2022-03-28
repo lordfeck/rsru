@@ -49,6 +49,25 @@ RSRU's core functionality operates using only standard library modules. The proj
 * Performance optimisations, deduplicate where necessary (many places look similar)
 * Very far in the future: Use a real templating engine (like Mustache) to build our pages. This would make RSRU into something approaching a full site generator.
 
+# Repository layout
+What are the directories and what is inside each?
+
+`conf_samples` : A variety of config files intended to build sample websites in RSRU. Each config file matches a template style under `tpl`. To try a config sample, run `./rsru.pl -c ./conf_samples/<CONF_NAME>.pl`.
+
+`docs` : Documentation including release history and HOWTO.
+
+`entries` : Default sample entries for the softcat template.
+
+`entries_samples` : Sample entries to demonstrate the other config samples.
+
+`img` : Sample image files to demonstrate RSRU's thumbnail generation. Also the default directory RSRU will check for your images.
+
+`misc` : Screenshots and images intended to show how RSRU looks. This directory may be deleted.
+
+`output` : The default destionation directory wherein RSRU writes its generated website.
+
+`tpl` : The template root directory. All style template files are stored in subdirectories under here.
+
 ## Release history
 [Devlog](./docs/DEVLOG.md)
 
