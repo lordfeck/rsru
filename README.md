@@ -56,15 +56,15 @@ What are the directories and what is inside each?
 
 `docs` : Documentation including release history and HOWTO.
 
-`entries` : Default sample entries for the softcat template.
+`entries` : Default sample entries for the softcat template. Also the default source directory whence RSRU will read its entries.
 
 `entries_samples` : Sample entries to demonstrate the other config samples.
 
-`img` : Sample image files to demonstrate RSRU's thumbnail generation. Also the default directory RSRU will check for your images.
+`img` : Sample image files to demonstrate RSRU's thumbnail generation. Also the default source directory RSRU will check for your images.
 
 `misc` : Screenshots and images intended to show how RSRU looks. This directory may be deleted.
 
-`output` : The default destionation directory wherein RSRU writes its generated website.
+`output` : The default destionation directory whereto RSRU writes its generated website.
 
 `tpl` : The template root directory. All style template files are stored in subdirectories under here.
 

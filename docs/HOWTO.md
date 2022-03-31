@@ -130,21 +130,23 @@ Edit the following fields in conf.pl to set some descriptive text fields on the 
 
 ## Category config
 
-This section uses Perl lists. Please edit only the values inside the `[qw( EDIT_THESE )],` list, i.e. between the parentheses. If you mess with the list formatting RSRU and its big brother Perl will not like you.
+This section uses Perl lists. Please edit only the values inside the `[ EDIT_THESE ],` list, i.e. between the brackets. **The category list and known keys list must be single words, or phrases with underscores. Do not use spaces.** If you mess with the list formatting RSRU and its big brother Perl will not like you.
 
 `cats` a Perl list of the default categories. The categories in your entries should match one of these, but this isn't necessary. Unknown categories will have pages generated regardless.
 
-`knownKeys`
+`knownKeys` A list of keys that are possible to be in each entry text file. Each of these keys should also exist in the rsru_entry.html and rsru_entry_img.html template files. When building an entry, RSRU will look for each of these keys in each of your entry text files, then fill their values into their placeholders in the template. **NOTE:** *desc* should always be in this list.
 
-`necessaryKeys`
+`necessaryKeys` A subset of the above list. All these keys will be mandatory for each entry. If RSRU encounters an entry without any of these keys, it will print an error message and exit. 
 
-`catDesc`
+`catDesc` A Perl array mapping each category name to a description. Formatted as follows: `CAT_NAME => "category description",`. The category description is printed at the top of each category page in your website. To exclude a description for a certain category, just make its string empty. `CAT_NAME` should match the category name in the `cats` list described above.
 
 ## Logging levels
 
-`debug`
+By default, RSRU doesn't say much while it is working. If you need to know what it is doing with your precious entries, here is how to make it talk more.
 
-`verbose`
+`verbose` If your website isn't being built right set this to `1` to enable verbose logging. It may offer clues to where you have went wrong.
+
+`debug` If "verbose" didn't remedy your malady, set this one to `1`. Things will be very noisy and this may actually make matters less clear.
 
 # Customisation
 

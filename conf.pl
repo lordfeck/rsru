@@ -53,11 +53,11 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     #======================================================================
     # These default cats are always generated, even if empty.
     # Hitherto unknown cats will be appended to a derived array if found.
-    cats => [qw(utility media sysadmin gfx dev)],
-    # List of known keys for each entry
-    knownKeys => [qw(title version category interface img_desc img_src os_support order date desc dl_url is_highlight)],
+    cats => ["utility", "media", "sysadmin", "gfx", "dev"],
+    # List of known keys for each entry, RSRU will substitute their values in a template
+    knownKeys => ["title", "version", "category", "interface", "img_desc", "img_src", "os_support", "order", "date", "desc", "dl_url", "is_highlight"],
     # Necessary keys. RSRU will fail if these are not present in any entry.
-    necessaryKeys => [qw(title version category date desc)],
+    necessaryKeys => ["title", "version", "category", "date", "desc"],
     # Description for each category, will appear on the first page of each
     catDesc => {
         utility => "Small programs for accomplishing a specific task",
