@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- RSRU by Thransoft. -->
+<!--   (C) 2020 Thran   -->
+<!-- Licenced under the terms of the GPL. See licence.txt. -->
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <link rel="stylesheet" href="{% STATIC_ROOT %}/rsru.css" type="text/css">
+    {% FEEDBLOCK_TOP %}
+    <title>{% RSRU_TITLE %}</title>
+</head>
+<body>
+    <div id="topBar">
+        <h1 id="top">{% HEAD_TITLE %}</h1>
+    <p id="subt">{% HEAD_DESC %}</p>
+    </div>
+    <div id="catBar">
+        {% RSRU_CATS %}
+    </div>
+    <div id="bodyContainer">
+        <div id="rsruCanvas">
+            <!--BEGIN RSRU-->
+            <h2>Note: everything between here is discarded and replaced with your entries.</h2>
+            <!--END RSRU-->
+        </div>
+        <p class="footerText">Rendered by <a href="https://github.com/lordfeck/rsru" target="_blank">RSRU</a>, &copy; 2020-2022 <a href="http://soft.thran.uk" target="_blank">Thransoft</a>. Source code is licenced GPLv3.</p>
+        {% FEEDBLOCK_BOTTOM %}
+    </div>
+</body>
+</html>

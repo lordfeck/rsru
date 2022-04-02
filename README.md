@@ -10,6 +10,8 @@ RSRU is ideal for building any kind of catalogue website. You could build:
 - a screenshot showcase of your favourite desktops
 - a photo gallery
 - a listing of your favourite albums by genre with copious notes glorifying your pristine music taste
+- a list of your favourite books or places to visit
+- a news section for your website
 - or just copy me and build an index of weird and wonderful websites you've discovered
 
 **Anything** is possible when you tweak the template files and the keywords. Then RSRU can do all the hard work of building the website for you.
@@ -68,8 +70,10 @@ What are the directories and what is inside each?
 
 `tpl` : The template root directory. All style template files are stored in subdirectories under here.
 
-## Release history
+## Release history & dev homepage
 [Devlog](./docs/DEVLOG.md)
+
+[Thransoft](https://soft.thran.uk)
 
 ## Sample Screenshot
 ![RSRU Screenshot](misc/rsru3.png)

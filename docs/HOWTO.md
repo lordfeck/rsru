@@ -64,11 +64,11 @@ Download the latest version of RSRU from [Thransoft](https://soft.thran.uk) or [
 $ tar -xvzf rsru_r3.tar.gz
 ```
 
-On Windows, you can use the Windows file extraction wizard, 7zip, WinZip, WinRAR, pkzip or whichever archiever is nearest to hand.
+On Windows you can use the Windows file extraction wizard, 7zip, WinZip, WinRAR, pkzip or whichever unzipper is nearest to hand.
 
 # Configuration
 
-The default config file `./conf.pl` defaults to the softcat style. Other styles are available, currently only `linkcat`. See the sample config files in the `conf_samples/` directory.
+The default config file `./conf.pl` defaults to the *softcat* style. Other styles are available, currently only *linkcat*. See the sample config files in the `conf_samples/` directory for to try each of these styles. A full explanation is given later.
 
 ## Edit conf.pl
 Before the script may be used, it is first necessary to tailor `conf.pl` to your liking. The config file is just a plain Perl hash, which means you can include any other Perl code you fancy. It also means that when editing the values, please be careful to edit only between the "quote marks" and leave all the values to the left of the fat arrows `=>` alone.
@@ -104,7 +104,7 @@ Edit the following fields in conf.pl to set some descriptive text fields on the 
 
 ## RSS Config
 
-`rssEnabled` set to 1 if you want an RSS feed generated. Set to 0 if not. When set to 0, links and meta tags for RSS are not generated.
+`rssEnabled` set to 1 if you want an RSS feed generated. Set to 0 if not. When this is set to 0 links and meta tags for RSS are not generated.
 
 `rssFilepath` set a name for the generated RSS feed. Usually the defualt is fine.
 
@@ -112,7 +112,7 @@ Edit the following fields in conf.pl to set some descriptive text fields on the 
 
 `rssLang` set the language tag for RSS.
 
-`rssCopyright` set your copyright licence for RSS (eg, your name, or creative commons).
+`rssCopyright` set your copyright licence for RSS (eg, your name or creative commons).
 
 ## Image config
 
@@ -132,7 +132,7 @@ Edit the following fields in conf.pl to set some descriptive text fields on the 
 
 This section uses Perl lists. Please edit only the values inside the `[ EDIT_THESE ],` list, i.e. between the brackets. **The category list and known keys list must be single words, or phrases with underscores. Do not use spaces.** If you mess with the list formatting RSRU and its big brother Perl will not like you.
 
-`cats` a Perl list of the default categories. The categories in your entries should match one of these, but this isn't necessary. Unknown categories will have pages generated regardless.
+`cats` a Perl list of the default categories. The categories in your entries should match one of these, but this isn't necessary. Unknown categories will have pages generated regardless. **Do not use spaces for the cat names, but you may use underscores or hyphens in their place.**
 
 `knownKeys` A list of keys that are possible to be in each entry text file. Each of these keys should also exist in the rsru_entry.html and rsru_entry_img.html template files. When building an entry, RSRU will look for each of these keys in each of your entry text files, then fill their values into their placeholders in the template. **NOTE:** *desc* should always be in this list.
 
@@ -190,25 +190,89 @@ RSRU reads in a template file called `rsru_entry.html`. Inside it there is:
 
 RSRU then takes the entry text file, finds the `{% placeholder_fields %}` inside the HTML template file and replaces those with the values in the text file. 
 
+You may customise any part of these HTML files. RSRU will then take your superb hypertext craftsmanship and make it into a full fledged website. All it asks is that you leave the special keyword fields intact inside each file. Otherwise things will be weird and broken, like you probably were in school. An explanation of each file and its fields follows.
+
 ### Common template directory contents
 
-`rsru_base.html`: The base template file. Each page rendered by rsru.pl will build atop this file.
+These are found under `./tpl/common/`.
 
-**SPECIAL FIELDS IN BASE HTML**
+**rsru_base.html**
 
-`RSRU_TITLE`, `HEAD_TITLE`, `HEAD_DESC`, `RSRU_CATS`.
+The base template file. Each page rendered by rsru.pl will build atop this file.
 
-TITLE and HEAD TITLE are the configured title in conf.pl, as is the description. Cats is the list of categiories with a link to the first page of each category.
+**Fields in rsru_base.html**
+
+Special fields are in capital letters. They are in the same `{% KEYWORD_BLOCK %}` format mentioned above. These are replaced with values sourced from `conf.pl` or other template files.
+
+`FEEDBLOCK_TOP` Where the RSS feed meta link (if enabled) is transplanted. This is the filled contents of `rsru_rss_top.html` are written.
+
+`RSRU_TITLE`, `HEAD_TITLE`: These are replaced with your configured site name in conf.pl. This is the value mapped to `siteName` in the conf file.
+
+`HEAD_DESC`: This is replaced with the value of `siteHeaderDesc` in `conf.pl`. This is the header description displayed under the title on every page.
+
+`RSRU_CATS`: A link to the homepage and links to the first page of each category are rendered here. The links are generated using the template file `rsru_cat.html`. This list appears at the top of every page.
+
+`FEEDBLOCK_BOTTOM` Where the RSS feed link (if enabled) is transplanted. This is the filled contents of `rsru_rss_bottom.html` are written. It is a link to your RSS feed at the bottom of each page.
 
 **SPECIAL NOTE**
 
 Everything between the HTML comments `<!--BEGIN RSRU-->` and `<!--END RSRU-->` is where further rendering happens. RSRU reads in until it hits BEGIN RSRU, then looks for END RSRU. From there it reads to the bottom. This is how we generate a consistent header and footer. 
 
+#### Other common template files
+
+**rsru_index.html**
+
+ Unique text for the homepage, displayed above the latest entries list.
+
+**Fields in rsru_index.html**
+
+`RSRU_HPHD`: Homepage header. Replaced with the contents of `siteHeaderDesc` in conf.pl. Intended to be a friendly greeting for your visitors.
+
+`RSRU_HPDESC`: Homepage description. Replaced with the contents of `siteHomepageDesc`  in conf.pl. A good place to describe the contents and purpose of your website.
+
+**rsru_cat.html**
+
+Used to generate a link to each of your categories at the top of every page.
+
+**Fields in rsru_cat.html**
+
+`IS_ACTIVE`: Replaced with the text `active` to apply the CSS class for an active link. This is applied to the pages of the currently active category. It provides a navigation aid in the link bar.
+
+`CAT_URL`: The link to the first page of this category.
+
+`CAT_NAME`: Replaced with the name of this category. The name of each category is sourced from the `cats` list in conf.pl is sourced from the `cats` list in conf.pl.
+
+**pagination_nav.html**
+
+Template for the pagination at the bottom of each category page. Links to next/previous pages. RSRU will create a new page for each category once the value of `maxPerPage` is exceeded. This template is used to find your way back and forwards through each category.
+
+**Fields in pagination_nav.html**
+
+`IDX_PREV`, `IDX_NEXT`: Links to the previous and next pages in this category.
+
+`IDX` Replaced with the current page number. Used to show to your visitors how far deep they are.
+
+`MAX_URL` A link to the final page in each category. Used to jump to the end.
+
+`MAX` The total number of pages in this category.
+
+**rsru_hp_entry.html**
+
+Template for individual entries linked from the homepage. Used to build lists of the latest entries and highlighted entries in your site.
+
+**Fields in rsru_hp_entry.html**
 
 
+`rsru_rss_top.html`: Made into an RSS link in the meta section of your pages.
+
+`rsru_rss_bottom.html`: Made into an RSS link at the bottom of each page.
+
+todo:
 the "static" dir
 
-How to customise something in "common". (priority order)
+How to adapt something in "common". (priority order)
+
+Template files in each template root.
 
 # Utilisation
 
@@ -243,6 +307,8 @@ This is <b>bold</b> to test HTML.
 ```
 
 **NOTE:** The minimum required fields are: _title, version, category, date, desc_. These are coded as `necessaryKeys` in `conf.pl`. It is possible to change this list, should you see fit.
+
+TODO: describe all supported fields.
 
 ### An example entry - linkcat
 
