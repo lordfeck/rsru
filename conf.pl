@@ -3,8 +3,8 @@
 # Don't be daft: This is not executable alone. Do not amend the key names.
 #===============================================================================
 
-# Path setup, template include dir. Should be left alone!
 #=======================================================================
+# Path setup, template include dir. Should be left alone!
 my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 #=======================================================================
 
@@ -18,7 +18,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 
     # Path Configuration
     tplRoot => "$tplRoot",
-    tplinc => "${tplRoot}/softcat",  # Template include dir
+    tplinc => "${tplRoot}/softcat",  # Template include dir.
     entrydir => "./entries",
     out => "./output",
     # Wipe destination directory before writing output files
@@ -55,7 +55,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Hitherto unknown cats will be appended to a derived array if found.
     cats => ["utility", "media", "sysadmin", "gfx", "dev"],
     # List of known keys for each entry, RSRU will substitute their values in a template
-    knownKeys => ["title", "version", "category", "interface", "img_desc", "img_src", "os_support", "order", "date", "desc", "dl_url", "is_highlight"],
+    knownKeys => ["title", "version", "category", "interface", "img_desc", "img_src", "os_support", "order", "date", "desc", "dl_url", "is_highlight", "summary"],
     # Necessary keys. RSRU will fail if these are not present in any entry.
     necessaryKeys => ["title", "version", "category", "date", "desc"],
     # Description for each category, will appear on the first page of each

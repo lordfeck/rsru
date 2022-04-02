@@ -29,9 +29,9 @@ Each entry will belong to a category. Each category will appear as tab-style HTM
 RSRU will also generate image thumbnails and RSS feeds for you.
 
 # How do I RSRU?
-If you're eager to try RSRU, instructions are available here: [RSRU Howto](docs/HOWTO.md). The documentation covers installation, configuration, customisation and everyday operation.
+If you're eager to try RSRU, instructions are available here: [RSRU HOWTO](docs/HOWTO.md). The comprehensive documentation covers installation, configuration, customisation and everyday operation. Any other questions you have may be raised as a ticket on this repository.
 
-*Note*: Documentation is currently a work in progress!
+If you want to start quickly, just download the latest release. Edit a text file under `entries/` (don't delete anything ending with a colon, but change anything to the right of the colon). Then run `./rsru.pl` and open `./output/index.html` in a web browser. This will give you the gist of what it does!
 
 # Requirements
 * Perl, at least version 5.10 and List::Util present. This should be available in the standard library of most recent Perls.
@@ -44,12 +44,12 @@ RSRU's core functionality operates using only standard library modules. The proj
 - XML::RSS is optional. It is (surprisingly) used by RSRU to generate an RSS feed.
 - GD is optional. It is used to generate thumbnails and convert PNG to JPEG, if desired.
 
-# Future hackery for RSRU
+# Future hackery for RSRU, known issues
 * I've plans to hack it into a "microblogger" system. Think of a way to share clips of sites, quotes, images, whatever else.
-* Photoblog and blog templates
-* Make pathnames deterministic. Currently we just sort alphabetically then chronologically, then make a new page when the previous page is filled. This means that entries aren't always on the same page.
+* Build a photoblog and blog template
+* Make pathnames deterministic. Currently we just sort alphabetically then chronologically, then make a new page when the previous page is filled. This means that entries aren't guaranteed to be on the same page, but will move further back down the list and onto higher numbered pages. This will be a problem for hyperlink consistency.
 * Performance optimisations, deduplicate where necessary (many places look similar)
-* Very far in the future: Use a real templating engine (like Mustache) to build our pages. This would make RSRU into something approaching a full site generator.
+* Very far in the future: Use a real templating engine (like Moustache) to build our pages. This would make RSRU into something approaching a full site generator. This would be best suited for a new project.
 
 # Repository layout
 What are the directories and what is inside each?
@@ -66,7 +66,7 @@ What are the directories and what is inside each?
 
 `misc` : Screenshots and images intended to show how RSRU looks. This directory may be deleted.
 
-`output` : The default destionation directory whereto RSRU writes its generated website.
+`output` : The default destination directory whereto RSRU writes its generated website.
 
 `tpl` : The template root directory. All style template files are stored in subdirectories under here.
 
