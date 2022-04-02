@@ -5,5 +5,7 @@ ecc: 8
 heaviness: 8
 date: 2002-03-01
 category: fun
+img_src: ebay-2002.png
+img_desc: ebay back in the day
 
 Cool auction site!

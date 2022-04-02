@@ -70,11 +70,11 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 
     # Master template and any other blank HTML templates
     # Typically, these should not be altered.
-    tpl => "rsru_template.html",
+    tpl => "rsru_base.html",
     blankEntry => "rsru_entry.html",
     blankEntryImg => "rsru_entry_img.html",
     blankCatEntry => "rsru_cat.html",
-    blankTplHp => "index.html",
+    blankTplHp => "rsru_index.html",
     blankTplHpEntry => "rsru_hp_entry.html",
     blankTplNav => "pagination_nav.html",
     rssBlockTop => "rsru_rss_top.html",

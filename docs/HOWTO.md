@@ -5,7 +5,7 @@ User's Guide covering installation, configuration, customisation and utilisation
 
 # RSRU in brief
 
-RSRU, or _Really Small Really Useful_, is a static website builder written in Perl.
+RSRU, or _Really Small, Really Useful_, is a static website builder written in Perl.
 It currently specialises in building "catalogue" style websites, so it is ideal for building a website dedicated to collections.
 
 Sample templates are included for building a link catalogue or a software catalogue. These may be adapted to fit your needs.
@@ -68,7 +68,7 @@ On Windows, you can use the Windows file extraction wizard, 7zip, WinZip, WinRAR
 
 # Configuration
 
-The default config file `./conf.pl` defaults to the softcat style. Other styles are available, currently only `linkcat`.
+The default config file `./conf.pl` defaults to the softcat style. Other styles are available, currently only `linkcat`. See the sample config files in the `conf_samples/` directory.
 
 ## Edit conf.pl
 Before the script may be used, it is first necessary to tailor `conf.pl` to your liking. The config file is just a plain Perl hash, which means you can include any other Perl code you fancy. It also means that when editing the values, please be careful to edit only between the "quote marks" and leave all the values to the left of the fat arrows `=>` alone.
@@ -152,13 +152,63 @@ By default, RSRU doesn't say much while it is working. If you need to know what 
 
 Now that you've RSRU ready and waiting on your system, it is time to decide which template you prefer.
 
-(screenshots of both, how to switch keywords in the tpl)
+Currently, two templates are available: linkcat and softcat. 
+
+![linkcat screenshot](../misc/linkcat.png)
+
+![softcat screenshot](../misc/rsru3.png)
+
+You can easily try either using the command line switches:
+
+`./rsru.pl -c conf_samples/conf_linkcat.pl`
+
+`./rsru.pl -c conf_samples/conf_softcat.pl`
+
+Pick one of these styles and tweak the keywords, css and HTML layout to your liking. A guide instructing you in this very task follows.
 
 ## Templating
-The template files are read by default from `./tpl/softcat`. Each HTML file under here is essential and used to weave the output.
+The template files are read by default from `./tpl/<TPL_NAME>/`. Each HTML file under here is essential and used to weave the output. There is also a `common` directory which holds HTML template files that are common to all templates *(This is possible because much of the style is just handled with CSS)* but it is trivial to override the common template files.
 
-See [TPL_README](TPL_README.md), which will describe each file and how to customise it. (This guide is due a revamp)
+The template format for RSRU is very straightforward. RSRU maps placeholder fields in the template files to keyword values in your entry text files. To illustrate this practically:
 
+You have an entry called `excellent.txt`. Inside it:
+
+```
+title: Excellent entry!
+rating: 100/10
+
+They don't come any better.
+```
+
+RSRU reads in a template file called `rsru_entry.html`. Inside it there is:
+
+```
+<h1>{% title %}</h1>
+<div>{% desc %}</div>
+<div>{% rating %}</div>
+```
+
+RSRU then takes the entry text file, finds the `{% placeholder_fields %}` inside the HTML template file and replaces those with the values in the text file. 
+
+### Common template directory contents
+
+`rsru_base.html`: The base template file. Each page rendered by rsru.pl will build atop this file.
+
+**SPECIAL FIELDS IN BASE HTML**
+
+`RSRU_TITLE`, `HEAD_TITLE`, `HEAD_DESC`, `RSRU_CATS`.
+
+TITLE and HEAD TITLE are the configured title in conf.pl, as is the description. Cats is the list of categiories with a link to the first page of each category.
+
+**SPECIAL NOTE**
+
+Everything between the HTML comments `<!--BEGIN RSRU-->` and `<!--END RSRU-->` is where further rendering happens. RSRU reads in until it hits BEGIN RSRU, then looks for END RSRU. From there it reads to the bottom. This is how we generate a consistent header and footer. 
+
+
+
+the "static" dir
+
+How to customise something in "common". (priority order)
 
 # Utilisation
 

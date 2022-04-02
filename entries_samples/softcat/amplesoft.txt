@@ -3,10 +3,12 @@ version: 4
 category: utility
 interface: console
 img_desc: 
+img_src: sample.jpg
 os_support: Linux
 order: 3
 date: 2021-01-01
 dl_url: http://www.themostamazingwebsiteontheinternet.com/
+is_highlight: 1
 # Lines beginning '#' are skipped
 # The rest of the file is the description in HTML
 Sample soft offers no convenience to the user. It only exists to provide a sample for RSRU.
