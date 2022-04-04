@@ -164,8 +164,10 @@ Now that you've RSRU ready and waiting on your system, it is time to decide whic
 
 Currently, two templates are available: linkcat and softcat. 
 
+### Linkcat screenshot
 ![linkcat screenshot](../misc/linkcat.png)
 
+### Softcat screenshot
 ![softcat screenshot](../misc/rsru3.png)
 
 You can easily try either using the command line switches:
@@ -457,7 +459,8 @@ Open index.html in a web browser and look around. If you are happy with how this
 
 ## Command Line Flags (optional)
 - `-p` for *P*roduction mode. Call `./rsru.pl -p`. The configured live URL will be used as the base URL for all internal links. Without this flag, relative links are instead used. Use production mode when you're building the live version of your website for the Internet. Use non-production mode when you're testing it on your local system.
-- `-c <conf>` to load in the specified *C*onfig file. Call `./rsru.pl -c <conf_file>.pl`. The specified configuration file is used to configure your site.
+- `-c <conf>` to load in the specified *C*onfig file. Call `./rsru.pl -c <conf_file>.pl`. The specified configuration file is read and used to configure your site.
+- `-o <dir>`: Overwrite the configured output directory and instead have RSRU write your website to `<dir>`
 - `-r` for *R*ebuild. Will ignore no-clobber img option and **will wipe everything** in the output dir before writing your website there.
 - `-h` for *H*elp. Prints command line options then exits.
 - `-v` for *V*ersion. Prints release information then exists.

@@ -4,7 +4,7 @@
 # Thransoft RSRU Release 3
 # A static catalogue-style website generator, freely given
 # Licence: GPLv3. See "licence.txt" for full details.
-# Author: Thran. Authored: 09/09/2020 - 27/11/2021
+# Author: Thran. Authored: 09/09/2020 - 04/04/2022
 # WWW: http://soft.thran.uk
 # 
 # With Thanks: https://stackoverflow.com/questions/63835994/
@@ -90,6 +90,7 @@ Usage:
 -p : Use Productuion mode (uses Live URL as basepath)
 -r : Rebuild. Will ignore no-clobber and recreates all outfiles (including images).
 -c <conf> : Use this conf file
+-o <dir> : Use this output directory
 -v : Show version
 
 Call with no args, RSRU will read in conf.pl and build a website.
@@ -319,7 +320,7 @@ sub entrykvs_to_html {
 
     # If image file exists, assign entry template with image field and prepare
     # the image files, otherwise use text-only tplEntry
-    if ($localImgPath = get_image_filename($entryId)) {
+    if ($uc{imagesEnabled} and ($localImgPath = get_image_filename($entryId))) {
         $filledEntry = $tplEntryImg;
         process_entry_image($localImgPath, $entryId);
         $filledEntry =~ s/{% img_tn %}/${imgBasePath}\/$entryKvs{$entryId}{img_tn}/g;
@@ -783,7 +784,7 @@ sub write_rss {
 #===============================================================================
 
 # Handle user flags, if any
-getopts('c:vhpr', \%opts);
+getopts('c:vhpro:', \%opts);
 
 if (defined $opts{h}) { say $BANNER; exit; }
 if (defined $opts{v}) { say $RELEASE; exit; }
@@ -814,6 +815,8 @@ if ((defined $opts{p}) or $uc{target} eq 'production') {
     $uc{target} = 'production';
     say "Production mode configured, base URL: $baseURL";
 }
+
+$uc{out} = $opts{o} if (defined $opts{o}); 
 
 # Check we have the appropriate module installed for imaging
 if ($uc{imagesEnabled} && !$has_gd) {
@@ -856,7 +859,7 @@ $tplRssBlockBottom = read_template_file($uc{rssBlockBottom});
 $tplEntryImg = read_template_file($uc{blankEntryImg});
 $tplEntry = read_template_file($uc{blankEntry});
 
-@imgDirList = @{list_dir($uc{imgSrcDir})};
+@imgDirList = @{list_dir($uc{imgSrcDir})} if $uc{imagesEnabled};
 
 say "<== Read Finished <==";
 

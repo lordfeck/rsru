@@ -1,5 +1,6 @@
 Thransoft RSRU Release 3
 ========================
+Skip to user's guide: [RSRU HOWTO](docs/HOWTO.md).
 
 # What is RSRU?
 A simple static HTML page generator written in Perl. It is intended for the sole task of generating a section of my website [Well Made Web](https://wmw.thran.uk), but RSRU is flexible enough that it could build other websites. GPLv3 licence.
@@ -31,7 +32,7 @@ RSRU will also generate image thumbnails and RSS feeds for you.
 # How do I RSRU?
 If you're eager to try RSRU, instructions are available here: [RSRU HOWTO](docs/HOWTO.md). The comprehensive documentation covers installation, configuration, customisation and everyday operation. Any other questions you have may be raised as a ticket on this repository.
 
-If you want to start quickly, just download the latest release. Edit a text file under `entries/` (don't delete anything ending with a colon, but change anything to the right of the colon). Then run `./rsru.pl` and open `./output/index.html` in a web browser. This will give you the gist of what it does!
+If you want to start quickly, just download the latest release. Edit a text file under `entries/` (don't delete anything ending with a colon, but change anything to the right of the colon). Then run `./rsru.pl` and open `./output/index.html` in a web browser. This will give you a practical demonstration of what it does.
 
 # Requirements
 * Perl, at least version 5.10 and List::Util present. This should be available in the standard library of most recent Perls.
@@ -54,19 +55,19 @@ RSRU's core functionality operates using only standard library modules. The proj
 # Repository layout
 What are the directories and what is inside each?
 
-`conf_samples` : A variety of config files intended to build sample websites in RSRU. Each config file matches a template style under `tpl`. To try a config sample, run `./rsru.pl -c ./conf_samples/<CONF_NAME>.pl`.
+`conf_samples` : A variety of config files intended to build sample websites in RSRU. Each config file matches a template style under `tpl`. To try a config sample, run `./rsru.pl -c ./conf_samples/<CONF_NAME>.pl`. To make a config sample permanent, copy it to the root and rename it conf.pl (replacing the default). You'll then no longer have to run RSRU with any `-c` option flag.
 
 `docs` : Documentation including release history and HOWTO.
 
 `entries` : Default sample entries for the softcat template. Also the default source directory whence RSRU will read its entries.
 
-`entries_samples` : Sample entries to demonstrate the other config samples.
+`entries_samples` : Sample entries to demonstrate the other config samples. Once you understand how the entries are written, you may safely remove this directory.
 
 `img` : Sample image files to demonstrate RSRU's thumbnail generation. Also the default source directory RSRU will check for your images.
 
-`misc` : Screenshots and images intended to show how RSRU looks. This directory may be deleted.
+`misc` : Screenshots and images intended to show how RSRU looks. This directory may be safely deleted once you've settled for a style.
 
-`output` : The default destination directory whereto RSRU writes its generated website.
+`output` : The default destination directory whereto RSRU writes its generated website. Not tracked in Git by default (see `.gitignore`).
 
 `tpl` : The template root directory. All style template files are stored in subdirectories under here.
 

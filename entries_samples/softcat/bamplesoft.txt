@@ -6,7 +6,9 @@ img_desc:
 os_support: Linux
 order: 3
 date: 2021-01-01
+img_src: ebay-2002.png
 dl_url: http://www.themostamazingwebsiteontheinternet.com/
+is_highlight: yes
 # Lines beginning '#' are skipped
 # The rest of the file is the description in HTML
 Sample soft offers no convenience to the user. It only exists to provide a sample for RSRU.
