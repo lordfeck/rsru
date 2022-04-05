@@ -1,0 +1,161 @@
+/***************************
+ *   THRANSOFT LAYOUT
+ * 	   Revision 1
+ * Edited 01/12/2019 S.D.G.
+ ***************************/
+
+/* page layout */
+body {
+	background-color: #7788ef;
+	margin:0;
+	font-family: "Franklin Gothic Medium", "Lucida Grande", sans-serif;
+}
+
+code {
+    margin-right: 3px;
+    color: #c9d1d9;
+    font-size: 1.2em;
+}
+
+code p {
+        margin-top: 0px;
+        margin-bottom: 0px;
+}
+pre#tabs {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        display: inline-block;
+}
+
+div#topBar {
+	background-color: #5177b9;
+	width: 100%;
+	height: 120px;
+	border: 0; margin: 0;
+	padding-top: 4px;
+	border-bottom: 3px solid black;
+}
+
+div#topMenu {
+	padding-left: 3px;
+	border-bottom: 1px solid grey;
+	padding-bottom: 2px;
+    color: #D9D09E;
+}
+
+div#howto {
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+img#poweroff {
+    float: right;
+    margin-left: auto;
+    display: block;
+    margin-right: 5px;
+}
+
+#bodyContainer a:link {
+	color: #66ff66;
+}
+
+#bodyContainer a:hover {
+	color: #36ef36;
+    text-decoration: underline;
+}
+
+#bodyContainer a:visited {
+	color: #66ff66;
+}
+
+#topMenu a:link { 
+	text-decoration: none;
+} 
+#topMenu a:hover { 
+	text-decoration: underline;
+} 
+
+#topMenu a:visited { 
+	text-decoration: none;
+}
+
+div#bodyContainer {
+ 	padding-top: 3px;
+	margin-left: 5px;
+	margin-right: 5px;
+	padding-left: 10px;
+/*	color: #aaddbb;*/
+    color: #D9D09E;
+	background-color:#000000;
+  padding-bottom: 5px;
+}
+
+img#logo {
+	float: left;
+	display: inline-block;
+	width: 92px;
+	height: 92px;
+	margin-right: 10px;
+	margin-left: 6px;
+}
+
+div#SubsectionLinks {
+	display: block;
+	text-transform: uppercase;
+	text-align: left;
+	width: 100px;
+	position: absolute;
+}
+
+/* text style */
+h1#titleHeader{
+	text-align: left;
+	color: #000001;
+	letter-spacing: 2px;
+	font-style: italic;
+	font-size: 3em;
+	margin-bottom: 0;
+	margin-top: 20px;
+}
+
+h2#subtitle {
+	font-size: 0.8em;
+	font-style: italic;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+p.footerText{
+	border-top: 1px solid black;
+	padding-top: 4px;
+	margin: 3px 4px 10px 4px;
+	font-style: italic;
+	font-size: 0.7em;
+	text-align: center;
+}
+
+p.footerTextNob{
+    color: black;
+	padding-top: 4px;
+	margin: 3px 4px 10px 4px;
+	font-style: italic;
+	font-size: 0.7em;
+	text-align: center;
+}
+
+p.newsItem{
+    font-style: italic;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #9FA8D9;
+    border-bottom: 1px solid #9FA8D9;
+}
+
+p.downloadHeader {
+	font-weight: bold;
+}
+@media only screen and (max-width: 500px) {
+h1#titleHeader{
+	font-size: 2em;
+}
+}

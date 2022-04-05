@@ -485,7 +485,7 @@ sub prep_tpltop {
     my $staticRoot = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
     $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
-    $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/;
+    $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/g;
 
     # Handle RSS feeds
     if ($uc{rssEnabled}) {

@@ -1,0 +1,8 @@
+title: Big Story!
+summary: You won't believe this.
+category: politics
+date: 2022-04-04
+is_highlight: no
+url: https://www.bbc.co.uk/news/uk-politics-42322191
+
+UK minister confirms that objective reality exists.

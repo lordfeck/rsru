@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- Built by Thransoft RSRU. -->
+<!--  (C) 2020 - 2022 Thran.  -->
+<!-- Licenced under the terms of the GPL. See licence.txt. -->
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="Cache-Control" content="no-store" />
+	<title>{% RSRU_TITLE %}</title>
+    <link rel="stylesheet" href="{% STATIC_ROOT %}/rsru.css" type="text/css">
+    {% FEEDBLOCK_TOP %}
+</head>
+<body>
+
+	<div id="topBar">
+		<img id="logo" src="{% STATIC_ROOT %}/logo.png" alt="New news logo.">
+		<h1 id="titleHeader">{% HEAD_TITLE %}</h1>
+        <h2 id="subtitle">{% HEAD_DESC %}</h2>
+	</div>
+
+
+	<div id="bodyContainer">
+        <div id="topMenu">
+        {% RSRU_CATS %}
+        </div>
+        <div id="howto">
+        <!--BEGIN RSRU-->
+        <h2>Note: everything between here is discarded and replaced with your entries.</h2>
+        <!--END RSRU-->
+        </div>
+	</div>
+	<div id="footer">
+        <p class="footerText">Rendered by <a href="https://github.com/lordfeck/rsru" target="_blank">RSRU</a>, &copy; 2020-2022 <a href="http://soft.thran.uk" target="_blank">Thransoft</a>. Source code is licenced GPLv3.</p>
+        {% FEEDBLOCK_BOTTOM %}
+	</div>
+</body>
+</html>
+
