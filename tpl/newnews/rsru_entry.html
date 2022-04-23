@@ -1,4 +1,7 @@
-        <p class="newsItem">{% title %}</p>
+
+    <div class="rsru {% IS_HIGHLIGHT %}">
+        <p class="newsItem"><a id="{% KEY %}">{% title %}</a></p>
         <p>{% desc %}</p>
-        <p><b>Date:</b>{% date %}</p>
+        <p><b>Date: </b>{% date %}</p>
         <p><a href="{% url %}">Read more</a></p>
+    </div>

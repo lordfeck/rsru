@@ -1,0 +1,8 @@
+title: new war story
+summary: It is new and that's all that may be said.
+category: war
+date: 2005-02-11
+is_highlight: no
+url: https://www.defense.gov/
+
+another war happened somewhere, very bad, much tragedy, people were die.

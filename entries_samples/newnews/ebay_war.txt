@@ -1,0 +1,11 @@
+title: ebay war
+summary: another one
+category: war
+date: 2022-04-15
+is_highlight: no
+url: https://www.ebay.co.uk/war
+img_src: ebay-2002.png
+img_desc: ebay, i want it my way
+
+There was a war fought on eBay.<br>
+Many died. <i>Alas.</i> We will remember them always. We will leave them feedback that shines to eternity. May many green plusses rain down and honour their descendents.

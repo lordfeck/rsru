@@ -1,0 +1,9 @@
+title: New News
+summary: Finally, a 100% reliable news source.
+category: politics
+date: 2022-04-01
+is_highlight: yes
+url: https://soft.thran.uk
+
+New News launches. Obey us. Submit to us.<br><br>
+All the others are fake news. Truth, O sweet delight of total accuracy, has arrived at last.

@@ -72,7 +72,7 @@ my $imgOutDir;      # Concatenation of root output dir + user image output dir
 # Consts
 my $DATE_FORMAT = "%Y-%m-%d";
 my $MAX_CATS = 8;
-my $MIN_ENTRIES = 5;
+my $MIN_ENTRIES = 2;
 my $MAX_ENTRIES = 5;
 my $YES = 'yes';
 my $NO_SUMMARY = '';
@@ -325,7 +325,8 @@ sub entrykvs_to_html {
         process_entry_image($localImgPath, $entryId);
         $filledEntry =~ s/{% img_tn %}/${imgBasePath}\/$entryKvs{$entryId}{img_tn}/g;
         $filledEntry =~ s/{% img_full %}/${imgBasePath}\/$entryKvs{$entryId}{img_full}/g;
-        $filledEntry =~ s/{% img_desc %}/$entryKvs{$entryId}{img_desc}/g;
+        my $imgDesc = defined $entryKvs{$entryId}{img_desc} ? $entryKvs{$entryId}{img_desc} : "";
+        $filledEntry =~ s/{% img_desc %}/$imgDesc/g;
     } else {
         $filledEntry = $tplEntry;
     }
@@ -579,7 +580,6 @@ sub generate_entries_hp {
 
     for my $entry (@_) {
        $cwHpEntry = $tplHpEntry;
-        
        $cwHpEntry =~ s/{% ENTRY_NAME %}/$entryKvs{$entry}{title}/;
        if ($entryKvs{$entry}{summary}) {
            $cwHpEntry =~ s/{% ENTRY_DESC %}/$entryKvs{$entry}{summary}/;
@@ -613,9 +613,11 @@ sub paint_homepage {
     $tplHp .= "<p>Current total entries: " . scalar %entryKvs . "</p>";
 
     print $fh $tplHp;
+    my $totalEntries = scalar (%entryKvs);
 
-    if (scalar (%entryKvs) >= $MIN_ENTRIES){
-        @latest = sort_all_entries($MAX_ENTRIES); 
+    if ( $totalEntries >= $MIN_ENTRIES ){
+        my $max = ($totalEntries < $MAX_ENTRIES) ? $totalEntries : $MAX_ENTRIES;
+        @latest = sort_all_entries($totalEntries); 
         print $fh '<h2>Latest Entries</h2>';
         print $fh generate_entries_hp(@latest);
     } else {

@@ -42,7 +42,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 
     # Imaging configuration (requires GD)
     imagesEnabled => 1,
-    thumbnailSize => "150x150",
+    thumbnailSize => "120x120",
     imgSrcDir => "./img",
     imgDestDir => "img",            # Destination subdir, appended to liveURL or out path
     imgToJpeg => 1,                 # Convert fullres PNG to JPEG

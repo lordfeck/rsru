@@ -1,7 +1,5 @@
 /***************************
- *   THRANSOFT LAYOUT
- * 	   Revision 1
- * Edited 01/12/2019 S.D.G.
+ *   Thransoft RSRU Newnews
  ***************************/
 
 /* page layout */
@@ -17,20 +15,20 @@ code {
     font-size: 1.2em;
 }
 
-code p {
-        margin-top: 0px;
-        margin-bottom: 0px;
-}
 pre#tabs {
-        margin-top: 0px;
-        margin-bottom: 0px;
-        display: inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: inline-block;
 }
 
 div#topBar {
-	background-color: #5177b9;
+	/*background-color: #5177b9;*/
+    background: #513D9A;
+    background: -webkit-linear-gradient(bottom right, #513D9A, #E2AC55);
+    background: -moz-linear-gradient(bottom right, #513D9A, #E2AC55);
+    background: linear-gradient(to top left, #513D9A, #E2AC55);
 	width: 100%;
-	height: 120px;
+	height: 90px;
 	border: 0; margin: 0;
 	padding-top: 4px;
 	border-bottom: 3px solid black;
@@ -43,16 +41,72 @@ div#topMenu {
     color: #D9D09E;
 }
 
-div#howto {
+div#nav {
+    text-align: center;
+    font-size: 1.0em;
+    padding-bottom: 2px;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    height: 1.2em;
+    font-weight: bold;
+    display: block;
+}
+
+span.active {
+    font-weight: bold;
+}
+
+div#navCount {
+    float: left;
+}
+
+div#navSkip {
+    float: right; 
+}
+
+div#contentContainer {
     padding-left: 5%;
     padding-right: 5%;
 }
 
-img#poweroff {
+div#bodyContainer {
+ 	padding-top: 3px;
+    padding-bottom: 20px;
+	padding-left: 10px;
+	margin-left: 5px;
+	margin-right: 5px;
+    color: #D9D09E;
+	background-color:#000000;
+}
+
+span#catTotal {
     float: right;
+}
+
+
+/* entry div */
+div.rsru {
+    min-height: 170px;
+}
+
+div.rsru_entry_text {
+    margin-top: 4px;
+}
+
+div.rsru_img div.rsru_entry_text {
+    max-width: 60%;
+    display: inline-block;
+}
+
+.rsru_entry_text p { 
+    margin-top: 0px; 
+}
+
+div.imgWrap {
+    width: 120px;
     margin-left: auto;
-    display: block;
-    margin-right: 5px;
+    margin-right: 0px;
+    float: right;
 }
 
 #bodyContainer a:link {
@@ -79,32 +133,14 @@ img#poweroff {
 	text-decoration: none;
 }
 
-div#bodyContainer {
- 	padding-top: 3px;
-	margin-left: 5px;
-	margin-right: 5px;
-	padding-left: 10px;
-/*	color: #aaddbb;*/
-    color: #D9D09E;
-	background-color:#000000;
-  padding-bottom: 5px;
-}
-
 img#logo {
 	float: left;
 	display: inline-block;
-	width: 92px;
-	height: 92px;
+	width: 60px;
+	height: 60px;
 	margin-right: 10px;
 	margin-left: 6px;
-}
-
-div#SubsectionLinks {
-	display: block;
-	text-transform: uppercase;
-	text-align: left;
-	width: 100px;
-	position: absolute;
+    margin-bottom: 30px; /* to ensure subtitle doesn't appear below logo, del if you want this */
 }
 
 /* text style */
@@ -115,7 +151,7 @@ h1#titleHeader{
 	font-style: italic;
 	font-size: 3em;
 	margin-bottom: 0;
-	margin-top: 20px;
+	margin-top: 10px;
 }
 
 h2#subtitle {
@@ -126,19 +162,8 @@ h2#subtitle {
 }
 
 p.footerText{
-	border-top: 1px solid black;
 	padding-top: 4px;
 	margin: 3px 4px 10px 4px;
-	font-style: italic;
-	font-size: 0.7em;
-	text-align: center;
-}
-
-p.footerTextNob{
-    color: black;
-	padding-top: 4px;
-	margin: 3px 4px 10px 4px;
-	font-style: italic;
 	font-size: 0.7em;
 	text-align: center;
 }
@@ -149,13 +174,50 @@ p.newsItem{
     font-size: 1.2em;
     color: #9FA8D9;
     border-bottom: 1px solid #9FA8D9;
+    margin-bottom: 4px;
+}
+
+div.highlight p.newsItem {
+    color: gold;
+    border-bottom: 1px solid gold;
 }
 
 p.downloadHeader {
 	font-weight: bold;
 }
-@media only screen and (max-width: 500px) {
-h1#titleHeader{
-	font-size: 2em;
+
+p#catDesc {
+    font-style: italic;
+    letter-spacing: 1.1px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
+
+/* homepage entries */
+p.entryDesc {
+    margin-top: 0px;
+    margin-bottom: 4px;
+}
+
+h3.entryName {
+	color: #9FA8D9;
+    font-style: italic;
+    margin-top: 8px;
+    margin-bottom: 2px; 
+}
+
+div.entryMeta {
+    width: 100%;
+	color: #9FA8D9;
+	border-bottom: 1px solid #9FA8D9;
+}
+span.entryMetaItem {
+    display: inline-block;
+    float: right;
+}
+
+@media only screen and (max-width: 500px) {
+    h1#titleHeader{
+        font-size: 2em;
+    }
 }
