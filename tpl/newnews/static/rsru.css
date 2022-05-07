@@ -46,6 +46,7 @@ div#nav {
     height: 1.2em;
     font-weight: bold;
     display: block;
+    margin-top: 15px;
 }
 
 span.active {
@@ -83,16 +84,35 @@ span#catTotal {
 
 /* entry div */
 div.rsru {
-    min-height: 170px;
+    min-height: 180px;
+    padding-top: 5px;
+    border-bottom: 1px solid #E2AC55;
+}
+div.noImg {
+    min-height: 80px;
 }
 
 div.rsru_entry_text {
     margin-top: 4px;
 }
 
-div.rsru_img div.rsru_entry_text {
-    max-width: 60%;
-    display: inline-block;
+div.entryDesc {
+    display: inline;
+    vertical-align: top;
+    min-height: 170px;
+}
+
+div.entryMetaTail {
+    display: block;
+    width: 100%;
+}
+
+a.readMoreLink {
+    float: right;
+}
+
+p.rsruDesc {
+    margin-top: 0px;
 }
 
 .rsru_entry_text p { 
@@ -101,9 +121,14 @@ div.rsru_img div.rsru_entry_text {
 
 div.imgWrap {
     width: 120px;
-    margin-left: auto;
-    margin-right: 0px;
-    float: right;
+    margin-right: 8px;
+    margin-left: 0px;
+    margin-bottom: 8px;
+    float: left;
+}
+
+img.imgThumbnail {
+    float: left;
 }
 
 #bodyContainer a:link {
@@ -173,6 +198,7 @@ p.newsItem{
     color: #E2AC55;
     border-bottom: 1px solid #E2AC55;
     margin-bottom: 4px;
+    margin-top: 4px;
 }
 
 div.highlight p.newsItem {

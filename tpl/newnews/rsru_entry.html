@@ -1,7 +1,8 @@
 
-    <div class="rsru {% IS_HIGHLIGHT %}">
-        <p class="newsItem"><a id="{% KEY %}">{% title %}</a></p>
-        <p>{% desc %}</p>
-        <p><b>Date: </b>{% date %}</p>
-        <p><a href="{% url %}">Read more</a></p>
+    <div class="rsru noImg {% IS_HIGHLIGHT %}">
+        <p class="newsItem"><a id="{% KEY %}"></a>{% title %}</p>
+        <p class="rsruDesc">{% desc %}</p>
+        <div class="entryMetaTail">
+        <p><b>Date: </b>{% date %} <a href="{% url %}" class="readMoreLink">Read more</a></p>
+        </div>
     </div>

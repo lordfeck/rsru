@@ -1,15 +1,18 @@
             
     <div class="rsru rsru_img {% IS_HIGHLIGHT %}">
         <p class="newsItem"><a id="{% KEY %}"></a>{% title %}</p>
-        <div class="rsru_entry_text">
-            <p>{% desc %}</p>
-            <p><b>Date: </b>{% date %}</p>
-            <p><a href="{% url %}">Read more</a></p>
-        </div>
 
         <div class="imgWrap">
         <div class="imgBorder">
             <a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a>
         </div>
         </div>
+
+        <div class="entryDesc">
+            <p class="rsruDesc">{% desc %}</p>
+        </div>
+        <div class="entryMetaTail">
+        <p><b>Date: </b>{% date %} <a href="{% url %}" class="readMoreLink">Read more</a></p>
+        </div>
+
     </div>
