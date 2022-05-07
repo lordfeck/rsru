@@ -17,7 +17,7 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Path Configuration
     tplRoot => "$tplRoot",
     tplinc => "${tplRoot}/bland",  # Template include dir
-    entrydir => "./entries_samples/bland",
+    entrydir => "./entries_samples/blandblog",
     out => "./output",
     # Wipe destination directory before writing output files
     clearDest => 0,

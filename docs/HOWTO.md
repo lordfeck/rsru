@@ -414,7 +414,6 @@ Always give your entry a value for `category:`. This should be one of the catego
 Your entry also requires a date in the `date:` key. The date must be in the format `YYY-MM-DD`. This is essential for sorting your entries into chronological order. The date will also be shown in each entry's HTML table, if a field exists in the template for the date.
 
 ### An example entry - linkcat
-
 ```
 title: ebay
 is_highlight: no
@@ -427,6 +426,34 @@ img_src: ebay-2002.png
 img_desc: ebay back in the day
 
 Cool auction site! <i>Please bid on my listings!!</i>
+```
+
+### An example entry - newnews
+```
+title: ebay war
+summary: another one
+category: war
+date: 2022-04-15
+is_highlight: no
+url: https://www.ebay.co.uk/war
+img_src: ebay-2002.png
+img_desc: ebay, i want it my way
+
+There was a war fought on eBay.<br>
+Many died. 
+```
+
+### An example entry - blandblog
+```
+title: ebay review
+date: 2002-06-11
+category: reviews
+summary: cool site I found
+img_desc: ebay ebay eaby
+img_src: ebay-2002.png
+author: bob
+
+<p>Hi welcome to my ebay review it will say lots of useful thing regarding ebay</p>
 ```
 
 ### A note on imaging
