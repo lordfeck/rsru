@@ -1,9 +1,11 @@
-/******************************************
- *   Thransoft RSRU Newnews Bee Be See    *
- ******************************************/
+/***************************
+ *   Thransoft RSRU Newnews
+ ***************************/
+
 /* page layout */
 body {
-	background-color: #E2AC55;
+/*	background-color: #7788ef; */
+	background-color: #E2AC55; 
 	margin:0;
 	font-family: "Franklin Gothic Medium", "Lucida Grande", sans-serif;
 }
@@ -21,7 +23,11 @@ pre#tabs {
 }
 
 div#topBar {
-    background: #930000;
+	/*background-color: #5177b9;*/
+    background: #513D9A;
+    background: -webkit-linear-gradient(bottom right, #513D9A, #E2AC55);
+    background: -moz-linear-gradient(bottom right, #513D9A, #E2AC55);
+    background: linear-gradient(to top left, #513D9A, #E2AC55);
 	width: 100%;
 	height: 90px;
 	border: 0; margin: 0;
@@ -31,8 +37,7 @@ div#topBar {
 
 div#topMenu {
 	padding-left: 3px;
-	padding-right: 3px;
-	border-bottom: 1px solid #E2AC55;
+	border-bottom: 1px solid grey;
 	padding-bottom: 2px;
     color: #D9D09E;
 }
@@ -69,7 +74,6 @@ div#bodyContainer {
  	padding-top: 3px;
     padding-bottom: 20px;
 	padding-left: 10px;
-	padding-right: 10px;
 	margin-left: 5px;
 	margin-right: 5px;
     color: #D9D09E;
@@ -143,7 +147,7 @@ img#logo {
 /* text style */
 h1#titleHeader{
 	text-align: left;
-	color: #e8e6e3;
+	color: #000001;
 	letter-spacing: 2px;
 	font-style: italic;
 	font-size: 3em;
@@ -156,7 +160,6 @@ h2#subtitle {
 	font-style: italic;
 	padding-top: 0;
 	margin-top: 0;
-    color: #e8e6e3;
 }
 
 p.footerText{
@@ -170,8 +173,8 @@ p.newsItem{
     font-style: italic;
     font-weight: bold;
     font-size: 1.2em;
-    color: #E2AC55;
-    border-bottom: 1px solid #E2AC55;
+    color: #9FA8D9;
+    border-bottom: 1px solid #9FA8D9;
     margin-bottom: 4px;
 }
 
@@ -198,7 +201,7 @@ p.entryDesc {
 }
 
 h3.entryName {
-	color: #E2AC55;
+	color: #9FA8D9;
     font-style: italic;
     margin-top: 8px;
     margin-bottom: 2px; 
@@ -206,8 +209,8 @@ h3.entryName {
 
 div.entryMeta {
     width: 100%;
-	color: #E2AC55;
-	border-bottom: 1px solid #E2AC55;
+	color: #9FA8D9;
+	border-bottom: 1px solid #9FA8D9;
 }
 span.entryMetaItem {
     display: inline-block;
@@ -219,4 +222,3 @@ span.entryMetaItem {
         font-size: 2em;
     }
 }
-
