@@ -3,6 +3,14 @@ RSRU.pl Dev Log
 
 # Release History
 
+## R3.1 (07/05/2022)
+Bugs fixed:
+- max entries on HP may be arbitrary, previously rsru would only show "latest entries" if there were at least 5
+- `{% STATIC_ROOT %}` is now applied to the top of templates, meaning other static assets like images may be included in the heading of templates
+
+Features added:
+- New template styles: New News and Bland Blog. This proves that RSRU can build more than just catalogue websites.
+
 ## R3 (04/04/2022)
 Bugs fixed:
 

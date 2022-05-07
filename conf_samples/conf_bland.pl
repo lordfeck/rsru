@@ -26,9 +26,9 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
 
     # Filename Prefix, prepended to all output HTML
     siteName => "Bland blog",
-    siteHeaderDesc => "It's not pretending to be anything different.",
-    siteHomepageHeader => "LATEST SCRIBBLES",
-    siteHomepageDesc => "I endeavour to please.",
+    siteHeaderDesc => "I've never had an original thought.",
+    siteHomepageHeader => "BEHOLD MY SCRIBBLES",
+    siteHomepageDesc => "I endeavour to please. So read these.",
     maxPerPage => 10,
     maxHpHighlights => 6,
     showCatTotal => 1,
@@ -55,9 +55,9 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Hitherto unknown cats will be appended to a derived array if found.
     cats => ["life", "opinions", "reviews"],
     # List of known keys for each entry
-    knownKeys => [qw(title category desc summary img_desc date is_highlight)],
+    knownKeys => [qw(title category desc summary img_desc date author is_highlight)],
     # Necessary keys. RSRU will fail if these are not present in any entry.
-    necessaryKeys => [qw(title category desc date)],
+    necessaryKeys => [qw(title category desc date author)],
     # Description for each category, will appear on the first page of each
     catDesc => {
         life => "Snapshots of the everyday.",

@@ -5,6 +5,8 @@ RSRU Testplan
 1. Ensure each is read and applied properly
 2. Test both thumbnailed and un-thumbnailed entries for each template
 3. Ensure the templates are interpolated properly
+4. Create an entry and assign it a category that isn't defined in the conf.pl file. Ensure this category is created by RSRU.
+5. Create an entry and omit some of the necessaryKeys. Ensure RSRU flags this and exits.
 
 # Layout test
 1. Test desktop and mobile browsers

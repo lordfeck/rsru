@@ -2,9 +2,10 @@ title: Hullo Warld!
 category: life
 summary: New blog yeah!
 date: 2022-05-07
+author: thran
 
 A new blog has emerged among the noisy depths of the Internet.<br>
-<em>WELCOME!</em> You'd better enjoy it.<br><br>
+<em>WELCOME!</em> You'd better enjoy it.<br>
 <pre>
                      _____ 
  _ __ ___ _ __ _   _|___ / 

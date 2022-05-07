@@ -3,5 +3,8 @@ date: 2002-06-11
 category: reviews
 summary: cool site I found
 img_desc: ebay ebay eaby
+author: jim
 
-Hi welcome to my ebay review it will say lots of useful thing regarding ebay
+<p>Hi welcome to my ebay review it will say lots of useful thing regarding ebay</p>
+<p>ebay is a site that allows bids and auctions. I bought a cat there but it was illegal so I had to send it back. I don't know if it survived the postal service.</p>
+<p>if you want to visit ebay you can at www.ebay.co.uk or change .co.uk for your country if it isn't the uk (best country soz lol)</p>

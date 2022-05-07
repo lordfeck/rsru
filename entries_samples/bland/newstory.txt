@@ -4,6 +4,7 @@ category: life
 date: 2021-02-02
 img_src: sample.jpg
 img_desc: a boat that came up later in the story
+author: jummy
 
 greetings all, this is a new life story<br>
 one day I woke up and went to shave myself, but I was stalled in this task. the reason being I couldn't locate my shaving foam. also, big point that will matter later, I did not check for adequate spare shaving blades. anyhow this begins a big story.

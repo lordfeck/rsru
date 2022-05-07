@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 
 #===============================================================================
-# Thransoft RSRU Release 3
+# Thransoft RSRU Release 3.1 (with multimedia extensions)
 # A static catalogue-style website generator, freely given
 # Licence: GPLv3. See "licence.txt" for full details.
-# Author: Thran. Authored: 09/09/2020 - 04/04/2022
+# Author: Thran. Authored: 09/09/2020 - 07/05/2022
 # WWW: http://soft.thran.uk
 # 
 # With Thanks: https://stackoverflow.com/questions/63835994/
