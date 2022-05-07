@@ -1,23 +1,11 @@
-            
-            <table class="rsru {% IS_HIGHLIGHT %}">
-            <tr>
-                <td class="title" colspan="3"><span id="entryTitle">{% title %}</span> <span class="anchor">[<a href="#{% KEY %}" id="{% KEY %}">jump here</a>]</span></td>
-            <tr>
-                <td class="desc" colspan="2" rowspan="1">{% desc %}</td>
-                <td class ="td_img" rowspan="3">
-                    <div class="imgWrap">
-                    <div class="imgBorder">
-                        <a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a>
-                    </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="heaviness"><b>Heaviness:</b> {% heaviness %}</td>
-                <td class="ecc" title="Eccentricity" colspan="1"><b>Eccentricity:</b> {% ecc %}/10</td>
-            </tr>
-            <tr>
-                <td class="siteUrl" colspan="1"><a href="{% url %}" target="_blank">Visit {% title %}</a></td>
-                <td class="date" title="Submission date"> {% date %}</td>
-            </tr>
-            </table>
+
+    <div class="rsru {% IS_HIGHLIGHT %}">
+        <p class="newsItem">{% title %}</p>
+        <p><b>Date:</b>{% date %}</p>
+        <div class="imgWrap">
+            <div class="imgBorder">
+                <a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a>
+            </div>
+        </div>
+        <p>{% desc %}</p>
+    </div>

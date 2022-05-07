@@ -1,0 +1,15 @@
+title: Hullo Warld!
+category: life
+summary: New blog yeah!
+date: 2022-05-07
+
+A new blog has emerged among the noisy depths of the Internet.<br>
+<em>WELCOME!</em> You'd better enjoy it.<br><br>
+<pre>
+                     _____ 
+ _ __ ___ _ __ _   _|___ / 
+| '__/ __| '__| | | | |_ \ 
+| |  \__ \ |  | |_| |___) |
+|_|  |___/_|   \__,_|____/ 
+
+</pre>

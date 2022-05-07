@@ -78,7 +78,7 @@ On Windows you can use the Windows file extraction wizard, 7zip, WinZip, WinRAR,
 
 # Configuration
 
-The default config file `./conf.pl` defaults to the *softcat* style. Other styles are available, currently only *linkcat*. See the sample config files in the `conf_samples/` directory for to try each of these styles. A full explanation is given later.
+The default config file `./conf.pl` defaults to the *softcat* style. Other styles are available, currently these include *linkcat*, *newnews* and *blandblog*. See the sample config files in the `conf_samples/` directory for to try each of these styles. A full explanation is given later.
 
 ## Edit conf.pl
 Before the script may be used, it is first necessary to tailor `conf.pl` to your liking. The config file is just a plain Perl hash, which means you can include any other Perl code you fancy. It also means that when editing the values, please be careful to edit only between the "quote marks" and leave all the values to the left of the fat arrows `=>` alone.
@@ -162,7 +162,7 @@ By default, RSRU doesn't say much while it is working. If you need to know what 
 
 Now that you've RSRU ready and waiting on your system, it is time to decide which template you prefer.
 
-Currently, two templates are available: linkcat and softcat. 
+Currently, four templates are available: linkcat, softcat, newnews and blandblog. 
 
 ### Linkcat screenshot
 ![linkcat screenshot](../misc/linkcat.png)
@@ -170,11 +170,21 @@ Currently, two templates are available: linkcat and softcat.
 ### Softcat screenshot
 ![softcat screenshot](../misc/rsru3.png)
 
-You can easily try either using the command line switches:
+### Newnews screenshot
+![newnews screenshot](../misc/newnews.png)
+
+### Blandblog screenshot
+![blandblog screenshot](../misc/blandblog.png)
+
+You can easily try these using the command line switches:
 
 `./rsru.pl -c conf_samples/conf_linkcat.pl`
 
 `./rsru.pl -c conf_samples/conf_softcat.pl`
+
+`./rsru.pl -c conf_samples/conf_newnews.pl`
+
+`./rsru.pl -c conf_samples/conf_blandblog.pl`
 
 Pick one of these styles and tweak the keywords, css and HTML layout to your liking. A guide instructing you in this very task follows.
 

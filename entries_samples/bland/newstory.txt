@@ -1,0 +1,11 @@
+title: new life story
+is_highlight: yes
+category: life
+date: 2021-02-02
+img_src: sample.jpg
+img_desc: a boat that came up later in the story
+
+greetings all, this is a new life story<br>
+one day I woke up and went to shave myself, but I was stalled in this task. the reason being I couldn't locate my shaving foam. also, big point that will matter later, I did not check for adequate spare shaving blades. anyhow this begins a big story.
+<h2>the big story</h2>
+<p>I went into my car and made for the nearest known supplier of shaving foam. it was 8.37am and I skipped breakfast. there was more to the story but this is just placeholder text lorem ipsom dolor sit amet sit</p>

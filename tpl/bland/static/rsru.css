@@ -1,10 +1,10 @@
 /***************************
- *   Thransoft RSRU Newnews
+ *   Thransoft RSRU Blandblog
  ***************************/
 
 /* page layout */
 body {
-	background-color: #7788ef;
+	background-color: #dad7d7;
 	margin:0;
 	font-family: "Franklin Gothic Medium", "Lucida Grande", sans-serif;
 }
@@ -15,39 +15,40 @@ code {
     font-size: 1.2em;
 }
 
-pre#tabs {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    display: inline-block;
-}
-
 div#topBar {
-	/*background-color: #5177b9;*/
-    background: #513D9A;
-    background: -webkit-linear-gradient(bottom right, #513D9A, #E2AC55);
-    background: -moz-linear-gradient(bottom right, #513D9A, #E2AC55);
-    background: linear-gradient(to top left, #513D9A, #E2AC55);
 	width: 100%;
 	height: 90px;
 	border: 0; margin: 0;
 	padding-top: 4px;
 	border-bottom: 3px solid black;
+    font-family: Cambria, Georgia, serif;
 }
 
-div#topMenu {
+div#catBar {
 	padding-left: 3px;
-	border-bottom: 1px solid grey;
+	padding-right: 3px;
+	border-bottom: 1px solid black;
 	padding-bottom: 2px;
-    color: #D9D09E;
+    color: #181a1b;
+    text-align: center;
+}
+
+div#catWrap {
+    margin-left: auto;
+    padding-left: 60px; /* Match logo width to align */
+    margin-right: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 div#nav {
     text-align: center;
     font-size: 1.0em;
     padding-bottom: 2px;
+    padding-top: 2px;
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
-    height: 1.2em;
+    height: 1.3em;
     font-weight: bold;
     display: block;
 }
@@ -67,16 +68,21 @@ div#navSkip {
 div#contentContainer {
     padding-left: 5%;
     padding-right: 5%;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
 
 div#bodyContainer {
  	padding-top: 3px;
     padding-bottom: 20px;
 	padding-left: 10px;
+	padding-right: 10px;
 	margin-left: 5px;
 	margin-right: 5px;
-    color: #D9D09E;
-	background-color:#000000;
+    color: #181a1b;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom: 1px solid grey;
 }
 
 span#catTotal {
@@ -93,59 +99,66 @@ div.rsru_entry_text {
     margin-top: 4px;
 }
 
-div.rsru_img div.rsru_entry_text {
-    max-width: 60%;
-    display: inline-block;
-}
-
 .rsru_entry_text p { 
     margin-top: 0px; 
 }
 
+div.rsru_img div.rsru_entry_text {
+    max-width: 60%;
+    display: block;
+}
+
 div.imgWrap {
-    width: 120px;
+    width: 300px;
     margin-left: auto;
-    margin-right: 0px;
-    float: right;
+    margin-right: auto;
+}
+
+div.imgWrap {
+    border: 1px solid grey;
 }
 
 #bodyContainer a:link {
-	color: #66ff66;
+	color: #f84202;
 }
 
 #bodyContainer a:hover {
-	color: #36ef36;
+	color: #aa4c2a;
     text-decoration: underline;
 }
 
 #bodyContainer a:visited {
-	color: #66ff66;
+	color: #f84202;
 }
 
-#topMenu a:link { 
+#catBar a:link { 
 	text-decoration: none;
 } 
-#topMenu a:hover { 
+#catBar a:hover { 
 	text-decoration: underline;
 } 
 
-#topMenu a:visited { 
+#catBar a:visited { 
 	text-decoration: none;
 }
 
 img#logo {
-	float: left;
-	display: inline-block;
 	width: 60px;
 	height: 60px;
+}
+
+div#logoWrapper {
 	margin-right: 10px;
 	margin-left: 6px;
-    margin-bottom: 30px; /* to ensure subtitle doesn't appear below logo, del if you want this */
+    margin-top: 12px;
+    margin-bottom: 20px; /* ensures the subtitle doesn't misalign */
+    display: block;
+    float: left;
 }
 
 /* text style */
 h1#titleHeader{
-	text-align: left;
+	text-align: center;
 	color: #000001;
 	letter-spacing: 2px;
 	font-style: italic;
@@ -159,6 +172,7 @@ h2#subtitle {
 	font-style: italic;
 	padding-top: 0;
 	margin-top: 0;
+    text-align: center;
 }
 
 p.footerText{
@@ -172,14 +186,14 @@ p.newsItem{
     font-style: italic;
     font-weight: bold;
     font-size: 1.2em;
-    color: #9FA8D9;
-    border-bottom: 1px solid #9FA8D9;
+    color: #565656;
+    border-bottom: 1px solid #565656;
     margin-bottom: 4px;
 }
 
 div.highlight p.newsItem {
-    color: gold;
-    border-bottom: 1px solid gold;
+    color: #8b5300;
+    border-bottom: 1px solid #8b5300;
 }
 
 p.downloadHeader {
@@ -200,7 +214,6 @@ p.entryDesc {
 }
 
 h3.entryName {
-	color: #9FA8D9;
     font-style: italic;
     margin-top: 8px;
     margin-bottom: 2px; 
@@ -208,8 +221,7 @@ h3.entryName {
 
 div.entryMeta {
     width: 100%;
-	color: #9FA8D9;
-	border-bottom: 1px solid #9FA8D9;
+	border-bottom: 1px solid #000000;
 }
 span.entryMetaItem {
     display: inline-block;
