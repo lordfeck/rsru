@@ -10,6 +10,7 @@ div#topBar {
     height: 70px;
     padding-top: 5px;
     border-bottom: 1px solid black;
+    padding-left: 15px;
 }
 div#bodyContainer {
     margin-left: 5px;

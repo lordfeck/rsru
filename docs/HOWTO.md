@@ -40,7 +40,7 @@ If you have never used Perl before, run `cpan` from a command window and agree t
 You may wish to include pictures in your website. You may also wish to generate RSS feeds so your eager audience can stay informed of your latest discoveries.
 In these cases, RSRU needs some help to perform these duties. *If you opt against installing these, RSRU is still usable but will be without RSS and graphics processing.*
 
-**NOTE:** To install the graphics module on Linux, another library must first be installed. This is not necessary on Windows.
+**NOTE:** To install the graphics module on Linux and Mac OSX, another library must first be installed. This is not necessary on Windows.
 
 Open a command window and run the following as root/sudo on Debian:
 
@@ -54,6 +54,12 @@ Or on Void Linux:
 # xbps-install base-devel gd-devel
 ```
 
+On Mac OSX:
+
+```
+$ sudo brew install libgd
+```
+
 I haven't used other Linux versions, but if you find how to install the GD dev library for that distro it should work. You can also install the Perl modules directly using your distro's packager, if you prefer and have the knowhow.
 
 ### Installing the CPAN modules
@@ -62,6 +68,12 @@ CPAN is the packager for Perl. It will fetch and install our helper modules. To 
 
 ```
 $ cpan install XML::RSS GD
+```
+
+On Mac OSX, you need to run CPAN as root for LibGD:
+
+```
+$ sudo brew cpan install GD
 ```
 
 You'll also need `Time::Piece` if you're using anything in the Fedora/RH/CentOS family.
