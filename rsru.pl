@@ -510,6 +510,9 @@ sub prep_tplbottom {
     } else {
         $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}//;
     }
+    # QnD method to get static files into the footer. Will be invalid
+    # for pages below root in non-production mode. FIXME.
+    $tplBottom =~  s/{% STATIC_ROOT %}/${baseURL}/;
 }
 
 # Print gathered entries into our template files. Do one for each cat.
