@@ -38,7 +38,7 @@ If you're eager to try RSRU, instructions are available here: [RSRU HOWTO](docs/
 If you want to start quickly, just download the latest release. Edit a text file under `entries/` (don't delete anything ending with a colon, but change anything to the right of the colon). Then run `./rsru.pl` and open `./output/index.html` in a web browser. This will give you a practical demonstration of what it does.
 
 # Requirements
-* Perl, at least version 5.10 and List::Util present. This should be available in the standard library of most recent Perls.
+* Perl, at least version 5.16.
 * Anything that runs Perl. The author has tested on Linux and Windows (Strawberry Perl). 
 
 ## CPAN Modules
@@ -46,14 +46,11 @@ RSRU's core functionality operates using only standard library modules. The proj
 
 - Time::Piece is mandatory. It is 'core' everywhere except Fedora/Red Hat, for some strange reason.
 - XML::RSS is optional. It is (surprisingly) used by RSRU to generate an RSS feed.
-- GD is optional. It is used to generate thumbnails and convert PNG to JPEG, if desired.
+- GD is optional. It is used to generate image thumbnails and convert PNG to JPEG, if desired.
 
 # Future hackery for RSRU, known issues
-* I've plans to hack it into a "microblogger" system. Think of a way to share clips of sites, quotes, images, whatever else.
-* Build a photoblog and blog template
 * Make pathnames deterministic. Currently we just sort alphabetically then chronologically, then make a new page when the previous page is filled. This means that entries aren't guaranteed to be on the same page, but will move further back down the list and onto higher numbered pages. This will be a problem for hyperlink consistency.
-* Performance optimisations, deduplicate where necessary (many places look similar)
-* Very far in the future: Use a real templating engine (like Moustache) to build our pages. This would make RSRU into something approaching a full site generator. This would be best suited for a new project.
+* Very far in the future: Use a real templating engine (like Template::Tookit) to build our pages. This would make RSRU into something approaching a full site generator. I think this would be best suited for a new project, but it would be easy for such a rewrite to read the same entry file format used by RSRU.
 
 # Repository layout
 What are the directories and what is inside each?
