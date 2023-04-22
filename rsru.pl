@@ -10,9 +10,9 @@
 # With Thanks: https://stackoverflow.com/questions/63835994/
 #===============================================================================
 
+use v5.16;
 use strict;
 use warnings;
-use v5.16;
 
 use File::Copy;
 use File::Path qw(make_path remove_tree);
@@ -70,6 +70,7 @@ my $imgBasePath;    # Base path for "img src=" in output files
 my $imgOutDir;      # Concatenation of root output dir + user image output dir
 
 # Consts
+my $VER = 3.2;
 my $DATE_FORMAT = "%Y-%m-%d";
 my $MAX_CATS = 8;
 my $MIN_ENTRIES = 2;
@@ -79,7 +80,7 @@ my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
 my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 my $DEFAULT_CONF = "conf.pl";
-my $RELEASE = "RSRU Release 3, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
+my $RELEASE = "RSRU Release $VER, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
 my $BANNER = <<"EOF";
 $RELEASE
 RSRU: Really Small, Really Useful. 
@@ -143,7 +144,6 @@ sub list_dir {
 }
 
 # Arguments: two arrays refs, walk these and return the first entry that is in both
-# TODO: Is there an easier or more performant way to do this??
 sub get_first {
     my ($ar1, $ar2) = @_;
     for my $idx ( @{$ar1} ) {
@@ -214,7 +214,6 @@ sub get_image_filename {
 
 # Make thumbnail and large image for each filename, use same img filename in dest dir
 # Args: Entry filename, entryID. Will determine format from extension
-# TODO: this could certainly be optimised
 sub process_entry_image {
     my ($imgFn, $entryId) = @_;
 
@@ -265,7 +264,7 @@ sub process_entry_image {
         return;
     }
     
-    # TODO: make square
+    # TODO: make square, currently just resizes by a scalar transformation
     $srcX = 0;
     $srcY = 0;
     $gdOut->copyResampled($gd,0,0,$srcX,$srcY,$w,$l,$gd->width,$gd->height);
@@ -413,7 +412,6 @@ sub generate_cat_tabs {
 }
 
 # Calculate the max page index for a category
-# Note: This will be easier once entryKvs is restructured
 # ARGS: Cat name
 # RETURNS: Max page index
 sub calculate_max_page {
@@ -510,7 +508,7 @@ sub prep_tplbottom {
         $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}//;
     }
     # QnD method to get static files into the footer. Will be invalid
-    # for pages below root in non-production mode. FIXME.
+    # for pages below root in non-production mode. FIXME. i.e. breaks when using a relative link
     $tplBottom =~  s/{% STATIC_ROOT %}/${baseURL}/g;
 }
 
@@ -616,8 +614,10 @@ sub paint_homepage {
 
     print $fh $tplHp;
 
-    if (scalar (%entryKvs) >= $MIN_ENTRIES){
-        @latest = sort_all_entries($MAX_ENTRIES); 
+    my $hp_entries_cap = scalar (keys %entryKvs) >= $MAX_ENTRIES ? $MAX_ENTRIES : scalar (keys %entryKvs);
+
+    if ($hp_entries_cap >= $MIN_ENTRIES){
+        @latest = sort_all_entries($hp_entries_cap); 
         print $fh '<h2 class="hpHeader">Latest Entries</h2>';
         print $fh generate_entries_hp(@latest);
     } else {
@@ -670,21 +670,20 @@ sub sort_all_entries {
     # First sort alphabetically, then by date
     my @sorted = sort keys %entryDate;
     @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
+
     say "Sorted are @sorted." if $uc{debug};
-    return @sorted;
+    return @sorted[0..$max-1];
 }
 
 sub get_highlighted_entries {
     my @highlights;
 
-    my $idx = $uc{maxHpHighlights} - 1;
     foreach (keys %entryKvs) {
-        last if $idx < 0;
         next unless ($entryKvs{$_}{is_highlight});
         push (@highlights, $_) if ($entryKvs{$_}{is_highlight} eq $YES);
-        $idx--;
     }
-    return @highlights;
+    my $idx_max = $uc{maxHpHighlights} < scalar @highlights ? $uc{maxHpHighlights} : scalar @highlights;
+    return @highlights[0..$idx_max-1];
 }
 
 # Read the contents of an individual entry file. Entryfiles are plain text and in
@@ -750,10 +749,10 @@ sub write_rss {
     my $buildDate = $t->strftime();
     my $entryMax;
 
-    if ((scalar %entryKvs) > $uc{rssEntryMax}) {
+    if ((scalar keys %entryKvs) >= $uc{rssEntryMax}) {
         $entryMax = $uc{rssEntryMax};
     } else {
-        $entryMax = (scalar %entryKvs);
+        $entryMax = (scalar keys %entryKvs); 
     }
 
     my @sortedEntryKeys = sort_all_entries($entryMax);
@@ -794,7 +793,7 @@ getopts('c:vhpro:', \%opts);
 if (defined $opts{h}) { say $BANNER; exit; }
 if (defined $opts{v}) { say $RELEASE; exit; }
 
-print "RSRU starting. ";
+print "RSRU Release $VER starting. ";
 
 # Read in user-configurable values
 my $conf = (defined $opts{c} ? $opts{c} : $DEFAULT_CONF);
