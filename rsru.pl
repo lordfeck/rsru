@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 
 #===============================================================================
-# Thransoft RSRU Release 3.1 (with multimedia extensions)
+# Thransoft RSRU Release 3.2 (with multimedia extensions)
 # A static catalogue-style website generator, freely given
 # Licence: GPLv3. See "licence.txt" for full details.
-# Author: Thran. Authored: 09/09/2020 - 07/05/2022
+# Author: Thran. Authored: 09/09/2020 - 22/04/2023
 # WWW: http://soft.thran.uk
 # 
 # With Thanks: https://stackoverflow.com/questions/63835994/
@@ -12,7 +12,7 @@
 
 use strict;
 use warnings;
-use v5.10;
+use v5.16;
 
 use File::Copy;
 use File::Path qw(make_path remove_tree);
@@ -73,7 +73,7 @@ my $imgOutDir;      # Concatenation of root output dir + user image output dir
 my $DATE_FORMAT = "%Y-%m-%d";
 my $MAX_CATS = 8;
 my $MIN_ENTRIES = 2;
-my $MAX_ENTRIES = 5;
+my $MAX_ENTRIES = 8;
 my $YES = 'yes';
 my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
@@ -339,7 +339,7 @@ sub entrykvs_to_html {
         } elsif ($key eq "is_highlight" && defined $entryKvs{$entryId}{is_highlight} && $entryKvs{$entryId}{is_highlight} eq $YES) {
             $filledEntry =~ s/{% IS_HIGHLIGHT %}/highlight/g;
             $wasHighlight = 1;
-        } else {
+        } elsif ($entryKvs{$entryId}{$key}) {
             $filledEntry =~ s/{% $key %}/$entryKvs{$entryId}{$key}/g;
         }
     }
@@ -435,12 +435,11 @@ sub prep_navbar {
     my ($catName, $pgIdx, $isLast) = @_;
     my $cwNavbar = $tplNav;
     my %url;
-    my ($max, $next);
+    my ($max, $next) = (calculate_max_page($catName), 0);
 
     my $prev = $pgIdx - 1;
     my $baseURL = $baseURL eq "." ? ".." : $baseURL;
 
-    $max = calculate_max_page($catName);
     say "Max page for $catName is $max" if $uc{debug};
 
     if ($max == 1) {
@@ -616,12 +615,10 @@ sub paint_homepage {
     $tplHp .= "<p>Current total entries: " . scalar %entryKvs . "</p>";
 
     print $fh $tplHp;
-    my $totalEntries = scalar (%entryKvs);
 
-    if ( $totalEntries >= $MIN_ENTRIES ){
-        my $max = ($totalEntries < $MAX_ENTRIES) ? $totalEntries : $MAX_ENTRIES;
-        @latest = sort_all_entries($totalEntries); 
-        print $fh '<h2>Latest Entries</h2>';
+    if (scalar (%entryKvs) >= $MIN_ENTRIES){
+        @latest = sort_all_entries($MAX_ENTRIES); 
+        print $fh '<h2 class="hpHeader">Latest Entries</h2>';
         print $fh generate_entries_hp(@latest);
     } else {
         say "Total entries are below $MIN_ENTRIES. Skipping latest on homepage.";
@@ -629,7 +626,7 @@ sub paint_homepage {
     
     @highlights = get_highlighted_entries; 
     if (@highlights) {
-        print $fh '<h2>Highlights</h2>';
+        print $fh '<h2 class="hpHeader">Highlights</h2>';
         print $fh generate_entries_hp(@highlights);
     }
     print $fh $tplBottom; 
@@ -665,6 +662,7 @@ sub sort_entries {
 sub sort_all_entries {
     my $max = shift;
     my %entryDate;
+
     for my $entry (keys %entryKvs) {
         say "entry $entry and $entryKvs{$entry}{'date'}" if $uc{debug};
         $entryDate{$entry} = $entryKvs{$entry}{"date"};
@@ -673,16 +671,18 @@ sub sort_all_entries {
     my @sorted = sort keys %entryDate;
     @sorted = sort { $entryDate{$b} <=> $entryDate{$a} } @sorted;
     say "Sorted are @sorted." if $uc{debug};
-    return @sorted[0..$max-1];
+    return @sorted;
 }
 
 sub get_highlighted_entries {
     my @highlights;
 
+    my $idx = $uc{maxHpHighlights} - 1;
     foreach (keys %entryKvs) {
-        last if (scalar @highlights ge $uc{maxHpHighlights});
+        last if $idx < 0;
         next unless ($entryKvs{$_}{is_highlight});
         push (@highlights, $_) if ($entryKvs{$_}{is_highlight} eq $YES);
+        $idx--;
     }
     return @highlights;
 }

@@ -84,3 +84,5 @@ What are the directories and what is inside each?
 
 ![RSRU Screenshot](misc/blandblog.png)
 
+![RSRU Screenshot](misc/linkcat.png)
+
