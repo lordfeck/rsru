@@ -7,7 +7,7 @@ A simple static HTML page generator written in Perl. It is intended for the sole
 
 RSRU is ideal for building any kind of catalogue website. It can also build news/blog websites. You could use it to build:
 
-- a download website
+- a download repository
 - a screenshot showcase of your favourite desktops
 - a photo gallery
 - a listing of your favourite albums by genre with copious notes glorifying your pristine music taste
@@ -39,7 +39,7 @@ If you want to start quickly, just download the latest release. Edit a text file
 
 # Requirements
 * Perl, at least version 5.16.
-* Anything that runs Perl. The author has tested on Linux and Windows (Strawberry Perl). 
+* Anything that runs Perl. The author has tested RSRU on Linux, MacOS and Windows (Strawberry Perl). 
 
 ## CPAN Modules
 RSRU's core functionality operates using only standard library modules. The project goals will not require any hard dependencies on any CPAN modules. Future non-essential features (eg, RSS) may depend upon CPAN modules, but RSRU will still perform its core duties without them.
