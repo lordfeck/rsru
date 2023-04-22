@@ -1,4 +1,4 @@
-Thransoft RSRU Release 3.1
+Thransoft RSRU Release 3.2
 ==========================
 Skip to user's guide: [RSRU HOWTO](docs/HOWTO.md).
 

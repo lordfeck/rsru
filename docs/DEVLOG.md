@@ -3,6 +3,11 @@ RSRU.pl Dev Log
 
 # Release History
 
+## R3.2 (22/04/2023)
+Various fixes to the templates. Also fixed the calculation of max highlighted issues on the homepage, some problems with substituting items on the footer.
+
+Fairly minor but they'd annoy me if I found these bugs in someone else's work.
+
 ## R3.1 (07/05/2022)
 Bugs fixed:
 - max entries on HP may be arbitrary, previously rsru would only show "latest entries" if there were at least 5
