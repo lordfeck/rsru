@@ -157,12 +157,12 @@ img.imgThumbnail {
 
 img#logo {
 	float: left;
-	display: inline-block;
-	width: 60px;
-	height: 60px;
-	margin-right: 10px;
-	margin-left: 6px;
-    margin-bottom: 30px; /* to ensure subtitle doesn't appear below logo, del if you want this */
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+    margin-left: 6px;
+    margin-bottom: 20px;
+    margin-top: 15px;
 }
 
 /* text style */

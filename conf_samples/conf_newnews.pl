@@ -27,8 +27,8 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
     # Filename Prefix, prepended to all output HTML
     siteName => "New News",
     siteHeaderDesc => "Connecting YOU to the NEW.",
-    siteHomepageHeader => "NEW NEWS",
     siteHomepageDesc => "The latest news from around my head.",
+    siteHomepageHeader => "News isn't fake. People are.",
     maxPerPage => 10,
     maxHpHighlights => 6,
     showCatTotal => 1,
