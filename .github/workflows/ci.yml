@@ -62,15 +62,16 @@ jobs:
       run: |
          cat  /Users/runner/.cpanm/work/*/build.log
 
-    - name: Run process
-      run: |
-        perl rsru.pl
+#    - name: Run process
+#      run: |
+#        perl rsru.pl
 
-#    - name: Run tests
+    - name: Run tests
 #      env:
 #        AUTHOR_TESTING: 1
 #        RELEASE_TESTING: 1
-#      run: |
+      run: |
+        prove
 #        perl Makefile.PL
 #        make
 #        make test
