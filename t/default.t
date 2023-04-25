@@ -9,6 +9,14 @@ my @diff = qx(diff -r output t/expected_output);
 
 diag explain \@diff;
 
+# Ideally we would generate the output in a temporary directory and not in the "output" folder
+# We would probably want to test various configurations.
+# We should probably run the CI on the same docker images as where we created the expectation to
+#     ensure that the images are the same.
+# It would be probably better to generate html that does not have a timestamp in it.
+
+# This is what the diff looks like now: (with the first line only showing on the CI)
+
 # Binary files output/img/sample_tn.jpg and t/expected_output/img/sample_tn.jpg differ
 # diff -r output/rss.xml t/expected_output/rss.xml
 # 13c13
@@ -26,3 +34,4 @@ if (scalar(@diff) == 6) {
 }
 
 done_testing;
+
