@@ -81,7 +81,7 @@ my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-
 my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 my $DEFAULT_CONF = "conf.pl";
 my $RELEASE = "RSRU Release $VER, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
-my $BANNER = <<"EOF";
+my $BANNER = qq(
 $RELEASE
 RSRU: Really Small, Really Useful. 
 A static website weaver.
@@ -94,8 +94,21 @@ Usage:
 -o <dir> : Use this output directory
 -v : Show version
 
-Call with no args, RSRU will read in conf.pl and build a website.
-EOF
+Call with no args, RSRU will read in conf.pl and build a website.);
+
+# Set default template filenames, may be overwritten in conf.pl (but not likely or necessary)
+%uc = (
+    tpl => "rsru_base.html",
+    blankEntry => "rsru_entry.html",
+    blankPermalink => "rsru_permalink.html",
+    blankEntryImg => "rsru_entry_img.html",
+    blankCatEntry => "rsru_cat.html",
+    blankTplHp => "rsru_index.html",
+    blankTplHpEntry => "rsru_hp_entry.html",
+    blankTplNav => "pagination_nav.html",
+    rssBlockTop => "rsru_rss_top.html",
+    rssBlockBottom => "rsru_rss_bottom.html"
+);
 
 # Declare some fn prototypes
 sub sort_entries;
@@ -799,7 +812,9 @@ print "RSRU Release $VER starting. ";
 my $conf = (defined $opts{c} ? $opts{c} : $DEFAULT_CONF);
 say "Using config file: $conf";
 my $cwd = getcwd;
-%uc = do ("$cwd/$conf");
+%uc = (%uc, do ("$cwd/$conf"));
+
+# Test config file for a known value before beginning
 die "Problem reading config file $conf, cannot continue." unless $uc{tpl};
 
 # Copy cats list from the user conf and make it a mutable array.

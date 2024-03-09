@@ -1,0 +1,9 @@
+title: Microsoft agrees to open source the Windows codebase
+summary: Collected essays of Richard Stallman said to have swayed Redmond's C-suite.
+category: tech
+date: 2023-04-04
+is_highlight: no
+url: #
+
+The collected essays of Richard Stallman are said to have swayed Redmond's C-suite. This prompted much soul-searching over at the Microsoft HQ and the codebase was released to the public eye, following the recent example of Twitter.<br><br>
+GNOME 3 users are eagerly awaiting a port of Windows Explorer to Linux, it is also reported. This means they will finally experience a UI that has better coherency than they've ever known before!

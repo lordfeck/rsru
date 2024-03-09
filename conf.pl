@@ -1,3 +1,4 @@
+use strict;
 #===============================================================================
 # RSRU user-configurable constants
 # Don't be daft: This is not executable alone. Do not amend the key names.
@@ -5,7 +6,7 @@
 
 #=======================================================================
 # Path setup, template include dir. Should be left alone!
-my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
+my $tplRoot = "./tpl"; # Root template dir (for all templates & common)
 #=======================================================================
 
 # NOTE: 1 is ENABLED, 0 is DISABLED
@@ -67,18 +68,6 @@ my $tplRoot = "./tpl";  # Root template dir (for all templates & common)
         dev => "Developemnt tools and aids, compilers, languages",
     },
     #======================================================================
-
-    # Master template and any other blank HTML templates
-    # Typically, these should not be altered.
-    tpl => "rsru_base.html",
-    blankEntry => "rsru_entry.html",
-    blankEntryImg => "rsru_entry_img.html",
-    blankCatEntry => "rsru_cat.html",
-    blankTplHp => "rsru_index.html",
-    blankTplHpEntry => "rsru_hp_entry.html",
-    blankTplNav => "pagination_nav.html",
-    rssBlockTop => "rsru_rss_top.html",
-    rssBlockBottom => "rsru_rss_bottom.html",
 
     # Logging levels
     debug => 0,
