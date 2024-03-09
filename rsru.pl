@@ -55,12 +55,16 @@ my $tplTop;         # The 'top' half of the per-category template
 my $tplBottom;      # The 'bottom' half of the same. Entries will go between
 my $tplEntry;       # The blank HTML for each entry
 my $tplEntryImg;    # The blank HTML for each entry, with space for thumbnails
+my $tplPermalink;   # The blank HTML for the permalink. The 'full' page of the entry with no image.
+my $tplPermalinkImg;   # The blank HTML for the permalink with image. The 'full' page of the entry.
 my $tplCatTab;      # Blank HTML for each category
 my $tplHp;          # Blank HTML for homepage
 my $tplHpEntry;     # Blank HTML for entries on the homepage
 my $tplNav;         # Blank HTML for nav section
 my $tplRssBlockTop; # Blank HTML for RSS block - top
 my $tplRssBlockBottom;      # Blank HTML for RSS block - bottom
+my $tplPermalinkIsUnique;   # TRUE if permalink has its own template
+my $tplPermalinkImgIsUnique;   # TRUE if permalink with image has its own template
 
 my $writtenOut = 0; # A count of written out files.
 my $writtenEntries = 0;     # total count of written entries in all files
@@ -101,6 +105,7 @@ Call with no args, RSRU will read in conf.pl and build a website.);
     tpl => "rsru_base.html",
     blankEntry => "rsru_entry.html",
     blankPermalink => "rsru_permalink.html",
+    blankPermalinkImg => "rsru_permalink_img.html",
     blankEntryImg => "rsru_entry_img.html",
     blankCatEntry => "rsru_cat.html",
     blankTplHp => "rsru_index.html",
@@ -320,29 +325,39 @@ sub verify_necessary_keys {
 }
 
 # Takes a key and prints the HTML for its contents
-# ARGUMENTS: Entry ID
+# ARGUMENTS: Entry ID, (bool) current TPL (inline entry or full page permalink)
 # RETURNS: Scalar reference to woven template
 sub entrykvs_to_html {
-    my $entryId = shift;
-    my $filledEntry;
+    my ($entryId, $isPermalink) = @_;
     my ($localImgPath, $imgSrc);
     my $wasHighlight = 0;
-    
+    my $filledEntry;
+
+    my $entryHasImage = ($uc{imagesEnabled} and ($localImgPath = get_image_filename($entryId)));
+
+    # Which template shall it be? Copy the appropriate one to $filledEntry
+    if ($isPermalink && $entryHasImage) {
+        $filledEntry = $tplPermalinkImg;
+    } elsif ($isPermalink && !$entryHasImage){
+        $filledEntry = $tplPermalink;
+    } elsif ($entryHasImage) {
+        $filledEntry = $tplEntryImg;
+    } else {
+        $filledEntry = $tplEntry;
+    }
+
     verify_necessary_keys ($entryId);
 
     # If image file exists, assign entry template with image field and prepare
     # the image files, otherwise use text-only tplEntry
-    if ($uc{imagesEnabled} and ($localImgPath = get_image_filename($entryId))) {
-        $filledEntry = $tplEntryImg;
+    if ($entryHasImage) {
         process_entry_image($localImgPath, $entryId);
         $filledEntry =~ s/{% img_tn %}/${imgBasePath}\/$entryKvs{$entryId}{img_tn}/g;
         $filledEntry =~ s/{% img_full %}/${imgBasePath}\/$entryKvs{$entryId}{img_full}/g;
         my $imgDesc = defined $entryKvs{$entryId}{img_desc} ? $entryKvs{$entryId}{img_desc} : "";
         $filledEntry =~ s/{% img_desc %}/$imgDesc/g;
-    } else {
-        $filledEntry = $tplEntry;
     }
-    
+
     # Find and replace, boys. Find and replace.
     foreach my $key (@knownKeys) {
         if ($key eq "date") {
@@ -562,7 +577,7 @@ sub paint_template {
             $currentPgIdx = 0;
         }
         $entryKvs{$entryId}{path} = $outFn;
-        $currentEntry = entrykvs_to_html $entryId;
+        $currentEntry = entrykvs_to_html($entryId, 0);
         $catIsEmpty = 0;
         $currentPgIdx++;
         print $fh $$currentEntry;
@@ -877,6 +892,14 @@ $tplRssBlockBottom = read_template_file($uc{rssBlockBottom});
 # Now load in our entry template file. This should be a HTML table with the appropriate areas for our data marked out
 $tplEntryImg = read_template_file($uc{blankEntryImg});
 $tplEntry = read_template_file($uc{blankEntry});
+
+$tplPermalinkIsUnique = defined $uc{blankPermalink} && (-s "$uc{tplinc}/$uc{blankPermalink}" ||
+    -s "$uc{tplRoot}/common/$uc{blankPermalink}");
+$tplPermalinkImgIsUnique = defined $uc{blankPermalinkImg} && (-s "$uc{tplinc}/$uc{blankPermalinkImg}" ||
+    -s "$uc{tplRoot}/common/$uc{blankPermalinkImg}");
+
+$tplPermalink = $tplPermalinkIsUnique ? read_template_file($uc{blankPermalink}) : read_template_file($uc{blankEntry});
+$tplPermalinkImg = $tplPermalinkImgIsUnique ? read_template_file($uc{blankPermalinkImg}) : read_template_file($uc{blankEntryImg});
 
 @imgDirList = @{list_dir($uc{imgSrcDir})} if $uc{imagesEnabled};
 

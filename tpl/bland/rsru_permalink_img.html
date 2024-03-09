@@ -1,0 +1,11 @@
+
+    <h2 class="newsItem">{% title %}</h2>
+    <div class="rsru {% IS_HIGHLIGHT %}">
+        <p class="newsDetail"><b>Posted on </b>{% date %} by {% author %}</p>
+        <div class="imgWrap">
+            <div class="imgBorder">
+                <img src="{% img_full %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}">
+            </div>
+        </div>
+        <div class="entryDesc">{% desc %}</div>
+    </div>
