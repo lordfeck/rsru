@@ -374,6 +374,7 @@ sub entrykvs_to_html {
 
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
+    $filledEntry =~ s/{% PERMALINK %}/$entryKvs{$entryId}{permalink_path}/g if(defined $entryKvs{$entryId}{permalink_path});
 
 #    say "Filled $entryId:\n$filledEntry" if ($uc{debug});
     $writtenEntries++;
@@ -499,7 +500,7 @@ sub prep_navbar {
     return $cwNavbar;
 }
 
-# Insert the cat links. called by paint_template when it is used to process
+# Insert the cat links. called by paint_category and paint_permalink when it is used to process
 # each category page.
 # ARGUMENTS: active cat, page number
 sub prep_tpltop {
@@ -509,6 +510,7 @@ sub prep_tpltop {
     my $catTabs = generate_cat_tabs($activeCat);
     my $cwTplTop = $tplTop;
     my $staticRoot = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
+
     $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
     $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/g;
@@ -540,9 +542,28 @@ sub prep_tplbottom {
     $tplBottom =~  s/{% STATIC_ROOT %}/${baseURL}/g;
 }
 
+# Print an entry into its permalink template file. Do one for each entry.
+# ARGUMENTS: entryId
+sub paint_permalink {
+    my $entryId = shift;
+    my $catName = $entryKvs{$entryId}{category};
+    say "PL CATEGORY IS $catName";
+    my $currentPl = prep_tpltop($catName);
+    $currentPl .= entrykvs_to_html($entryId, 1);
+
+    my $outFn = "${catName}/${entryId}.html";
+    open (my $fh, '>', "$uc{out}/$outFn");
+    print $fh $currentPl;
+
+    $entryKvs{$entryId}{permalink_path} = $outFn;
+    # Increment grand total for reporting files written after process completes
+    $writtenOut++;
+    close $fh;
+}
+
 # Print gathered entries into our template files. Do one for each cat.
 # ARGUMENTS: Cat name
-sub paint_template {
+sub paint_category {
     my $catName = shift;
     my $currentEntry;
     my $pgIdx = 1;
@@ -552,7 +573,6 @@ sub paint_template {
 
     # assume index, make new page if we exceed maxPerPage
     my $outFn = "${catName}/index.html";
-    my $navBar;
 
     open (my $fh, '>', "$uc{out}/$outFn");
     print $fh $cwTplTop;
@@ -913,7 +933,8 @@ copy_res;
 make_category_dirs;
 prep_tplbottom;
 paint_desc;
-foreach my $cat (@cats) { paint_template $cat; }
+foreach my $entry (keys %entryKvs) { paint_permalink $entry; }
+foreach my $cat (@cats) { paint_category $cat; }
 paint_homepage;
 say "<== Template interpolation finished. ==>";
 
