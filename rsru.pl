@@ -376,7 +376,7 @@ sub entrykvs_to_html {
     $filledEntry =~ s/{% PERMALINK %}/$entryKvs{$entryId}{permalink_path}/g if(defined $entryKvs{$entryId}{permalink_path});
 
 #    say "Filled $entryId:\n$filledEntry" if ($uc{debug});
-    $writtenEntries++;
+    $writtenEntries++ unless $isPermalink;
     return \$filledEntry;
 }
 
