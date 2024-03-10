@@ -85,14 +85,13 @@ my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-
 my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 my $DEFAULT_CONF = "conf.pl";
 my $RELEASE = "RSRU Release $VER, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
-my $BANNER = qq(
-$RELEASE
+my $BANNER = qq($RELEASE
 RSRU: Really Small, Really Useful. 
 A static website weaver.
 
 Usage:
 -h : Show this message
--p : Use Productuion mode (uses Live URL as basepath)
+-p : Use Production mode (uses Live URL as basepath)
 -r : Rebuild. Will ignore no-clobber and recreates all outfiles (including images).
 -c <conf> : Use this conf file
 -o <dir> : Use this output directory
@@ -329,7 +328,7 @@ sub verify_necessary_keys {
 # RETURNS: Scalar reference to woven template
 sub entrykvs_to_html {
     my ($entryId, $isPermalink) = @_;
-    my ($localImgPath, $imgSrc);
+    my $localImgPath;
     my $wasHighlight = 0;
     my $filledEntry;
 
@@ -408,11 +407,11 @@ sub generate_cat_tabs {
     my $cwCat;  # Current Working Category
     my $filledCats; # Tabs of categories, eventually filled
 
-    # Handle relative paths (overwrite global var)
-    my $baseURL = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
+    # Handle relative paths
+    my $cwBaseURL = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
 
     # handle special case of index.html
-    $catFn = "$baseURL/index.html";
+    $catFn = "$cwBaseURL/index.html";
     $cwCat = $tplCatTab;
     $cwCat =~ s/{% CAT_NAME %}/home/;
     $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -423,7 +422,7 @@ sub generate_cat_tabs {
 
     # Now fill in the category tabs
     foreach my $cat (@cats) {
-        $catFn = "${baseURL}/${cat}/index.html";
+        $catFn = "${cwBaseURL}/${cat}/index.html";
         $cwCat = $tplCatTab;
         $cwCat =~ s/{% CAT_NAME %}/$cat/;
         $cwCat =~ s/{% CAT_URL %}/$catFn/;
@@ -465,27 +464,27 @@ sub prep_navbar {
     my ($max, $next) = (calculate_max_page($catName), 0);
 
     my $prev = $pgIdx - 1;
-    my $baseURL = $baseURL eq "." ? ".." : $baseURL;
+    my $cwBaseURL = $baseURL eq "." ? ".." : $baseURL;
 
     say "Max page for $catName is $max" if $uc{debug};
 
     if ($max == 1) {
-        $url{max} = "$baseURL/${catName}/index.html";
+        $url{max} = "$cwBaseURL/${catName}/index.html";
     } else {
-        $url{max} = "$baseURL/${catName}/$max.html";
+        $url{max} = "$cwBaseURL/${catName}/$max.html";
     }
 
     if ($pgIdx == 1) {
         $url{prev} = "#"     
     } elsif ($pgIdx  == 2){
-        $url{prev} = "$baseURL/${catName}/index.html";
+        $url{prev} = "$cwBaseURL/${catName}/index.html";
     } else {
-        $url{prev} = "$baseURL/${catName}/$prev.html";
+        $url{prev} = "$cwBaseURL/${catName}/$prev.html";
     }
 
     if ($isLast eq 'no'){
         $next = $pgIdx + 1;
-        $url{next} = "$baseURL/${catName}/$next.html";
+        $url{next} = "$cwBaseURL/${catName}/$next.html";
     } else {
         $url{next} = "#";
     }
@@ -514,6 +513,7 @@ sub prep_tpltop {
     $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
     $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/g;
+    $cwTplTop =~  s/{% HOME_URL %}/$staticRoot/g; # Replace with own if static root ever changes
 
     # Handle RSS feeds
     if ($uc{rssEnabled}) {
@@ -526,36 +526,47 @@ sub prep_tpltop {
     return $cwTplTop;
 }
 
-# Works on global tplBottom (it doesn't vary for category or page)
+# Print bottom of template for the category name.
 # Appends RSS link, if configured
+# ARGS: Current working category name
 sub prep_tplbottom {
+    my ($activeCat) = @_;
+    my $cwTplBottom = $tplBottom;
     # Handle RSS feeds
     my $rssPath = "${baseURL}/$uc{rssFilepath}";
     if ($uc{rssEnabled}) {
-        $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}/$tplRssBlockBottom/;
-        $tplBottom =~ s/{% RSRU_FEED %}/$rssPath/;
+        $cwTplBottom =~ s/{% FEEDBLOCK_BOTTOM %}/$tplRssBlockBottom/;
+        $cwTplBottom =~ s/{% RSRU_FEED %}/$rssPath/;
     } else {
-        $tplBottom =~ s/{% FEEDBLOCK_BOTTOM %}//;
+        $cwTplBottom =~ s/{% FEEDBLOCK_BOTTOM %}//;
     }
-    # QnD method to get static files into the footer. Will be invalid
-    # for pages below root in non-production mode. FIXME. i.e. breaks when using a relative link
-    $tplBottom =~  s/{% STATIC_ROOT %}/${baseURL}/g;
+
+    # QnD method to get static files into the footer.
+    my $staticRoot = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
+    $cwTplBottom =~  s/{% STATIC_ROOT %}/${staticRoot}/g;
+    return $cwTplBottom;
 }
 
-# Print an entry into its permalink template file. Do one for each entry.
+# Print an entry into its permalink template file, i.e. its single page view. Do one for each entry.
 # ARGUMENTS: entryId
 sub paint_permalink {
     my $entryId = shift;
     my $catName = $entryKvs{$entryId}{category};
-    say "PL CATEGORY IS $catName";
     my $currentPl = prep_tpltop($catName);
-    $currentPl .= entrykvs_to_html($entryId, 1);
+    my $outPath = "${catName}/${entryId}.html";
 
-    my $outFn = "${catName}/${entryId}.html";
-    open (my $fh, '>', "$uc{out}/$outFn");
+    my $cwBaseURL = ($baseURL eq ".") ? "." : "${baseURL}/${catName}";
+
+    # Permalink links to itself on the page
+    $entryKvs{$entryId}{permalink_path} = "${entryId}.html";
+    $currentPl .= ${entrykvs_to_html($entryId, 1)};
+
+    $entryKvs{$entryId}{permalink_path} = "${cwBaseURL}/${entryId}.html";
+    $currentPl .= prep_tplbottom($entryId);
+
+    open (my $fh, '>', "$uc{out}/$outPath");
     print $fh $currentPl;
 
-    $entryKvs{$entryId}{permalink_path} = $outFn;
     # Increment grand total for reporting files written after process completes
     $writtenOut++;
     close $fh;
@@ -567,7 +578,8 @@ sub paint_category {
     my $catName = shift;
     my $currentEntry;
     my $pgIdx = 1;
-    my $cwTplTop = prep_tpltop($catName, $pgIdx); 
+    my $cwTplTop = prep_tpltop($catName, $pgIdx);
+    my $cwTplBottom = prep_tplbottom($catName);
     my $catIsEmpty = 1;
     my $currentPgIdx = 0;
 
@@ -586,7 +598,7 @@ sub paint_category {
         # Handle pagination
         if ($currentPgIdx >= $uc{maxPerPage}) {
             print $fh prep_navbar($catName, $pgIdx, 'no');
-            print $fh $tplBottom; 
+            print $fh $cwTplBottom;
             $pgIdx++;
             $outFn = "${catName}/${pgIdx}.html";
             close $fh;
@@ -606,7 +618,7 @@ sub paint_category {
     print $fh $TPL_EMPTY_CAT if $catIsEmpty;
     
     print $fh prep_navbar($catName, $pgIdx, 'yes');
-    print $fh $tplBottom;
+    print $fh $cwTplBottom;
     # Increment grand total for reporting files written after process completes
     $writtenOut++;
     close $fh;
@@ -677,7 +689,7 @@ sub paint_homepage {
         print $fh '<h2 class="hpHeader">Highlights</h2>';
         print $fh generate_entries_hp(@highlights);
     }
-    print $fh $tplBottom; 
+    print $fh prep_tplbottom("index");
     $writtenOut++;
     close $fh;
 }
@@ -816,7 +828,6 @@ sub write_rss {
     );
 
     foreach my $entry (@sortedEntryKeys) {
-        # it isn't a permalink (yet)
         my $flimsyLink = "$uc{liveURL}/$entryKvs{$entry}{path}#$entry";
         my $href = "<a href=\"$flimsyLink\" target=\"_blank\">View $entryKvs{$entry}{title} on $uc{siteName}.</a>";
         $rss->add_item(
@@ -931,7 +942,6 @@ mkdir $uc{out} unless -d $uc{out};
 mkdir "$uc{out}/$uc{imgDestDir}" unless -d "$uc{out}/$uc{imgDestDir}";
 copy_res;
 make_category_dirs;
-prep_tplbottom;
 paint_desc;
 foreach my $entry (keys %entryKvs) { paint_permalink $entry; }
 foreach my $cat (@cats) { paint_category $cat; }

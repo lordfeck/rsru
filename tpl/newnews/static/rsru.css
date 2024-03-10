@@ -3,7 +3,7 @@
  ******************************************/
 /* page layout */
 body {
-	background-color: #E2AC55;
+	background-color: #E8D0AA;
 	margin:0;
 	font-family: "Franklin Gothic Medium", "Lucida Grande", sans-serif;
 }
@@ -109,6 +109,7 @@ div.entryMetaTail {
 
 a.readMoreLink {
     float: right;
+    margin-left: 10px;
 }
 
 p.rsruDesc {

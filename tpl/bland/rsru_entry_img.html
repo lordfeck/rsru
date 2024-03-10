@@ -3,9 +3,8 @@
         <p class="newsItem">{% title %}</p>
         <p class="newsDetail"><b>Posted on </b>{% date %} by {% author %}</p>
         <div class="imgWrap">
-            <div class="imgBorder">
-                <a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a>
-            </div>
+           <a href="{% img_full %}" ><img src="{% img_tn %}" class="imgThumbnail" title="{% img_desc %}" alt="{% img_desc %}"></a>
         </div>
         <div class="entryDesc">{% desc %}</div>
+        <div><a href="{% PERMALINK %}">Read Full Entry</a></div>
     </div>
