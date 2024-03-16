@@ -503,14 +503,16 @@ sub prep_navbar {
 # each category page.
 # ARGUMENTS: active cat, page number
 sub prep_tpltop {
-    my ($activeCat, $pgIdx) = @_; 
+    my ($activeCat, $pgIdx, $entryName) = @_; 
     my $pageTxt = "";
     $pageTxt = "(Page $pgIdx)" if $pgIdx;
     my $catTabs = generate_cat_tabs($activeCat);
     my $cwTplTop = $tplTop;
     my $staticRoot = ($baseURL eq ".") && ($activeCat ne "index") ? ".." : $baseURL;
 
-    $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $activeCat $pageTxt/;
+    my $title = $entryName ? $entryName : $activeCat;
+
+    $cwTplTop =~ s/{% RSRU_TITLE %}/$uc{siteName} :: $title $pageTxt/;
     $cwTplTop =~  s/{% RSRU_CATS %}/$catTabs/;
     $cwTplTop =~  s/{% STATIC_ROOT %}/$staticRoot/g;
     $cwTplTop =~  s/{% HOME_URL %}/$staticRoot/g; # Replace with own if static root ever changes
@@ -552,7 +554,8 @@ sub prep_tplbottom {
 sub paint_permalink {
     my $entryId = shift;
     my $catName = $entryKvs{$entryId}{category};
-    my $currentPl = prep_tpltop($catName);
+    my $title = $entryKvs{$entryId}{title};
+    my $currentPl = prep_tpltop($catName, undef, $title);
     my $outPath = "${catName}/${entryId}.html";
 
     my $cwBaseURL = ($baseURL eq ".") ? "." : "${baseURL}/${catName}";
