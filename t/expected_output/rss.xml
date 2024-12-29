@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rss version="2.0"
+ xmlns:blogChannel="http://backend.userland.com/blogChannelModule"
+>
+
+<channel>
+<title>RSRU</title>
+<link>http://www.example.com</link>
+<description>How do you do? Please enjoy your time browsing our lightweight software catalogue.</description>
+<language>en</language>
+<copyright>No Copyright</copyright>
+<lastBuildDate>Tue, 25 Apr 2023 16:44:18 UTC</lastBuildDate>
+
+<item>
+<title>Sample Soft</title>
+<link>http://www.example.com/utility/index.html#samplesoft</link>
+<description>Sample soft offers no convenience to the user. It only exists to provide a sample for RSRU.
+This is a new line.
+This is &#x3C;b&#x3E;bold&#x3C;/b&#x3E; to test HTML.
+
+&#x3C;a href=&#x22;http://www.example.com/utility/index.html#samplesoft&#x22; target=&#x22;_blank&#x22;&#x3E;View Sample Soft on RSRU.&#x3C;/a&#x3E;</description>
+<category>utility</category>
+<pubDate>Wed, 01 Jan 2020 00:00:00 UTC</pubDate>
+</item>
+</channel>
+</rss>

@@ -2,6 +2,8 @@ Thransoft RSRU Release 3.2
 ==========================
 Skip to user's guide: [RSRU HOWTO](docs/HOWTO.md).
 
+![ci status](https://github.com/lordfeck/rsru/actions/workflows/ci.yml/badge.svg)
+
 # What is RSRU?
 A simple static HTML page generator written in Perl. It is intended for the sole task of generating a section of my website [Well Made Web](https://wmw.thran.uk), but RSRU is flexible enough that it could build other websites. GPLv3 licence.
 
@@ -36,6 +38,10 @@ RSRU will also generate image thumbnails and RSS feeds for you.
 If you're eager to try RSRU, instructions are available here: [RSRU HOWTO](docs/HOWTO.md). The comprehensive documentation covers installation, configuration, customisation and everyday operation. Any other questions you have may be raised as a ticket on this repository.
 
 If you want to start quickly, just download the latest release. Edit a text file under `entries/` (don't delete anything ending with a colon, but change anything to the right of the colon). Then run `./rsru.pl` and open `./output/index.html` in a web browser. This will give you a practical demonstration of what it does.
+
+
+#### Are there more options?
+Yes! Run `./rsru.pl -h` and RSRU will print a list of its command switches along with an explanation of each.
 
 # Requirements
 * Perl, at least version 5.16.
