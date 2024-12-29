@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 
 #===============================================================================
-# Thransoft RSRU Release 3.2 (with multimedia extensions)
+# Thransoft RSRU Release 3.3 (with multimedia extensions)
 # A static catalogue-style website generator, freely given
 # Licence: GPLv3. See "licence.txt" for full details.
-# Author: Thran. Authored: 09/09/2020 - 22/04/2023
+# Author: Thran. Authored: 09/09/2020 - 01/01/2025
 # WWW: http://soft.thran.uk
 # 
 # With Thanks: https://stackoverflow.com/questions/63835994/
@@ -84,9 +84,9 @@ my $NO_SUMMARY = '';
 my $TPL_EMPTY_CAT = "<h1>Notice</h1><p>This category is currently empty. Finely-curated entries are forthcoming!</p>";
 my @EXTLIST = qw(jpg jpeg png JPEG PNG);
 my $DEFAULT_CONF = "conf.pl";
-my $RELEASE = "RSRU Release $VER, (C) 2022 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
+my $RELEASE = "RSRU Release $VER, (C) 2021-2025 Thransoft.\nThis is Free Software, licenced to you under the terms of the GNU GPL v3.";
 my $BANNER = qq($RELEASE
-RSRU: Really Small, Really Useful. 
+RSRU stands for Really Small, Really Useful. 
 A static website weaver.
 
 Usage:
@@ -768,7 +768,10 @@ sub read_entry {
             # Watch for URLs! spilt will split at each colon it finds, unless restrained as such:
             my ($key, $val) = split /:\s+/; 
             if ($key eq "date"){
-                $entryData{"date"} = Time::Piece->strptime($val, $DATE_FORMAT); 
+                eval {
+                   $entryData{"date"} = Time::Piece->strptime($val, $DATE_FORMAT);
+                };
+                die "Invalid date in $entryId, date must be in YYYY-MM-DD format." if ($@ =~ /"Error parsing time"/ or !$entryData{date});
                 next;
             } elsif ($key eq "category"){
                 unless ( first { /$val/ } @cats ){
@@ -831,6 +834,7 @@ sub write_rss {
     );
 
     foreach my $entry (@sortedEntryKeys) {
+        # it isn't a permalink
         my $flimsyLink = "$uc{liveURL}/$entryKvs{$entry}{path}#$entry";
         my $href = "<a href=\"$flimsyLink\" target=\"_blank\">View $entryKvs{$entry}{title} on $uc{siteName}.</a>";
         $rss->add_item(
