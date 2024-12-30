@@ -73,6 +73,9 @@ my @imgDirList;     # Listing of everything in source image dir
 my $imgBasePath;    # Base path for "img src=" in output files
 my $imgOutDir;      # Concatenation of root output dir + user image output dir
 
+#my $linkPrev;       # Previous link for permalink (single entity) views.
+#my $linkNext;       # Next link for permalink views.
+
 # Consts
 my $VER = 3.2;
 my $DATE_FORMAT = "%Y-%m-%d";
@@ -374,9 +377,17 @@ sub entrykvs_to_html {
     # Do anchor for links from elsewhere. Anchor is currently entry Id (key in %entryKvs)
     $filledEntry =~ s/{% KEY %}/$entryId/g;
     $filledEntry =~ s/{% PERMALINK %}/$entryKvs{$entryId}{permalink_path}/g if(defined $entryKvs{$entryId}{permalink_path});
+    
+    # if (0 and $isPermalink) {
+    #     $filledEntry =~ s/{% PREV %}/$entryKvs{$entryId}{permalink_path_prev}/g if(defined $entryKvs{$entryId}{permalink_path_prev});
+    #     $filledEntry =~ s/{% NEXT %}/$entryKvs{$entryId}{permalink_path_next}/g if(defined $entryKvs{$entryId}{permalink_path_next});
+    # } else { 
+    # }
+
+    # only count written entries once
+    $writtenEntries++ unless $isPermalink;
 
 #    say "Filled $entryId:\n$filledEntry" if ($uc{debug});
-    $writtenEntries++ unless $isPermalink;
     return \$filledEntry;
 }
 
@@ -552,7 +563,7 @@ sub prep_tplbottom {
 # Print an entry into its permalink template file, i.e. its single page view. Do one for each entry.
 # ARGUMENTS: entryId
 sub paint_permalink {
-    my $entryId = shift;
+    my ($entryId) = @_;
     my $catName = $entryKvs{$entryId}{category};
     my $title = $entryKvs{$entryId}{title};
     my $currentPl = prep_tpltop($catName, undef, $title);
